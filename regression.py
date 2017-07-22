@@ -104,6 +104,7 @@ def launch_test(test, cn, output_path_in_case_dir = "tmp"):
 
     final_path = os.path.join(case_dir, cn,
             output_path_in_case_dir, "final")
+    io.make_sure_path_exists(final_path)
 
     # Copying perf results to final path
     copyfile(os.path.join(output_path, 'perfs.dat'),
