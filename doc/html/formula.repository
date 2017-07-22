@@ -1,0 +1,5 @@
+\form#0:$\partial_t \rho + u \nabla \cdot \rho = 0$
+\form#1:$u$
+\form#2:$0 \leq \texttt{SDDid} < \texttt{nSDD}$
+\form#3:$N = r^p$
+\form#4:$p$

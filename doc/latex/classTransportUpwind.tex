@@ -1,0 +1,72 @@
+\hypertarget{classTransportUpwind}{
+\section{TransportUpwind Class Reference}
+\label{classTransportUpwind}\index{TransportUpwind@{TransportUpwind}}
+}
+
+
+Upwind scheme for the transport equation.  
+
+
+{\ttfamily \#include $<$transportUpwind.hpp$>$}Inheritance diagram for TransportUpwind::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classTransportUpwind}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classTransportUpwind_add9a1d8fbb788ea5612d93634c79a8b9}{
+\hyperlink{classTransportUpwind_add9a1d8fbb788ea5612d93634c79a8b9}{TransportUpwind} ()}
+\label{classTransportUpwind_add9a1d8fbb788ea5612d93634c79a8b9}
+
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hypertarget{classTransportUpwind_a05c9e8da697dfc51a2b8c3cfd19c2545}{
+\hyperlink{classTransportUpwind_a05c9e8da697dfc51a2b8c3cfd19c2545}{$\sim$TransportUpwind} ()}
+\label{classTransportUpwind_a05c9e8da697dfc51a2b8c3cfd19c2545}
+
+\begin{DoxyCompactList}\small\item\em Destructor. \item\end{DoxyCompactList}\item 
+void \hyperlink{classTransportUpwind_a6eb3dea8ecfa8441e56b0c0f8f787377}{writeState} (std::string directory)
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to a text file. \item\end{DoxyCompactList}\item 
+void \hyperlink{classTransportUpwind_aad7f9cd10acf49402a6a4fe039669a34}{writeState} ()
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to the output file. \item\end{DoxyCompactList}\item 
+void \hyperlink{classTransportUpwind_a1a59087c829238f58f028a544269be54}{massEquation} (const \hyperlink{classSDShared}{SDShared} \&sds, std::map$<$ std::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantityMap)
+\begin{DoxyCompactList}\small\item\em Solves mass/transport equation on given subdomain. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Upwind scheme for the transport equation. We solve the transport equation $\partial_t \rho + u \nabla \cdot \rho = 0$ for $u$ constant speed
+
+The upwind scheme is a scheme of order one that is stable under CFL condition, although very diffusive. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classTransportUpwind_a1a59087c829238f58f028a544269be54}{
+\index{TransportUpwind@{TransportUpwind}!massEquation@{massEquation}}
+\index{massEquation@{massEquation}!TransportUpwind@{TransportUpwind}}
+\subsubsection[{massEquation}]{\setlength{\rightskip}{0pt plus 5cm}void TransportUpwind::massEquation (const {\bf SDShared} \& {\em sds}, \/  std::map$<$ std::string, {\bf Quantity}$<$ real $>$ $\ast$ $>$ {\em quantityMap})}}
+\label{classTransportUpwind_a1a59087c829238f58f028a544269be54}
+
+
+Solves mass/transport equation on given subdomain. This function computes one iteration in time of the transport equation on a given subdomain on shared memory. Solving on a \char`\"{}small\char`\"{} portion of the global domain such as a SDS leaves control to the user on how the computations are done (parallel threads, geometrical shape of the computed domain, etc.) \hypertarget{classTransportUpwind_aad7f9cd10acf49402a6a4fe039669a34}{
+\index{TransportUpwind@{TransportUpwind}!writeState@{writeState}}
+\index{writeState@{writeState}!TransportUpwind@{TransportUpwind}}
+\subsubsection[{writeState}]{\setlength{\rightskip}{0pt plus 5cm}void TransportUpwind::writeState ()}}
+\label{classTransportUpwind_aad7f9cd10acf49402a6a4fe039669a34}
+
+
+Writes solution at given time to the output file. Call right after iteration of the scheme without parameter to write current state \hypertarget{classTransportUpwind_a6eb3dea8ecfa8441e56b0c0f8f787377}{
+\index{TransportUpwind@{TransportUpwind}!writeState@{writeState}}
+\index{writeState@{writeState}!TransportUpwind@{TransportUpwind}}
+\subsubsection[{writeState}]{\setlength{\rightskip}{0pt plus 5cm}void TransportUpwind::writeState (std::string {\em directory})}}
+\label{classTransportUpwind_a6eb3dea8ecfa8441e56b0c0f8f787377}
+
+
+Writes solution at given time to a text file. 
+\begin{DoxyParams}{Parameters}
+\item[{\em directory,:}]folder path where output files will be written \end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+project/transportUpwind/\hyperlink{transportUpwind_8hpp}{transportUpwind.hpp}\item 
+project/transportUpwind/transportUpwind.cpp\end{DoxyCompactItemize}

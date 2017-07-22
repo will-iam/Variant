@@ -1,0 +1,394 @@
+#ifndef DOMAIN_HPP
+#define DOMAIN_HPP
+
+/*!
+ * @file:
+ *
+ * @brief Defines the Domain class
+ */
+
+#include <map>
+#include <string>
+#include <vector>
+#include <array>
+#include <mpi.h>
+
+#include "SDDistributed.hpp"
+#include "number/number.hpp"
+#include "exception/exception.hpp"
+
+// Boundary indices (sides have to be less than zero)
+#define INSIDE 0
+#define LEFT -1
+#define RIGHT -2
+#define TOP -3
+#define BOTTOM -4
+
+/*!
+ * @brief Domain on which a scheme is executed
+ *
+ * A domain is the physical discrete set on which a
+ * finite volumes scheme is solved.
+ * Its space is divided into subdomains on distributed
+ * memory (SDD), in order to allow MPI parallel execution on several
+ * machines.
+ * These subdomains are then split in smaller subdomains (SDS),
+ * each one being treated as a task assigned to a thread.
+ */
+class Domain {
+  public:
+
+    /*!
+     * @brief Constructor
+     */
+    Domain();
+    /*!
+     * @brief Destructor
+     */
+    ~Domain();
+
+    /*!
+     * @brief Initializes domain rectangle.
+     *
+     * @param lx physical width of the domain
+     * @param ly physical width of the domain
+     * @param Nx number of cells on the x-axis
+     * @param Ny number of cells on the y-axis
+     */
+    void initRect(real lx, real ly,
+                  unsigned int Nx, unsigned int Ny);
+
+    /*!
+     * @brief Changes options for building SDDs and SDSs.
+     *
+     * @param nSDD number of SDDs on the domain
+     * @param nSDD_X number of SDDs along the x-axis
+     * @param nSDD_Y number of SDDs along the y-axis
+     * @param nSDS number of SDS per SDD
+     * @param SDSgeom type of SDS split
+     * @param nThreads number of threads per SDD
+     */
+    void setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
+            unsigned int nSDS, std::string SDSgeom,
+            unsigned int nThreads);
+
+    /*!
+     * @brief Returns vector of pointers to SDDs of the domain.
+     *
+     * @return vector of pointers to SDDs of the domain. 
+     */
+    std::vector<SDDistributed*> getSDD() const;
+
+    /*!
+     * @brief Returns the non-modifiable width of the domain.
+     *
+     * @return width of the domain
+     */
+    real getlx() const;
+    /*!
+     * @brief Returns the non-modifiable height of the domain.
+     *
+     * @return height of the domain
+     */
+    real getly() const;
+    /*!
+     * @brief Returns the non-modifiable number of cells on the x-axis.
+     *
+     * @return number of cells on x-axis
+     */
+    unsigned int getSizeX() const;
+    /*!
+     * @brief Returns the non-modifiable number of cells on the y-axis.
+     *
+     * @return number of cells on y-axis
+     */
+    unsigned int getSizeY() const;
+    /*!
+     * @brief Returns the non-modifiable space step on the x-axis (ie. the width of a cell).
+     *
+     * @return space step on the x-axis
+     */
+    real getdx() const;
+    /*!
+     * @brief Returns the non-modifiable space step on the y-axis (ie. the height of a cell).
+     *
+     * @return space step on the y-axis
+     */
+    real getdy() const;
+
+    /*!
+     * @brief Returns vector containing unique ids of all cells.
+     */
+    std::vector<unsigned int> getUidList() const;
+    /*!
+     * @brief Returns vector containing unique ids of all cells outside of the
+     * computed domain, ie. on the boundary.
+     *
+     * @return vector of unique ids of all cells on boundary
+     */
+    //std::vector<unsigned int> getBoundaryUidList() const;
+
+    /*!
+     * @brief Returns boundary thickness of the domain, ie. the number of
+     * layers of cells outside the computed domain.
+     *
+     * @return boundary thickness
+     */
+    unsigned int getBoundaryThickness();
+
+    /*!
+     * @brief Returns non-modifiable quantity value of a cell given by its id.
+     *
+     * /!\ Iterating over all cells with this function is much slower than
+     * iterating on SDDs and then getting values.
+     *
+     * @param quantityName name of desired quantity
+     * @param uid unique id of desired cell
+     * @param onNext get value on current time step if == 0, on previous time
+     * step if == 1
+     *
+     * @return value of quantity on desired cell
+     */
+    real getValue(std::string quantityName, unsigned int uid, int onNext = 0) const;
+    /*!
+     * @brief Modifies quantity value of a cell given by its id.
+     *
+     * /!\ Iterating over all cells with this function is much slower than
+     * iterating on SDDs and then setting values.
+     *
+     * @param quantityName name of quantity to set
+     * @param uid unique id of cell to modify
+     * @param new value to set
+     * @param onNext get value on current time step if == 0, on previous time
+     * step if == 1
+     */
+    void setValue(std::string quantityName, unsigned int uid,
+            real value, int onNext = 0);
+    
+    /*!
+     * @brief Gets bottom-left coordinates of SDD given by its id.
+     *
+     * @param SSDid id of desired SDD, with \f$0 \leq \texttt{SDDid}
+     * < \texttt{nSDD}\f$
+     *
+     * @return coordinates of bottom-left cell of desired SDD
+     */
+    std::pair<int, int> getBLOfSDD(unsigned int SDDid) const;
+
+    /*!
+     * @brief Gets coordinates on computed domain of cell given by its unique id.
+     *
+     * @param uid unique id of desired cell
+     *
+     * @return coordinates on domain of desired cell
+     */
+    std::pair<int, int> getCoordsOnDomain(unsigned int uid) const;
+
+    /*!
+     * @brief Gets pointer to SDD in charge of the computation of a cell given
+     * by its coordinates on the domain
+     *
+     * @param coordsOnDomain coordinates on the domain of the cell
+     *
+     * @return pointer to SDD
+     */
+    //SDDistributed* getSDDforCoords(std::pair<int, int> coordsOnDomain);
+
+    /*!
+     * @brief Returns boundary condition on a cell given by its coordinates on
+     * the domain.
+     *
+     * @param coords on the domain of desired cell
+     *
+     * @return boundary condition (type and value) assigned to cell
+     */
+    std::pair<char, real> getBoundaryCondition(std::pair<int, int> coordsOnSDD) const;
+
+    /*!
+     * @brief Returns non-modifiable unique id of cell given by its
+     * coordinates on the domain.
+     */
+    unsigned int getUid(std::pair<int, int> coordsOnDomain) const;
+
+    /*!
+     * @brief Returns boundary side (left, right, top, bottom or inside if not
+     * on boundary) of a cell given by its coordinates on the domain.
+     */
+    int getBoundarySide(std::pair<int, int> coords) const;
+
+    /*!
+     * @brief Adds new unique id <-> coords on domain correspondence on a given
+     * cell.
+     *
+     * @param uid unique id of new cell
+     * @param coords coordinates of new cell on the domain
+     */
+    void addCoord(unsigned int uid, std::pair<int, int> coords);
+
+    /*!
+     * @brief Adds new unique id <-> coords on domain correspondencPieśnie
+     * and boundary condition for a cell on the boundary.
+     *
+     * @param uid unique id of new cell
+     * @param coords coordinates of new cell on the domain
+     * @param BCtype boundary condition type
+     * @param value boundary condition value
+     *
+     */
+    void addBoundaryCoords(unsigned int uid,
+            std::pair<int, int> coords, char BCtype, real value);
+
+    /*!
+     * @brief Adds new quantity to be managed by the scheme.
+     *
+     * @param name of new quantity
+     */
+    void addQuantity(std::string quantityName, bool constant = false);
+    /*!
+     * @brief Adds function that resolves a new equation on a SDS to be computed
+     * for each iteration by the domain.
+     *
+     * @param equation function
+     */
+    void addEquation(eqType eqFunc);
+
+    /*!
+     * @brief Builds subdomains according to set options.
+     *
+     * This creates the SDDs and their SDSs according to options set in
+     * function setOptions, that has to be called before calling this function.
+     */
+    //void buildSubDomains();
+    void buildSubDomainsMPI();
+    /*!
+     * @brief Builds all info needed by the domain to compute the boundary
+     * according to the boundary conditions set on boundary cells.
+     */
+    void buildBoundaryMap();
+    /*!
+     * @brief Builds the task pool for each SDD.
+     *
+     * This can only be called after options were set and subdomains
+     * were built.
+     */
+    void buildThreads();
+
+    /*!
+     * @brief Calls all added equations, ie. computes an iteration of
+     * the scheme on the domain.
+     */
+    void execEquation();
+
+    /*!
+     * @brief updates overlap cells of all SDDs according to their
+     * values on reference cells on other SDDs, for a given quantity.
+     *
+     * @param quantityName name of quantity to update
+     */
+    void updateOverlapCells();
+    void updateOverlapCells(std::string qtyName);
+    /*!
+     * @brief updates boundary of all SDDs according to their
+     * values on reference cells on other SDDs, for a given quantity.
+     *
+     * /!\ This has to be called AFTER updating overlap cells, since boundary
+     * cells may be updated with values on overlap cells.
+     * The boolean parameter is optional and can be used for some physical
+     * quantities that require the Neumann boundary condition to be opposite.
+     *
+     * @param quantityName name of quantity to update
+     * @param changeNeumannToOpposite if true, this changes the value into its
+     * opposite on cells that have Neumann BC.
+     */
+    void updateBoundaryCells(std::string quantityName, bool changeNeumannToOpposite = false);
+
+    /*! @brief Returns non-modifiable id of SDD and coordinates on SDD of cell
+     * given by its coordinates on the domain.
+     *
+     * The returned SDD is the one that owns the cell on its computed area,
+     * ie. not as an overlap cell.
+     *
+     * @param coordinates of desired cell on domain
+     *
+     * @return id of SDD and coordinates on SDD of desired cell
+     */
+    std::pair<int, std::pair<int, int> > 
+        getSDDandCoords(std::pair<int, int> coordsOnDomain) const;
+    /*! @brief Returns non-modifiable id of SDD and coordinates on SDD of cell
+     * given by its coordinates on the domain.
+     *
+     * The returned SDD is the one that owns the cell on its computed area,
+     * ie. not as an overlap cell.
+     *
+     * @param coordinates of desired cell on domain
+     *
+     * @return id of SDD and coordinates on SDD of desired cell
+     */
+    std::pair<int, std::pair<int, int> > 
+        getSDDandCoords(unsigned int SDDid,
+                std::pair<int, int> coords) const;
+
+    /*!
+     * @brief Prints quantity values for all cells.
+     *
+     * @param quantityName name of quantity to print
+     */
+    void printState(std::string quantityName);
+
+    void setSDDInfo(unsigned int BL_X, unsigned int BL_Y,
+            unsigned int Nx, unsigned int Ny);
+
+    SDDistributed& getSDD();
+    const SDDistributed& getSDDconst() const;
+
+    unsigned int getNumberOfSDD() const;
+
+  private:
+
+    std::vector< std::array<int, 4> > _SDD_BLandSize_List;
+
+    std::map< unsigned int, std::pair<int, int> > _uidToCoords;
+    std::map< std::pair<int, int>, unsigned int > _coordsToUid;
+
+    // Uid <-> boundary conditions <type, value>
+    std::map< std::pair<int, int>, std::pair<char, real> > _SDD_coordsToBC;
+
+    real _lx;
+    real _ly;
+    unsigned int _Nx;
+    unsigned int _Ny;
+    real _dx;
+    real _dy;
+
+    unsigned int _nSDD;
+    unsigned int _nSDD_X; 
+    unsigned int _nSDD_Y; 
+    unsigned int _nSDS;
+    std::string _SDSgeom;
+    unsigned int _nThreads;
+
+    unsigned int _boundaryThickness;
+
+    // MPI Variables
+    int _MPI_rank;
+    int _MPI_size;
+    SDDistributed* _sdd; // Each proc possesses one SDD
+
+    int _SDD_BL_X;
+    int _SDD_BL_Y;
+    unsigned int _SDD_Nx;
+    unsigned int _SDD_Ny;
+
+    std::vector<std::string> _nonCstQties;
+
+};
+
+/*!
+ * @brief If \f$N = r^p\f$, returns \f$p\f$
+ *
+ * @param N number to test
+ * @param r corresponding power
+ */
+int isPowerOf(unsigned int N, unsigned int r);
+
+#endif

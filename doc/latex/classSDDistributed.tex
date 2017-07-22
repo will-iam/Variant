@@ -1,0 +1,173 @@
+\hypertarget{classSDDistributed}{
+\section{SDDistributed Class Reference}
+\label{classSDDistributed}\index{SDDistributed@{SDDistributed}}
+}
+
+
+Subdomain on distributed memory (SDD).  
+
+
+{\ttfamily \#include $<$SDDistributed.hpp$>$}\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classSDDistributed_a49ef3cd6d1409cc71d3800fd0fca2f28}{SDDistributed} (unsigned int sizeX, unsigned int sizeY, unsigned int boundaryThickness, unsigned int id)
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hypertarget{classSDDistributed_a1af9779279416a7bd519747e3b029124}{
+\hyperlink{classSDDistributed_a1af9779279416a7bd519747e3b029124}{$\sim$SDDistributed} ()}
+\label{classSDDistributed_a1af9779279416a7bd519747e3b029124}
+
+\begin{DoxyCompactList}\small\item\em Destructor. \item\end{DoxyCompactList}\item 
+\hypertarget{classSDDistributed_a995e6fad585afbf4158ea0b323eafc76}{
+void \hyperlink{classSDDistributed_a995e6fad585afbf4158ea0b323eafc76}{buildBoundaryMap} (const \hyperlink{classDomain}{Domain} \&domain)}
+\label{classSDDistributed_a995e6fad585afbf4158ea0b323eafc76}
+
+\begin{DoxyCompactList}\small\item\em Builds map between coords on SDD and \char`\"{}real cell\char`\"{} on neighbour SDD / boundary side. \item\end{DoxyCompactList}\item 
+\hypertarget{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}{
+std::map$<$ std::pair$<$ int, int $>$, std::pair$<$ int, std::pair$<$ int, int $>$ $>$ $>$ \hyperlink{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}{getBoundaryMap} ()}
+\label{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}
+
+\begin{DoxyCompactList}\small\item\em Returns map between coords on SDD and \char`\"{}real cell\char`\"{} on neighbour SDD / boundary side. \item\end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\void \hyperlink{classSDDistributed_a6b21ad5588e9128737406ac417127393}{addQuantity} (std::string name)
+\begin{DoxyCompactList}\small\item\em Adds physical quantity (and thus data) used in the scheme. \item\end{DoxyCompactList}\item 
+\hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ \hyperlink{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}{getQuantity} (std::string name)
+\begin{DoxyCompactList}\small\item\em Gets physical quantity previously added with method addQuantity. \item\end{DoxyCompactList}\item 
+void \hyperlink{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}{buildAllSDS} (unsigned int nSDS, std::string geomType)
+\begin{DoxyCompactList}\small\item\em Build subdomains on shared memory based on geometry type. \item\end{DoxyCompactList}\item 
+const std::vector$<$ \hyperlink{classSDShared}{SDShared} $>$ \& \hyperlink{classSDDistributed_a441ca869ca0246ea980d3d2fba4edb9b}{getSDS} () const 
+\begin{DoxyCompactList}\small\item\em Gets all SDS on SDD for a read-\/only access. \item\end{DoxyCompactList}\item 
+unsigned int \hyperlink{classSDDistributed_ab4f67f6e409d05a77edc148902d67790}{getSizeX} () const 
+\begin{DoxyCompactList}\small\item\em Gets width of SDD. \item\end{DoxyCompactList}\item 
+unsigned int \hyperlink{classSDDistributed_ab021a9aea5d9201a179e1cbec1b5c4fb}{getSizeY} () const 
+\begin{DoxyCompactList}\small\item\em Gets height of SDD. \item\end{DoxyCompactList}\item 
+unsigned int \hyperlink{classSDDistributed_ae8172d73b8eedd0fe13712ef898149a2}{getId} () const 
+\begin{DoxyCompactList}\small\item\em Gets unique id of SDD. \item\end{DoxyCompactList}\item 
+const std::map$<$ std::pair$<$ int, int $>$, std::pair$<$ int, std::pair$<$ int, int $>$ $>$ $>$ \& \hyperlink{classSDDistributed_afe481d91ab9ba6ebde03e4e61a6cd053}{getOverlapCellMap} () const 
+\begin{DoxyCompactList}\small\item\em Returns mapping between overlap cells and corresponding \char`\"{}real cells\char`\"{} on other SDDs. \item\end{DoxyCompactList}\item 
+\hypertarget{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}{
+void {\bfseries updateNeumannCells} (std::string quantityName, bool changeToOpposite=false)}
+\label{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}
+
+\item 
+\hypertarget{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}{
+void {\bfseries updateDirichletCells} (std::string quantityName)}
+\label{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}
+
+\item 
+\hypertarget{classSDDistributed_a4c8dc37fa1d0991f0b883563df329518}{
+void {\bfseries addEquation} (eqType eqFunc)}
+\label{classSDDistributed_a4c8dc37fa1d0991f0b883563df329518}
+
+\item 
+\hypertarget{classSDDistributed_a083335cd910b0818fb0990873b4e1f87}{
+void {\bfseries execEquation} ()}
+\label{classSDDistributed_a083335cd910b0818fb0990873b4e1f87}
+
+\item 
+\hypertarget{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}{
+void {\bfseries initThreadPool} (unsigned int nThreads)}
+\label{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Subdomain on distributed memory (SDD). Defines a subdomain on distributed memory. It represents a part of a domain available as a single block of memory, hence its definition as a rectangle. It will then be sliced on geometric subdomains on this block of shared memory (\hyperlink{classSDShared}{SDShared}). 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classSDDistributed_a49ef3cd6d1409cc71d3800fd0fca2f28}{
+\index{SDDistributed@{SDDistributed}!SDDistributed@{SDDistributed}}
+\index{SDDistributed@{SDDistributed}!SDDistributed@{SDDistributed}}
+\subsubsection[{SDDistributed}]{\setlength{\rightskip}{0pt plus 5cm}SDDistributed::SDDistributed (unsigned int {\em sizeX}, \/  unsigned int {\em sizeY}, \/  unsigned int {\em boundaryThickness}, \/  unsigned int {\em id})}}
+\label{classSDDistributed_a49ef3cd6d1409cc71d3800fd0fca2f28}
+
+
+Constructor. 
+\begin{DoxyParams}{Parameters}
+\item[{\em sizeX}]: number of cells of subdomain on the X-\/axis \item[{\em sizeY}]: number of cells of subdomain on the Y-\/axis \end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classSDDistributed_a6b21ad5588e9128737406ac417127393}{
+\index{SDDistributed@{SDDistributed}!addQuantity@{addQuantity}}
+\index{addQuantity@{addQuantity}!SDDistributed@{SDDistributed}}
+\subsubsection[{addQuantity}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void SDDistributed::addQuantity (std::string {\em name})\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classSDDistributed_a6b21ad5588e9128737406ac417127393}
+
+
+Adds physical quantity (and thus data) used in the scheme. 
+\begin{DoxyParams}{Parameters}
+\item[{\em name}]: name of the quantity to add \end{DoxyParams}
+\hypertarget{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}{
+\index{SDDistributed@{SDDistributed}!buildAllSDS@{buildAllSDS}}
+\index{buildAllSDS@{buildAllSDS}!SDDistributed@{SDDistributed}}
+\subsubsection[{buildAllSDS}]{\setlength{\rightskip}{0pt plus 5cm}void SDDistributed::buildAllSDS (unsigned int {\em nSDS}, \/  std::string {\em geomType})}}
+\label{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}
+
+
+Build subdomains on shared memory based on geometry type. 
+\begin{DoxyParams}{Parameters}
+\item[{\em nSDS}]: number of subdomains to be built \item[{\em geomType}]: geometry type of subdomain (see the \hyperlink{classGeometry}{Geometry} class for possible values) \end{DoxyParams}
+\hypertarget{classSDDistributed_ae8172d73b8eedd0fe13712ef898149a2}{
+\index{SDDistributed@{SDDistributed}!getId@{getId}}
+\index{getId@{getId}!SDDistributed@{SDDistributed}}
+\subsubsection[{getId}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int SDDistributed::getId () const}}
+\label{classSDDistributed_ae8172d73b8eedd0fe13712ef898149a2}
+
+
+Gets unique id of SDD. \begin{DoxyReturn}{Returns}
+id of SDD 
+\end{DoxyReturn}
+\hypertarget{classSDDistributed_afe481d91ab9ba6ebde03e4e61a6cd053}{
+\index{SDDistributed@{SDDistributed}!getOverlapCellMap@{getOverlapCellMap}}
+\index{getOverlapCellMap@{getOverlapCellMap}!SDDistributed@{SDDistributed}}
+\subsubsection[{getOverlapCellMap}]{\setlength{\rightskip}{0pt plus 5cm}const std::map$<$ std::pair$<$ int, int $>$, std::pair$<$ int, std::pair$<$ int, int $>$ $>$ $>$ \& SDDistributed::getOverlapCellMap () const}}
+\label{classSDDistributed_afe481d91ab9ba6ebde03e4e61a6cd053}
+
+
+Returns mapping between overlap cells and corresponding \char`\"{}real cells\char`\"{} on other SDDs. Used by the domain to communicate between SDDs when updating overlap cells \hypertarget{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}{
+\index{SDDistributed@{SDDistributed}!getQuantity@{getQuantity}}
+\index{getQuantity@{getQuantity}!SDDistributed@{SDDistributed}}
+\subsubsection[{getQuantity}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Quantity}$<$ real $>$ $\ast$ SDDistributed::getQuantity (std::string {\em name})}}
+\label{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}
+
+
+Gets physical quantity previously added with method addQuantity. 
+\begin{DoxyParams}{Parameters}
+\item[{\em name}]: name of the quantity to get \end{DoxyParams}
+\hypertarget{classSDDistributed_a441ca869ca0246ea980d3d2fba4edb9b}{
+\index{SDDistributed@{SDDistributed}!getSDS@{getSDS}}
+\index{getSDS@{getSDS}!SDDistributed@{SDDistributed}}
+\subsubsection[{getSDS}]{\setlength{\rightskip}{0pt plus 5cm}const std::vector$<$ {\bf SDShared} $>$ \& SDDistributed::getSDS () const}}
+\label{classSDDistributed_a441ca869ca0246ea980d3d2fba4edb9b}
+
+
+Gets all SDS on SDD for a read-\/only access. \begin{DoxyReturn}{Returns}
+const reference to the array of all subdomains on SDD 
+\end{DoxyReturn}
+\hypertarget{classSDDistributed_ab4f67f6e409d05a77edc148902d67790}{
+\index{SDDistributed@{SDDistributed}!getSizeX@{getSizeX}}
+\index{getSizeX@{getSizeX}!SDDistributed@{SDDistributed}}
+\subsubsection[{getSizeX}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int SDDistributed::getSizeX () const}}
+\label{classSDDistributed_ab4f67f6e409d05a77edc148902d67790}
+
+
+Gets width of SDD. \begin{DoxyReturn}{Returns}
+width of SDD 
+\end{DoxyReturn}
+\hypertarget{classSDDistributed_ab021a9aea5d9201a179e1cbec1b5c4fb}{
+\index{SDDistributed@{SDDistributed}!getSizeY@{getSizeY}}
+\index{getSizeY@{getSizeY}!SDDistributed@{SDDistributed}}
+\subsubsection[{getSizeY}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int SDDistributed::getSizeY () const}}
+\label{classSDDistributed_ab021a9aea5d9201a179e1cbec1b5c4fb}
+
+
+Gets height of SDD. \begin{DoxyReturn}{Returns}
+height of SDD 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+subdomain/\hyperlink{SDDistributed_8hpp}{SDDistributed.hpp}\item 
+subdomain/Domain.cpp\item 
+subdomain/SDDistributed.cpp\end{DoxyCompactItemize}

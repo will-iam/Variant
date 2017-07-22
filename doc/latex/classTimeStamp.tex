@@ -1,0 +1,93 @@
+\hypertarget{classTimeStamp}{
+\section{TimeStamp Class Reference}
+\label{classTimeStamp}\index{TimeStamp@{TimeStamp}}
+}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classTimeStamp_a8ec4dfa2498f47685c3f8f72b426316c}{
+static void {\bfseries printLocalTime} (time\_\-t t=time(NULL))}
+\label{classTimeStamp_a8ec4dfa2498f47685c3f8f72b426316c}
+
+\item 
+\hypertarget{classTimeStamp_aa7c7e41c3c0b18eccf14e82893d61474}{
+static void {\bfseries printGmtTime} (time\_\-t t)}
+\label{classTimeStamp_aa7c7e41c3c0b18eccf14e82893d61474}
+
+\item 
+\hypertarget{classTimeStamp_af4050fd9a42f1164f08228896182c037}{
+static void {\bfseries stampLocalStream} (std::ostream \&out, time\_\-t t=time(NULL))}
+\label{classTimeStamp_af4050fd9a42f1164f08228896182c037}
+
+\item 
+\hypertarget{classTimeStamp_a6488a89f147c3ad756b8a1669d02e121}{
+static void {\bfseries stampGMTStream} (std::ostream \&out, time\_\-t t)}
+\label{classTimeStamp_a6488a89f147c3ad756b8a1669d02e121}
+
+\item 
+\hypertarget{classTimeStamp_a0f124a90bd8126f4d4db39d8cb40bd45}{
+static std::string {\bfseries gmtStamp} (time\_\-t date)}
+\label{classTimeStamp_a0f124a90bd8126f4d4db39d8cb40bd45}
+
+\item 
+\hypertarget{classTimeStamp_a7be3a73ce893276376f96a74e7add043}{
+static std::string {\bfseries localStamp} (time\_\-t date)}
+\label{classTimeStamp_a7be3a73ce893276376f96a74e7add043}
+
+\item 
+\hypertarget{classTimeStamp_aaf0342f4746a70a9833d1b2820a5cc92}{
+static std::string {\bfseries gmtDateStamp} (time\_\-t date)}
+\label{classTimeStamp_aaf0342f4746a70a9833d1b2820a5cc92}
+
+\item 
+\hypertarget{classTimeStamp_a58075740c3ec523129da01723839c409}{
+static void {\bfseries gmtDateStream} (std::ostream \&out, time\_\-t date)}
+\label{classTimeStamp_a58075740c3ec523129da01723839c409}
+
+\item 
+\hypertarget{classTimeStamp_aabcdf6d992a680d9da815f0a78683e59}{
+static int \hyperlink{classTimeStamp_aabcdf6d992a680d9da815f0a78683e59}{getLocalHour} (time\_\-t t)}
+\label{classTimeStamp_aabcdf6d992a680d9da815f0a78683e59}
+
+\begin{DoxyCompactList}\small\item\em Returns local hour. \item\end{DoxyCompactList}\item 
+\hypertarget{classTimeStamp_a456d0271b13636d11d6871bafe4c7f62}{
+static std::string \hyperlink{classTimeStamp_a456d0271b13636d11d6871bafe4c7f62}{elasticsearch} (std::chrono::system\_\-clock::time\_\-point t)}
+\label{classTimeStamp_a456d0271b13636d11d6871bafe4c7f62}
+
+\begin{DoxyCompactList}\small\item\em Elastic Search \hyperlink{classTimeStamp}{TimeStamp} format. \item\end{DoxyCompactList}\item 
+\hypertarget{classTimeStamp_a0e829646c9d7366ba987f977a42ab191}{
+static std::string {\bfseries elasticsearch} (time\_\-t t)}
+\label{classTimeStamp_a0e829646c9d7366ba987f977a42ab191}
+
+\item 
+\hypertarget{classTimeStamp_abe1a70441d20385f4ca4ddec07ef9342}{
+static std::string {\bfseries elasticsearch} (time\_\-t t, int ms)}
+\label{classTimeStamp_abe1a70441d20385f4ca4ddec07ef9342}
+
+\item 
+\hypertarget{classTimeStamp_a8e8f74521e03cabed287f5ffffd4d518}{
+static time\_\-t {\bfseries elasticsearch} (const std::string \&timeString)}
+\label{classTimeStamp_a8e8f74521e03cabed287f5ffffd4d518}
+
+\item 
+\hypertarget{classTimeStamp_ae61c2b60ddae2ef62051af03b6ca387e}{
+static time\_\-t {\bfseries yyyymmdd} (const std::string \&timeString)}
+\label{classTimeStamp_ae61c2b60ddae2ef62051af03b6ca387e}
+
+\item 
+\hypertarget{classTimeStamp_a14f4c3194f3e3caec6082eb00a6f0263}{
+static time\_\-t {\bfseries yyyymmdd} (const unsigned int \&dateNumber)}
+\label{classTimeStamp_a14f4c3194f3e3caec6082eb00a6f0263}
+
+\item 
+\hypertarget{classTimeStamp_ac18cb68d8341ea6d2c551b1ad5781394}{
+static std::string \hyperlink{classTimeStamp_ac18cb68d8341ea6d2c551b1ad5781394}{log} ()}
+\label{classTimeStamp_ac18cb68d8341ea6d2c551b1ad5781394}
+
+\begin{DoxyCompactList}\small\item\em Elastic Search \hyperlink{classTimeStamp}{TimeStamp} format for precise logs with milliseconds. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+toolkit/timestamp/timestamp.h\item 
+toolkit/timestamp/timestamp.cpp\end{DoxyCompactItemize}

@@ -1,0 +1,166 @@
+#include <iostream>
+#include <getopt.h>
+#include <cstdlib>
+#include <cstring>
+#include "timestamp/timestamp.h"
+#include "exception/exception.hpp"
+#include "IO.hpp"
+#include "engine.hpp"
+
+using namespace std;
+
+int Engine::main(int argc, char** argv) {
+
+    // Init the rand system
+    srand(time(NULL));
+
+    // Init MPI
+    MPI_Init(NULL, NULL);
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
+
+    int flag;
+    const int stringsize = 180;
+    char initfile[ stringsize ];
+    char outputpath[ stringsize ];
+    bool initfileSet = false;
+    bool outputpathSet = false; 
+    int testFlag = 0;
+
+    struct option long_options[] = {
+        {"test", 0, &testFlag, true},
+        {NULL, 0, NULL, 0}
+    };
+
+    std::map<std::string, double> perfResults;
+
+    int option_index = 0;
+    while ((flag = getopt_long(argc, argv, "i:o:h", long_options, &option_index)) != EOF) {
+        switch(flag){
+
+            case 0:
+                printf ("option %s", long_options[option_index].name);
+                if (optarg)
+                    printf (" with arg %s", optarg);
+                printf ("\n");
+                break;
+
+            case 'i':
+                strncpy(initfile,optarg,stringsize);
+                initfileSet = true;
+                break;
+
+            case 'o':
+                strncpy(outputpath,optarg,stringsize);
+                outputpathSet = true;
+                break;
+
+            case 'h': default:
+                cout << "-i to define input file path" << endl;
+                cout << "-o to define output path" << endl;
+                cout << "-h this menu" << endl;
+                cout << "Example:\n\t./scheme-debug-intel -i input.var -o /tmp\n";
+                return EXIT_SUCCESS;
+        }
+    }
+
+    if (_MPI_rank == 0) {
+
+#ifndef NDEBUG
+        cout << Console::_yellow << "Rules for developer:" << endl;
+        cout << "\t- no Warnings." << endl;
+        cout << "\t- no cast of any sort (dynamic, static, const, reinterpret, ...)." << endl;
+        cout << "\t- comment every class, function, method, member, variable with doxygen style." << endl;
+        cout << "\t- commit regularly." << endl;
+        cout << "\t- think simple." << endl;
+        cout << "\t- think modular: encapsulate as much as possible and put every member private." << Console::_normal << endl;
+#endif
+
+        if (!outputpathSet){
+            cout << "Output path argument missing. Exit." << endl;
+            return EXIT_FAILURE;
+        }
+
+        if (initfile[0] == '\0'){
+            cout << "Init file name missing. Exit." << endl;
+            return EXIT_FAILURE;
+        }
+
+        if (testFlag != 0){
+            cout << "Test Flag is on." << endl;
+        }
+    }
+
+    _initpath = initfile;
+    _outputpath = outputpath;
+
+    if (_MPI_rank == 0) {
+
+        cout << Console::_green;
+        TimeStamp::printLocalTime();
+        cout << ": Initialize Engine" << Console::_normal << endl;
+
+        _timer.start();
+    }
+
+    // Check return of initialize, if ok nothing to do
+    int result = init();
+
+    if (result < 0) {
+
+        cout << Console::_red << "Engine init() failed with return: ";
+        cout << result << Console::_normal << endl;
+        return EXIT_FAILURE;
+    }
+
+    if (_MPI_rank == 0) {
+
+        _timer.end();
+
+        _timer.report();
+
+        perfResults["initTime"] = _timer.getSteadyDuration();
+
+        cout << Console::_green;
+        TimeStamp::printLocalTime();
+        cout << ": Engine starts" << Console::_normal << endl;
+
+        _timer.start();
+    }
+
+    // Check return of start, if ok nothing to do
+    result = start();
+
+    if(result < 0) {
+
+        cout << Console::_red << "Engine start() failed with return: ";
+        cout << result << Console::_normal << endl;
+        return EXIT_FAILURE;
+    }
+
+    if (_MPI_rank == 0) {
+
+        _timer.end();
+
+        cout << Console::_green;
+        TimeStamp::printLocalTime();
+        cout << ": Engine stopped normally" << Console::_normal << endl;
+
+        perfResults["computeTime"] = _timer.getSteadyDuration();
+
+        _timer.report();
+
+        IO::writePerfResults(_outputpath, perfResults);
+    }
+
+    MPI_Finalize();
+
+    return EXIT_SUCCESS;
+}
+
+void Engine::setOptions(real T, real CFL) {
+
+    _T = T;
+    _CFL = CFL;
+}
+

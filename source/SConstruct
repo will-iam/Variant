@@ -1,0 +1,150 @@
+import os, sys
+import platform
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+import config
+
+currentPath=os.getcwd()
+
+print 'Currently running on', os.name, 	platform.system(), "started from", currentPath
+
+#get the mode flag from the command line
+workspace = ARGUMENTS.get('workspace', '')
+
+mymode = ARGUMENTS.get('mode', 'debug')   #holds current mode, default to 'debug' if the user didn't specify
+
+project = ARGUMENTS.get('project', '')   #holds current project to compiler
+
+compiler = ARGUMENTS.get('compiler', 'intel') #holds the current compiler to use
+
+lib = ARGUMENTS.get('lib', 'linux') #holds the current library to use
+
+precision = ARGUMENTS.get('precision', 'double') #computing digit precision
+
+std = ARGUMENTS.get('std', 'c++11') # C++ standard
+
+#check if the user has been naughty: only path must exist
+if not os.path.exists(workspace):
+	print "path", workspace, " does not exist, cannot compile.";
+	Exit(1)
+
+#check if the user has been naughty: only ''gcc', 'icpc' or 'clang' allowed
+if not (compiler in ['gnu', 'intel', 'clang', 'mpi']):
+	print "Error: expected 'gnu', 'intel', 'mpi' or 'clang' found: " + compiler
+	Exit(1)
+
+#check if the user has been naughty: only 'debug','profile' or 'release' allowed
+if not (mymode in ['maxidebug', 'debug', 'profile', 'release']):
+	print "Error: expected 'maxidebug', 'debug', 'profile' or 'release', found: " + mymode
+	Exit(1)
+
+if not (lib in ['linux', 'macos']):
+	print "Expected a library type within: macos, linux";
+	Exit(1)
+
+if not (std in ['c++98', 'c++0x', 'c++11']):
+    print "Expected a C++ standard type within: c++98, c++0x, c++11";
+    Exit(1)
+
+#tell the user what we're doing
+print '**** Compiling with '+ compiler +' in ' + mymode + ' mode for ' + project + ' ...'
+
+env = Environment()
+
+env['ENV']['PATH'] = os.environ['PATH']
+#env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
+
+print 'First', env.Dump()
+
+env['workspace'] = workspace
+mycflags = []
+mylinkflags = []
+
+#define environment and modify default compiler
+if compiler == 'gnu':
+	env['CC'] = config.gnu_CC
+	env['CXX'] = config.gnu_CXX
+    #env['CCVERSION'] = config.CCVERSION
+    #env['CXXVERSION'] = config.CXXVERSION
+	#-Wl,--no-as-needed
+
+	# Needed with gcc to compile the threads, don't ask me why...
+	mylinkflags.append('-pthread')
+	print 'We compile with GNU compiler'
+
+if compiler == 'clang':
+	env['CC'] = config.clang_CC
+	env['CXX'] = config.clang_CXX
+
+	# Needed with clang to compile the threads, don't ask me why...
+	mylinkflags.append('-pthread')
+	print 'We compile with Clang compiler'
+
+if compiler == 'intel':
+	env['CC'] = config.intel_CC
+	env['CXX'] = config.intel_CXX
+
+	# And... needed with intel too!
+	print 'We compile with Intel compiler'
+	mylinkflags.append('-pthread')
+
+if compiler == 'mpi':
+    env['CC'] = config.mpi_CC
+    env['CXX'] = config.mpi_CXX
+
+    mylinkflags.append('-pthread')
+    print 'We compile with MPI compiler'
+
+#extra compile flags
+if mymode == 'maxidebug':
+	mycflags = ['-W','-Werror','-ansi','-Wall', '-Wextra', '-pedantic', '-g']
+	mycflags.append('-Wfatal-errors')
+	if platform.system() == 'Linux':
+		env['CXX'] = 'scan-build ' + env['CXX']
+
+if mymode == 'debug':
+   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
+
+if mymode == 'profile':
+	mycflags = ['-W','-Wall','-Wfatal-errors','-Wextra','-pg','-DNDEBUG',
+    '-DPROFILE=1']
+	#mylinkflags.append('-pg')
+
+if mymode == 'release':
+	mycflags = ['-W','-Wall','-Wfatal-errors','-O2', '-DNDEBUG']
+
+if mymode == 'debug':
+   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
+
+# Set the library path
+if lib == 'linux':
+	env.Append(LIBPATH = [ currentPath + '/common/lib/linux'])
+
+if lib == 'macos':
+	env.Append(LIBPATH = [currentPath + '/common/lib/mac'])
+
+# Computing precision
+if precision == 'double':
+    mycflags.append('-DPRECISION_DOUBLE')
+
+elif precision == 'float':
+    mycflags.append('-DPRECISION_FLOAT')
+
+elif precision == 'long_double':
+    mycflags.append('-DPRECISION_LONG_DOUBLE')
+
+env.Append(CXXFLAGS= '-std='+std)
+#append the user's additional compile flags
+env.Append(CXXFLAGS= mycflags)
+env.Append(LINKFLAGS= mylinkflags)
+
+#make sure the sconscripts can get to the variables
+Export('mymode','compiler','project','lib')
+
+#put all .sconsign files in one place
+env.SConsignFile()
+
+#specify the sconscript for the project
+prog = SConscript('SConscript', exports = 'env')
+execpath = workspace + project + '-' + mymode + '-' + compiler
+inst = env.Install(execpath, prog)
+Default(inst)

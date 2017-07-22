@@ -1,0 +1,95 @@
+\hypertarget{classEngine}{
+\section{Engine Class Reference}
+\label{classEngine}\index{Engine@{Engine}}
+}
+
+
+base class used to program a numerical scheme  
+
+
+{\ttfamily \#include $<$engine.hpp$>$}Inheritance diagram for Engine::\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classEngine}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classEngine_a8c98683b0a3aa28d8ab72a8bcd0d52f2}{
+\hyperlink{classEngine_a8c98683b0a3aa28d8ab72a8bcd0d52f2}{Engine} ()}
+\label{classEngine_a8c98683b0a3aa28d8ab72a8bcd0d52f2}
+
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+\hypertarget{classEngine_a8ef7030a089ecb30bbfcb9e43094717a}{
+\hyperlink{classEngine_a8ef7030a089ecb30bbfcb9e43094717a}{$\sim$Engine} ()}
+\label{classEngine_a8ef7030a089ecb30bbfcb9e43094717a}
+
+\begin{DoxyCompactList}\small\item\em Destructor. \item\end{DoxyCompactList}\item 
+\hypertarget{classEngine_a8464ed1410156a3ccff819373c914297}{
+int \hyperlink{classEngine_a8464ed1410156a3ccff819373c914297}{main} (int argc, char $\ast$$\ast$argv)}
+\label{classEngine_a8464ed1410156a3ccff819373c914297}
+
+\begin{DoxyCompactList}\small\item\em Main function of program, calls init and start function of the inherited engine. \item\end{DoxyCompactList}\item 
+\hypertarget{classEngine_add639334c809cd3e5c5888899df08e39}{
+virtual int \hyperlink{classEngine_add639334c809cd3e5c5888899df08e39}{init} ()=0}
+\label{classEngine_add639334c809cd3e5c5888899df08e39}
+
+\begin{DoxyCompactList}\small\item\em Virtual init function. Program here all necessary init procedures. \item\end{DoxyCompactList}\item 
+\hypertarget{classEngine_a133fbaf71f1fb7a2c7eccc9f3482e923}{
+virtual int \hyperlink{classEngine_a133fbaf71f1fb7a2c7eccc9f3482e923}{start} ()=0}
+\label{classEngine_a133fbaf71f1fb7a2c7eccc9f3482e923}
+
+\begin{DoxyCompactList}\small\item\em Virtual start function. Program here the iterations of the scheme. \item\end{DoxyCompactList}\item 
+void \hyperlink{classEngine_a6837cf148e122390a924718435cea117}{setOptions} (real T, real CFL)
+\begin{DoxyCompactList}\small\item\em Set scheme options : final time and Courant-\/Friedrichs-\/Levy condition. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classEngine_ae12535c5ba837c7ea2636f76678132fe}{
+std::string {\bfseries \_\-initpath}}
+\label{classEngine_ae12535c5ba837c7ea2636f76678132fe}
+
+\item 
+\hypertarget{classEngine_adf268ff3f02e5c4a4d9e987c5eb1d925}{
+std::string {\bfseries \_\-outputpath}}
+\label{classEngine_adf268ff3f02e5c4a4d9e987c5eb1d925}
+
+\item 
+\hypertarget{classEngine_ad868f62c35249da60df7aba62151e6dd}{
+real {\bfseries \_\-T}}
+\label{classEngine_ad868f62c35249da60df7aba62151e6dd}
+
+\item 
+\hypertarget{classEngine_a1c37d4f8d2f9c46afeb5356bb496bde4}{
+real {\bfseries \_\-CFL}}
+\label{classEngine_a1c37d4f8d2f9c46afeb5356bb496bde4}
+
+\item 
+\hypertarget{classEngine_a08555133228ffdf91eca97451f777ef2}{
+\hyperlink{classTimer}{Timer} {\bfseries \_\-timer}}
+\label{classEngine_a08555133228ffdf91eca97451f777ef2}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+base class used to program a numerical scheme 
+
+\subsection{Member Function Documentation}
+\hypertarget{classEngine_a6837cf148e122390a924718435cea117}{
+\index{Engine@{Engine}!setOptions@{setOptions}}
+\index{setOptions@{setOptions}!Engine@{Engine}}
+\subsubsection[{setOptions}]{\setlength{\rightskip}{0pt plus 5cm}void Engine::setOptions (real {\em T}, \/  real {\em CFL})}}
+\label{classEngine_a6837cf148e122390a924718435cea117}
+
+
+Set scheme options : final time and Courant-\/Friedrichs-\/Levy condition. 
+\begin{DoxyParams}{Parameters}
+\item[{\em T}]final time \item[{\em CFL}]Courant-\/Friedrichs-\/Levy condition \end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+engine/\hyperlink{engine_8hpp}{engine.hpp}\item 
+engine/engine.cpp\end{DoxyCompactItemize}

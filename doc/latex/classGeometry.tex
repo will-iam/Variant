@@ -1,0 +1,84 @@
+\hypertarget{classGeometry}{
+\section{Geometry Class Reference}
+\label{classGeometry}\index{Geometry@{Geometry}}
+}
+
+
+Tool providing various splits of SDDs (rectangular shapes) into SDS (any shape).  
+
+
+{\ttfamily \#include $<$Geometry.hpp$>$}\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classGeometry_ac7e6a2114a9969257aa18147575cd2fb}{Geometry} (int bottomLeftX, int bottomLeftY, unsigned int sizeX, unsigned int sizeY)
+\item 
+std::vector$<$ std::vector$<$ std::pair$<$ int, int $>$ $>$ $>$ \hyperlink{classGeometry_a64fa42fab5fe0c5e9bb7d960bafa55fd}{buildGeometry} (unsigned int nShapes, std::string geomType)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classGeometry_a58cd0d80518f153a1e219140cb91980b}{
+static const std::string {\bfseries LINE} = \char`\"{}line\char`\"{}}
+\label{classGeometry_a58cd0d80518f153a1e219140cb91980b}
+
+\item 
+\hypertarget{classGeometry_a914bf3bdc008a1651aa315c4dd47318d}{
+static const std::string {\bfseries RECTANGLE} = \char`\"{}rectangle\char`\"{}}
+\label{classGeometry_a914bf3bdc008a1651aa315c4dd47318d}
+
+\item 
+\hypertarget{classGeometry_a6ac0d43e3e3e040bb7b2d1aacd2c7491}{
+static const std::string {\bfseries RANDOM} = \char`\"{}random\char`\"{}}
+\label{classGeometry_a6ac0d43e3e3e040bb7b2d1aacd2c7491}
+
+\item 
+\hypertarget{classGeometry_a4a7f3e4300ea2d63741981a6265b75bd}{
+static const std::string {\bfseries DIAGONAL} = \char`\"{}diagonal\char`\"{}}
+\label{classGeometry_a4a7f3e4300ea2d63741981a6265b75bd}
+
+\item 
+\hypertarget{classGeometry_ac7c81afa8454187adc7be4e7b7f68d3c}{
+static const std::string {\bfseries TRIANGLE} = \char`\"{}triangle\char`\"{}}
+\label{classGeometry_ac7c81afa8454187adc7be4e7b7f68d3c}
+
+\item 
+\hypertarget{classGeometry_ad93926a0e530cc7e85a79ebc9da99b32}{
+static const std::string {\bfseries AMR} = \char`\"{}amr\char`\"{}}
+\label{classGeometry_ad93926a0e530cc7e85a79ebc9da99b32}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Tool providing various splits of SDDs (rectangular shapes) into SDS (any shape). 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classGeometry_ac7e6a2114a9969257aa18147575cd2fb}{
+\index{Geometry@{Geometry}!Geometry@{Geometry}}
+\index{Geometry@{Geometry}!Geometry@{Geometry}}
+\subsubsection[{Geometry}]{\setlength{\rightskip}{0pt plus 5cm}Geometry::Geometry (int {\em bottomLeftX}, \/  int {\em bottomLeftY}, \/  unsigned int {\em sizeX}, \/  unsigned int {\em sizeY})}}
+\label{classGeometry_ac7e6a2114a9969257aa18147575cd2fb}
+Constructor
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em bottomLeftX}]X-\/coord of bottem-\/left point of SDD \item[{\em bottomLeftX}]Y-\/coord of bottem-\/left point of SDD \item[{\em sizeX}]width of SDD \item[{\em sizeY}]height of SDD \end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classGeometry_a64fa42fab5fe0c5e9bb7d960bafa55fd}{
+\index{Geometry@{Geometry}!buildGeometry@{buildGeometry}}
+\index{buildGeometry@{buildGeometry}!Geometry@{Geometry}}
+\subsubsection[{buildGeometry}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ std::vector$<$ std::pair$<$ int, int $>$ $>$ $>$ Geometry::buildGeometry (unsigned int {\em nShapes}, \/  std::string {\em geomType})}}
+\label{classGeometry_a64fa42fab5fe0c5e9bb7d960bafa55fd}
+build \hyperlink{classGeometry}{Geometry} according to number and type of shapes
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em nShapes}]number of SDS shapes to create \item[{\em geomType}]type of geometry to build \end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+subdomain/\hyperlink{Geometry_8hpp}{Geometry.hpp}\item 
+subdomain/Geometry.cpp\end{DoxyCompactItemize}
