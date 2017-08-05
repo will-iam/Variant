@@ -1,11 +1,12 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
+#include <iostream>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <deque>
 #include <vector>
+#include <map>
 #include <cassert>
 /*#ifdef __GXX_EXPERIMENTAL_CXX0X__
     #include <cstdatomic>
@@ -17,15 +18,20 @@
 #include "timer/timer.hpp"
 #endif
 
+// This can be any less than zero value
+#define SYNC -1
+//#define END -2
+
 class ThreadPool;
 
 // Worker for thread pool object.
 class Worker {
     public:
-        Worker(ThreadPool &s) : _pool(s) { }
+        Worker(ThreadPool &s, int id) : _pool(s), _id(id) { }
         void work();
     private:
         ThreadPool& _pool;
+        int _id;
 };
 
 // Thread pool with single task method.
@@ -36,12 +42,13 @@ class ThreadPool {
 
         void wait() const {
 
-            while (_busyWorkerNumber.load() > 0) {}
+            while (_nextTaskCursor != SYNC || _busyWorkerNumber.load() > 0) {}
         }
 
-        void addTask(std::function<void()> f);
+        void addTask(std::string taskList_name, std::function<void()> f);
+        void setNewTaskList();
 
-        void start();
+        void start(std::string taskList_name);
 
         /// Return the actual queue size.
         size_t workerSize() const { return _workerVectorSize; }
@@ -55,11 +62,13 @@ class ThreadPool {
         const size_t _workerVectorSize;
         std::atomic<size_t> _busyWorkerNumber;
 
-        std::vector< std::function<void()> > _taskVector;
-        size_t _nextTaskCursor;
+        std::map<std::string, std::vector< std::function<void()> > > _taskList_map;
+        std::vector< std::function<void()> > _currentTaskList;
+        std::atomic<int> _nextTaskCursor;
+        bool _finished;
 
         // synchronization
-        mutable std::mutex _taskMutex;
+        std::mutex _taskMutex;
 
 #if PROFILE >= 1
         Timer _timer;

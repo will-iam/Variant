@@ -42,21 +42,39 @@ unsigned int SDDistributed::getId() const {
     return _id;
 }
 
+unsigned int SDDistributed::getNumberNeighbourSDDs() const {
+
+    return _neighbourSDDVector.size();
+}
+
+unsigned int SDDistributed::getNumberOverlapCells() const {
+
+    return _MPIRecv_map.size();    
+}
+
+unsigned int SDDistributed::getNumberBoundaryCells() const {
+
+    return _neumannCellMap.size() + _dirichletCellMap.size();
+}
+
 void SDDistributed::buildAllSDS(unsigned int nSDS, std::string geomType) {
     
     std::vector< std::vector< std::pair<int, int> > >
         geom = _geometry.buildGeometry(nSDS, geomType);
+    int i = 0;
     for (auto it = geom.begin(); it != geom.end(); ++it) {
-        _SDSList.push_back(SDShared(*it, _coordConverter));
+        _SDSList.push_back(SDShared(*it, _coordConverter, i));
+        i++;
     }
 }
 
-void SDDistributed::addEquation(eqType eqFunc) {
+void SDDistributed::addEquation(std::string eqName, eqType eqFunc) {
 
     for (auto& sds: _SDSList) {
 
-        _threadPool->addTask(std::bind(&SDShared::execEquation, sds, eqFunc, _quantityMap));
+        _threadPool->addTask(eqName, std::bind(&SDShared::execEquation, sds, eqFunc, _quantityMap));
     }
+
 }
 
 const std::vector<SDShared>& SDDistributed::getSDS() const {
@@ -67,13 +85,6 @@ const std::vector<SDShared>& SDDistributed::getSDS() const {
 Quantity<real>* SDDistributed::getQuantity(std::string name) {
 
     return _quantityMap[name];
-}
-
-const std::map< std::pair<int, int>,
-std::pair< int, std::pair<int, int> > >&
-SDDistributed::getOverlapCellMap() const {
-
-    return _overlapCellMap;
 }
 
 void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUpdate) {
@@ -198,15 +209,16 @@ void SDDistributed::updateDirichletCells(std::string quantityName) {
     }
 }
 
-void SDDistributed::execEquation() {
+void SDDistributed::execEquation(std::string eqName) {
 
-    _threadPool->start();
+    _threadPool->start(eqName);
 }
 
 void SDDistributed::initThreadPool(unsigned int nThreads) {
     
     assert(nThreads > 0); 
     _threadPool = std::unique_ptr<ThreadPool>(new ThreadPool(std::forward<unsigned int>(nThreads)));
+    //_threadPool = std::unique_ptr<ctpl::thread_pool>(new ctpl::thread_pool(std::forward<unsigned int>(nThreads)));
 }
 
 void SDDistributed::setValue(std::string quantityName,

@@ -21,10 +21,14 @@ def compare_data(input_path1, input_path2, quantityNameList):
     for q in quantityNameList:
         data1 = read_quantity(input_path1, q)
         data2 = read_quantity(input_path2, q)
-        if not (data1[0] == data2[0] \
-            and data1[1] == data2[1] \
-            and np.array_equal(data1[2], data2[2])):
-                return False
+        if not data1[2].shape == data2[2].shape:
+            print("Shape mismatch between data")
+            return False, q, data1[2]
+        comparedata = data2[2] - data1[2]
+        if not data1[0] == data2[0] \
+            or not data1[1] == data2[1] \
+            or not np.array_equal(data1[2], data2[2]):
+                return False, q, comparedata
 
-    return True
+    return True, "", np.empty([1, 1])
 

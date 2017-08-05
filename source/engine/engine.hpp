@@ -52,6 +52,9 @@ class Engine {
      */
     void setOptions(real T, real CFL);
 
+    void updateGlobalUxmax();
+    void updateGlobalUymax();
+
   protected:
     std::string _initpath;
     std::string _outputpath;
@@ -62,6 +65,10 @@ class Engine {
     Timer _timer;
 
     int _MPI_rank;
+    real _local_uxmax;
+    real _local_uymax;
+    real _global_uxmax;
+    real _global_uymax;
 };
 
 #endif

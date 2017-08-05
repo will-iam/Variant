@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <cassert>
+#include <algorithm>
 
 Domain::Domain() {
 
@@ -69,6 +70,56 @@ real Domain::getdy() const {
     return _dx;
 }
 
+unsigned int Domain::getNumberSDD() const {
+
+    return _nSDD;
+}
+
+unsigned int Domain::getNumberSDD_X() const {
+
+    return _nSDD_X;
+}
+
+unsigned int Domain::getNumberNeighbourSDDs() const {
+
+    return _sdd->getNumberNeighbourSDDs();
+}
+
+unsigned int Domain::getNumberSDD_Y() const {
+
+    return _nSDD_Y;
+}
+
+unsigned int Domain::getNumberPhysicalCells() const {
+
+    return _sdd->getSizeX() * _sdd->getSizeY();
+}
+
+unsigned int Domain::getNumberOverlapCells() const {
+
+    return _sdd->getNumberOverlapCells();
+}
+
+unsigned int Domain::getNumberBoundaryCells() const {
+
+    return _sdd->getNumberBoundaryCells();
+}
+
+unsigned int Domain::getNumberSDS() const {
+
+    return _nSDS;
+}
+
+std::string Domain::getSDSGeometry() const {
+
+    return _SDSgeom;
+}
+
+unsigned int Domain::getNumberThreads() const {
+
+    return _nThreads;
+}
+
 std::vector<unsigned int> Domain::getUidList() const {
 
     std::vector<unsigned int> uidList;
@@ -78,44 +129,6 @@ std::vector<unsigned int> Domain::getUidList() const {
     }
     return uidList;
 }
-
-/*
-std::vector<unsigned int> Domain::getBoundaryUidList() const {
-
-    std::vector<unsigned int> uidBoundaryList;
-    for (std::map< std::pair<int, int>, std::pair<char, real> >::const_iterator it = _coordsToBC.begin();
-            it != _coordsToBC.end(); ++it) {
-        uidBoundaryList.push_back(_coordsToUid.at(it->first));
-    }
-    return uidBoundaryList;
-}
-*/
-
-/*
-real Domain::getValue(std::string quantityName, unsigned int uid, int onNext) const {
-
-    std::pair<int, std::pair<int, int> > SDDandCoords = getSDDandCoords(getCoordsOnDomain(uid));
-    int SDDid = SDDandCoords.first;
-    std::pair<int, int> coords = SDDandCoords.second;
-    Quantity<real>* quantity = (_BLandSDDList[SDDid].second)->getQuantity(quantityName);
-    //std::cout << "On domain: " << getCoordsOnDomain(uid).first << "..." << getCoordsOnDomain(uid).second << std::endl;
-    //std::cout << "On SDD " << SDDid << ": " << coords.first << "..." << coords.second << std::endl;
-    //getchar();
-    return quantity->get(onNext, coords.first, coords.second);
-}
-
-void Domain::setValue(std::string quantityName, unsigned int uid,
-                      real value, int onNext) {
-
-    std::pair<int, std::pair<int, int> > SDDandCoords = getSDDandCoords(getCoordsOnDomain(uid));
-    int SDDid = SDDandCoords.first;
-    std::pair<int, int> coordsOnSDD = SDDandCoords.second;
-    //std::cout << SDDid << " ; " << coordsOnSDD.first << "..." << coordsOnSDD.second << " ; ";
-    //std::cout << value << std::endl;
-    Quantity<real>* quantity = (_BLandSDDList[SDDid].second)->getQuantity(quantityName);
-    quantity->set(value, onNext, coordsOnSDD.first, coordsOnSDD.second);
-}
-*/
 
 std::pair<int, int> Domain::getCoordsOnDomain(unsigned int uid) const {
 
@@ -142,9 +155,9 @@ void Domain::addQuantity(std::string quantityName, bool constant) {
     _sdd->addQuantity<real>(quantityName);
 }
 
-void Domain::addEquation(eqType eqFunc) {
+void Domain::addEquation(std::string eqName, eqType eqFunc) {
 
-    _sdd->addEquation(eqFunc);
+    _sdd->addEquation(eqName, eqFunc);
 }
 
 /*
@@ -204,18 +217,14 @@ void Domain::buildSubDomainsMPI() {
 
 void Domain::buildBoundaryMap() {
 
-    /*
-    for (auto const& coordsToBC: _SDD_coordsToBC)
-        std::cout << _MPI_rank << " ; " << coordsToBC.first << " -> " << coordsToBC.second << " -----> " << getSDDandCoords(_MPI_rank, coordsToBC.first) << std::endl;
-    */
     _sdd->buildRecvMap(*this);
     MPI_Barrier(MPI_COMM_WORLD);
     _sdd->buildSendMap(*this);
 }
 
-void Domain::execEquation() {
+void Domain::execEquation(std::string eqName) {
     
-    _sdd->execEquation();
+    _sdd->execEquation(eqName);
 }
 
 int Domain::getBoundarySide(std::pair<int, int> coords) const {
@@ -231,27 +240,6 @@ int Domain::getBoundarySide(std::pair<int, int> coords) const {
     else
         return INSIDE;
 }
-
-/*
-SDDistributed* Domain::getSDDforCoords(std::pair<int, int> coordsOnDomain) {
-
-    for (unsigned int i = 0; i < _BLandSDDList.size(); i++) {
-        std::pair<int, int> BL = _BLandSDDList.at(i).first;
-        std::pair<int, int> SDDsize((_BLandSDDList.at(i).second)->getSizeX(),
-                (_BLandSDDList.at(i).second)->getSizeY());
-        if (coordsOnDomain.first >= BL.first &&
-                coordsOnDomain.first < BL.first + SDDsize.first &&
-                coordsOnDomain.second >= BL.second &&
-                coordsOnDomain.second < BL.second + SDDsize.second) {
-
-            return _BLandSDDList.at(i).second;
-        }
-    }
-
-    assert(false);
-}
-*/
-
 
 std::pair<int, std::pair<int, int> > 
 Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
@@ -286,6 +274,7 @@ Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
             break;
 
         // If it is on boundary, then we return the boundary side
+        // and the same coords on domain
         default:
 
             return std::pair< int, std::pair<int, int> >(boundarySide, coordsOnDomain);
@@ -332,24 +321,6 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
     // Init boundary cells of SDD
     std::vector< std::pair<int, int> > boundaryCellList;
     for (unsigned int k = 1; k <= _boundaryThickness; k++) {
-        /*
-        // Left
-        for (unsigned int j = 0; j < _sizeY + _boundaryThickness; j++) {
-            boundaryCellList.push_back(std::pair<int, int>(-k, j - _boundaryThickness));
-        }
-        // Top
-        for (unsigned int i = 0; i < _sizeX + _boundaryThickness; i++) {
-            boundaryCellList.push_back(std::pair<int, int>(i - _boundaryThickness, _sizeY + k - 1));
-        }
-        // Right
-        for (int j = _sizeY + _boundaryThickness - 1; j >= 0; j--) {
-            boundaryCellList.push_back(std::pair<int, int>(_sizeX + k - 1, j));
-        }
-        // Bottom
-        for (int i = _sizeX + _boundaryThickness - 1; i >= 0; i--) {
-            boundaryCellList.push_back(std::pair<int, int>(i, -k));
-        }
-        */
         // --------------------------------------------------------
         // WITHOUT CORNERS VERSION
         // --------------------------------------------------------
@@ -387,6 +358,9 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
         if (SDDandCoords.first >= 0) {
 
             _MPIRecv_map[*it] = SDDandCoords;
+            // Adding the SDD to the list of neighbours
+            if (find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
+                _neighbourSDDVector.push_back(SDDandCoords.first);
         }
 
         // If it is a real boundary cell, it depends on the boundary type
@@ -492,14 +466,9 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
     }
 }
 
-unsigned int Domain::getNumberOfSDD() const {
-
-    return _nSDD;
-}
-
 void SDDistributed::buildSendMap(const Domain& domain) {
 
-    unsigned int nSDD = domain.getNumberOfSDD();
+    unsigned int nSDD = _nSDD;
     std::vector<int> numberOfCellsToRecv(nSDD, 0); // data sent to other SDDs
     std::vector<int> numberOfCellsToSend(nSDD, 0); // data recved from other SDDs
     std::vector<MPI_Status> statuses(nSDD);
@@ -706,6 +675,11 @@ SDDistributed& Domain::getSDD() {
 const SDDistributed& Domain::getSDDconst() const {
 
     return *_sdd;
+}
+
+void Domain::switchQuantityPrevNext(std::string quantityName) {
+
+    _sdd->getQuantity(quantityName)->switchPrevNext();
 }
 
 

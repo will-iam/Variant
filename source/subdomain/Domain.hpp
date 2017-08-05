@@ -17,13 +17,6 @@
 #include "number/number.hpp"
 #include "exception/exception.hpp"
 
-// Boundary indices (sides have to be less than zero)
-#define INSIDE 0
-#define LEFT -1
-#define RIGHT -2
-#define TOP -3
-#define BOTTOM -4
-
 /*!
  * @brief Domain on which a scheme is executed
  *
@@ -36,6 +29,7 @@
  * each one being treated as a task assigned to a thread.
  */
 class Domain {
+
   public:
 
     /*!
@@ -71,13 +65,6 @@ class Domain {
     void setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
             unsigned int nSDS, std::string SDSgeom,
             unsigned int nThreads);
-
-    /*!
-     * @brief Returns vector of pointers to SDDs of the domain.
-     *
-     * @return vector of pointers to SDDs of the domain. 
-     */
-    std::vector<SDDistributed*> getSDD() const;
 
     /*!
      * @brief Returns the non-modifiable width of the domain.
@@ -116,17 +103,23 @@ class Domain {
      */
     real getdy() const;
 
+    unsigned int getNumberSDD() const;
+    unsigned int getNumberSDD_X() const;
+    unsigned int getNumberSDD_Y() const;
+    unsigned int getNumberNeighbourSDDs() const;
+    unsigned int getNumberPhysicalCells() const;
+    unsigned int getNumberOverlapCells() const;
+    unsigned int getNumberBoundaryCells() const;
+    unsigned int getNumberSDS() const;
+    std::string getSDSGeometry() const;
+    unsigned int getNumberThreads() const;
+
     /*!
      * @brief Returns vector containing unique ids of all cells.
+     *
+     * @return vector of uids of all domain cells (unordered) (unordered)
      */
     std::vector<unsigned int> getUidList() const;
-    /*!
-     * @brief Returns vector containing unique ids of all cells outside of the
-     * computed domain, ie. on the boundary.
-     *
-     * @return vector of unique ids of all cells on boundary
-     */
-    //std::vector<unsigned int> getBoundaryUidList() const;
 
     /*!
      * @brief Returns boundary thickness of the domain, ie. the number of
@@ -136,35 +129,6 @@ class Domain {
      */
     unsigned int getBoundaryThickness();
 
-    /*!
-     * @brief Returns non-modifiable quantity value of a cell given by its id.
-     *
-     * /!\ Iterating over all cells with this function is much slower than
-     * iterating on SDDs and then getting values.
-     *
-     * @param quantityName name of desired quantity
-     * @param uid unique id of desired cell
-     * @param onNext get value on current time step if == 0, on previous time
-     * step if == 1
-     *
-     * @return value of quantity on desired cell
-     */
-    real getValue(std::string quantityName, unsigned int uid, int onNext = 0) const;
-    /*!
-     * @brief Modifies quantity value of a cell given by its id.
-     *
-     * /!\ Iterating over all cells with this function is much slower than
-     * iterating on SDDs and then setting values.
-     *
-     * @param quantityName name of quantity to set
-     * @param uid unique id of cell to modify
-     * @param new value to set
-     * @param onNext get value on current time step if == 0, on previous time
-     * step if == 1
-     */
-    void setValue(std::string quantityName, unsigned int uid,
-            real value, int onNext = 0);
-    
     /*!
      * @brief Gets bottom-left coordinates of SDD given by its id.
      *
@@ -183,16 +147,6 @@ class Domain {
      * @return coordinates on domain of desired cell
      */
     std::pair<int, int> getCoordsOnDomain(unsigned int uid) const;
-
-    /*!
-     * @brief Gets pointer to SDD in charge of the computation of a cell given
-     * by its coordinates on the domain
-     *
-     * @param coordsOnDomain coordinates on the domain of the cell
-     *
-     * @return pointer to SDD
-     */
-    //SDDistributed* getSDDforCoords(std::pair<int, int> coordsOnDomain);
 
     /*!
      * @brief Returns boundary condition on a cell given by its coordinates on
@@ -250,7 +204,7 @@ class Domain {
      *
      * @param equation function
      */
-    void addEquation(eqType eqFunc);
+    void addEquation(std::string eqName, eqType eqFunc);
 
     /*!
      * @brief Builds subdomains according to set options.
@@ -277,7 +231,7 @@ class Domain {
      * @brief Calls all added equations, ie. computes an iteration of
      * the scheme on the domain.
      */
-    void execEquation();
+    void execEquation(std::string eqName);
 
     /*!
      * @brief updates overlap cells of all SDDs according to their
@@ -291,7 +245,10 @@ class Domain {
      * @brief updates boundary of all SDDs according to their
      * values on reference cells on other SDDs, for a given quantity.
      *
-     * /!\ This has to be called AFTER updating overlap cells, since boundary
+     * /!\ This has to be called AFTER updating overlap cells, since boundary        // Updating umax for computation of the next dt
+        _umax = std::max(_umax, std::abs(ux.get(0, i, j)));
+        _umax = std::max(_umax, std::abs(uy.get(0, i, j)));
+
      * cells may be updated with values on overlap cells.
      * The boolean parameter is optional and can be used for some physical
      * quantities that require the Neumann boundary condition to be opposite.
@@ -335,13 +292,34 @@ class Domain {
      */
     void printState(std::string quantityName);
 
+    /*!
+     * @brief Change characteristics of SDD (bottom-left and size)
+     *
+     * @param BL_X X-coordinate of bottom-left coords on domain
+     * @param BL_Y Y-coordinate of bottom-left coords on domain
+     * @param Nx width of SDD
+     * @param Ny height of SDD
+     */
     void setSDDInfo(unsigned int BL_X, unsigned int BL_Y,
             unsigned int Nx, unsigned int Ny);
 
+    /*!
+     * @brief Returns reference to SDD possessed by this
+     * MPI node
+     *
+     * @return reference to SDD
+     */
     SDDistributed& getSDD();
+
+    /*!
+     * @brief Returns const reference to SDD possessed by this
+     * MPI node
+     *
+     * @return const reference to SDD
+     */
     const SDDistributed& getSDDconst() const;
 
-    unsigned int getNumberOfSDD() const;
+    void switchQuantityPrevNext(std::string quantityName);
 
   private:
 

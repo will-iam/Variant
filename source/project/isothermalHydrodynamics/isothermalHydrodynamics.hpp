@@ -1,14 +1,13 @@
-#ifndef TRANSPORT_UPWIND_HPP
-#define TRANSPORT_UPWIND_HPP
+#ifndef ISOTHERMALHYDRODYNAMICS_HPP
+#define ISOTHERMALHYDRODYNAMICS_HPP
 
 /*!
  * @file
- * @brief Defines class of the upwind scheme for the transport equation
+ * @brief Defines class of the upwind scheme for the hydrodynamics equations
  */
 
 #include <memory>
 #include <cmath>
-#include <mpi.h>
 
 #include "engine.hpp"
 #include "number/number.hpp"
@@ -18,27 +17,20 @@
 #include "Quantity.hpp"
 
 /*!
- * @brief Upwind scheme for the transport equation
- *
- * We solve the transport equation
- * \f$\partial_t \rho + u \nabla \cdot \rho = 0\f$
- * for \f$u\f$ constant speed
- *
- * The upwind scheme is a scheme of order one that
- * is stable under CFL condition, although very
- * diffusive.
+ * @brief Donor-cell scheme for the isothermal hydrodynamics equations
+ * (mass and quantity of motion equations)
  */
-class TransportUpwind: public Engine {
+class IsothermalHydrodynamics: public Engine {
   public:
 
     /*!
      * @brief Constructor
      */
-    TransportUpwind();
+    IsothermalHydrodynamics();
     /*!
      * @brief Destructor
      */
-    ~TransportUpwind();
+    ~IsothermalHydrodynamics();
 
     /*!
      * @brief Writes solution at given time to a text file
@@ -66,10 +58,10 @@ class TransportUpwind: public Engine {
      * threads, geometrical shape of the computed domain,
      * etc.)
      */
-     //void massEquation(int i, int j,
-     //       std::map< std::string, Quantity<real>* > quantityMap);
 
-    void massEquation(const SDShared& sds,
+    void advection(const SDShared& sds,
+            std::map< std::string, Quantity<real>* > quantityMap);
+    void source(const SDShared& sds,
             std::map< std::string, Quantity<real>* > quantityMap);
 
   private:
@@ -91,36 +83,6 @@ class TransportUpwind: public Engine {
     void computeDT();
 
     /*!
-     * @brief Applies boundary conditions on current
-     * mass data according to input received
-     * by the engine
-     */
-    //void boundaryConditionsOnMass();
-
-    /*
-     * @brief Applies Dirichlet boundary
-     * conditions on the border:
-     * \f$ \rho = \text{value} \f$ 
-     */
-    //void dirichlet(Quantity<real>& rho, int i, int j,
-    //        real value, int onNext);
-    /*
-     * @brief Applies Neumann
-     * boundary conditions on the border:
-     * \f$ \frac{\partial \rho}{\partial n} = 0 \f$
-     */
-    //void neumann(Quantity<real>& rho, int i, int j,
-    //        int onNext);
-    /*
-     * @brief Applies periodic
-     * boundary conditions on the border:
-     * \f$ \rho_{\text{left}} = \rho_{\text{right}}\f$ and
-     * \f$ \rho_{\text{top}} = \rho_{\text{bottom}}\f$
-     */
-    //void periodic(Quantity<real>& rho, int i, int j,
-    //        int onNext);
-
-    /*!
      * @brief Applies boundary conditions on the
      * speed, according to the boundary conditions on
      * the mass
@@ -136,6 +98,9 @@ class TransportUpwind: public Engine {
     real _dy;
     real _dt;
     real _t;
+
+    // Physical constants
+    real _gamma;
 
     Domain* _domain;
 };

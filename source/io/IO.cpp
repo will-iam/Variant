@@ -1,7 +1,9 @@
 #include "IO.hpp"
 #include "exception/exception.hpp"
+#include "number/number.hpp"
 #include <fstream>
 #include <iomanip>
+#include <limits>
 
 void stor(std::string tmpStr, float& target) {
     target = std::stof(tmpStr);
@@ -59,35 +61,6 @@ int IO::loadDomainInfo(std::string directory,
 
     domain.initRect(lx, ly, Nx, Ny);
     ifs.close();
-
-    return 0;
-}
-
-int IO::writeDomain(std::string directory,
-        const Domain& domain) {
-
-    std::ofstream ofs(directory + "/domain.dat");
-
-    ofs << "2D ";
-    ofs << "cartesian ";
-    ofs << domain.getlx() << " ";
-    ofs << domain.getly() << " ";
-    ofs << domain.getSizeX() << " ";
-    ofs << domain.getSizeY() << std::endl;
-
-    // /!\ Also contains boundary cells
-    std::vector<unsigned int> uidList = domain.getUidList();
-    for (std::vector<unsigned int>::iterator it = uidList.begin();
-            it != uidList.end(); ++it) {
-        std::pair<int, int> coords = domain.getCoordsOnDomain(*it);
-        if (domain.getBoundarySide(coords) != INSIDE)
-            continue;
-        ofs << *it << " ";
-        ofs << domain.getCoordsOnDomain(*it).first << " ";
-        ofs << domain.getCoordsOnDomain(*it).second << std::endl;
-    }
-
-    ofs.close();
 
     return 0;
 }
@@ -152,7 +125,6 @@ int IO::loadQuantity(std::string directory,
                       std::ios::in);
     std::string tmpStr;
 
-    //sdd.buildQuantity(quantityName); 
     for (int i = 0; i < sdd.getSizeX(); i++) {
         for (int j = 0; j < sdd.getSizeY(); j++) {
             std::getline(ifs, tmpStr, ' ');
@@ -184,7 +156,16 @@ int IO::writeQuantity(std::string directory,
 
     for (int i = 0; i < sdd.getSizeX(); i++) {
         for (int j = 0; j < sdd.getSizeY(); j++) {
-            ofs << i << " " << j << " " << sdd.getValue(quantityName, i, j) << std::endl;
+            ofs << i << " " << j << " ";
+#if defined(PRECISION_FLOAT)
+            ofs << std::setprecision(std::numeric_limits<float>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
+#endif
+#if defined(PRECISION_DOUBLE)
+            ofs << std::setprecision(std::numeric_limits<double>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
+#endif
+#if defined(PRECISION_LONG_DOUBLE)
+            ofs << std::setprecision(std::numeric_limits<long double>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
+#endif
         }
     }
 
@@ -219,36 +200,10 @@ int IO::loadBoundaryConditions(std::string directory,
     }
     ifs.close();
 
-    // Build domain boundary before leaving
+    // Build domain boundary map between SDDs before leaving
     domain.buildBoundaryMap();
     return 0;
 }
-
-/*
-int IO::writeBoundaryConditions(std::string directory,
-        std::string quantityName,
-        const Domain& domain) {
-
-    std::ofstream ofs(directory + "/" + quantityName + "_bc.dat", std::ios::out);
-    if (!ofs)
-        std::cerr << "Failed to open file: " << std::endl;
-
-    std::vector<unsigned int> boundaryUidList = domain.getBoundaryUidList();
-    for (std::vector<unsigned int>::iterator it = boundaryUidList.begin(); it != boundaryUidList.end(); ++it) {
-        std::pair<int, int> coords = domain.getCoordsOnDomain(*it);
-        std::pair<char, real> bc = domain.getBoundaryCondition(*it);
-        ofs << *it << " ";
-        ofs << coords.first << " " << coords.second << " ";
-        ofs << bc.first << " ";
-        ofs << std::scientific << std::setprecision(16) << bc.second << std::endl;
-        ofs.flush();
-    }
-
-    ofs.close();
-
-    return 0;
-}
-*/
 
 int IO::writePerfResults(std::string directory, const std::map<std::string, double> results) {
 
@@ -257,6 +212,30 @@ int IO::writePerfResults(std::string directory, const std::map<std::string, doub
     for (auto const& r: results)
         ofs << r.first << " " << r.second << std::endl;
     
+    ofs.close();
+    return 0;
+}
+
+int IO::writeVariantInfo(std::string directory, const Domain& domain) {
+
+    const SDDistributed& sdd = domain.getSDDconst();
+    std::ostringstream oss;
+    oss << sdd.getId();
+    std::ofstream ofs(directory + "/sdd" + oss.str() + "/" + "variant_info.dat", std::ios::out);
+
+    ofs << domain.getNumberSDD() << " ";
+    ofs << domain.getNumberSDD_X() << " ";
+    ofs << domain.getNumberSDD_Y() << std::endl;
+    ofs << domain.getNumberNeighbourSDDs() << " ";
+    ofs << domain.getNumberPhysicalCells() << " ";
+    ofs << domain.getNumberOverlapCells() << " ";
+    ofs << domain.getNumberBoundaryCells() << std::endl;
+    ofs << domain.getNumberSDS() << " ";
+    ofs << domain.getSDSGeometry() << " ";
+    ofs << domain.getNumberThreads() << std::endl;
+    ofs << "free_stack" << " ";
+    ofs << "SoA" << std::endl;;
+
     ofs.close();
     return 0;
 }

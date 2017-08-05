@@ -49,7 +49,8 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * @brief Copy constructor based on vector of coords
      */
     SDShared(const std::vector< std::pair<int, int> >& coords,
-            const CoordConverter& coordConverter);
+            const CoordConverter& coordConverter,
+            unsigned int index);
 
     /*!
      * @brief Gets memory index corresponding to given
@@ -62,6 +63,13 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * @return corresponding memory index
      */
     unsigned int getMemIndex(int i, int j) const;
+
+    /*!
+     * @brief Returns SDS id
+     *
+     * @return id of SDS
+     */
+    unsigned int getId() const;
 
     /*!
      * exec equation on SDS
@@ -77,6 +85,7 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * the converter of the parent SDD
      */
     CoordConverter _coordConverter;
+    unsigned int _id;
 
 };
 

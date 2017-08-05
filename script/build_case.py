@@ -9,15 +9,20 @@ import argparse
 import io
 import imp
 
-def build_case(root_dir, project_name, case_name, subdir = "tmp"):
+def build_case(root_dir, project_name, case_name, subdir = "tmp",
+        force_build = False):
     # Load all physical/numerical data from case
     case_path = os.path.join(root_dir, 'case', project_name, case_name)
     sys.path.append(case_path)
+
     import init as case
     case = reload(case)
     del sys.path[-1]
 
     output_dir = os.path.join(case_path, subdir, "init")
+    if os.path.isdir(output_dir) and not force_build:
+        return output_dir, list(case.quantityDict.keys())
+
     io.make_sure_path_exists(output_dir)
 
     # Write scheme info
@@ -35,10 +40,10 @@ def build_case(root_dir, project_name, case_name, subdir = "tmp"):
     for q_name, q in case.quantityDict.iteritems():
         io.write_quantity(output_dir, q_name, q)
 
-    del case
+    q_name_list = list(case.quantityDict.keys())
 
     # Return path to case directory
-    return output_dir
+    return output_dir, q_name_list
 
 if __name__ == "__main__":
     # Argument parser

@@ -21,6 +21,15 @@
 #include "threadpool/threadpool.hpp"
 #include "exception/exception.hpp"
 
+// Boundary indices (sides have to be less than zero)
+#define INSIDE 0
+#define LEFT -1
+#define RIGHT -2
+#define TOP -3
+#define BOTTOM -4
+
+// Types of ghost cells : boundary condition type (border of the domain),
+// or overlap (inside the domain)
 #define OVERLAP 0
 #define DIRICHLET 1
 #define PERIODIC 2
@@ -73,9 +82,9 @@ class SDDistributed {
     /*!
      * @brief Constructor
      *
-     * @param sizeX : number of cells of subdomain
+     * @param sizeX number of cells of subdomain
      * on the X-axis
-     * @param sizeY : number of cells of subdomain
+     * @param sizeY number of cells of subdomain
      * on the Y-axis
      */
     SDDistributed(unsigned int sizeX, unsigned int sizeY,
@@ -89,13 +98,6 @@ class SDDistributed {
     ~SDDistributed();
 
     /*!
-     * @brief Builds map between coords on SDD and "real cell" on neighbour SDD /
-     * boundary side
-     */
-    void buildSendMap(const Domain& domain);
-    void buildRecvMap(const Domain& domain);
-
-    /*!
      * @brief Returns map between coords on SDD and "real cell" on neighbour SDD /
      * boundary side
      */
@@ -103,31 +105,12 @@ class SDDistributed {
         std::pair< int, std::pair<int, int> > > getBoundaryMap();
 
     /*!
-     * @brief Adds physical quantity (and thus data) used 
-     * in the scheme.
-     * 
-     * @param name : name of the quantity to add
-     */
-    template<typename T> void addQuantity(std::string name);
-
-    /*!
      * @brief Gets physical quantity previously added 
      * with method addQuantity. 
      * 
-     * @param name : name of the quantity to get
+     * @param name name of the quantity to get
      */
     Quantity<real>* getQuantity(std::string name);
-
-    /*!
-     * @brief Build subdomains on shared memory based on
-     * geometry type
-     *
-     * @param nSDS : number of subdomains to be built
-     * @param geomType : geometry type of subdomain (see
-     * the Geometry class for possible values)
-     */
-    void buildAllSDS(unsigned int nSDS,
-            std::string geomType);
 
     /*!
      * @brief Gets all SDS on SDD for a read-only
@@ -139,14 +122,14 @@ class SDDistributed {
     const std::vector<SDShared>& getSDS() const;
 
     /*!
-     * @brief Gets width of SDD.
+     * @brief Gets width of SDD, excluding boundary thickness.
      *
      * @return width of SDD
      */
     unsigned int getSizeX() const;
 
     /*!
-     * @brief Gets height of SDD
+     * @brief Gets height of SDD, excluding boundary thickness
      *
      * @return height of SDD
      */
@@ -159,6 +142,10 @@ class SDDistributed {
      */
     unsigned int getId() const;
 
+    unsigned int getNumberNeighbourSDDs() const;
+    unsigned int getNumberOverlapCells() const;
+    unsigned int getNumberBoundaryCells() const;
+
     /*!
      * @brief Returns mapping between overlap cells
      * and corresponding "real cells" on other SDDs.
@@ -170,23 +157,117 @@ class SDDistributed {
         std::pair< int, std::pair<int, int> > >&
             getOverlapCellMap() const;
 
+    /*!
+     * @brief Manually set the value on a coordinate, without having to get
+     * the quantity.
+     *
+     * @param quantityName name of quantity to update
+     * @param coordX coordinate on X-axis of cell to update
+     * @param coordY coordinate on Y-axis of cell to update
+     * @param value value to set on the desired cell for the desired quantity
+     */
+    void setValue(std::string quantityName, int coordX, int coordY, real value);
+
+    /*!
+     * @brief Manually set the value on a coordinate, without having to get
+     * the quantity.
+     *
+     * @param quantityName name of quantity to update
+     * @param coordX coordinate on X-axis of cell to update
+     * @param coordY coordinate on Y-axis of cell to update
+     * @param value value to set on the desired cell for the desired quantity
+     */
+    real getValue(std::string quantityName, int coordX, int coordY) const;
+
+    /*!
+     * @brief Builds map of cells to send from this SDD to other SDDs.
+     *
+     * @param domain parent domain of the SDD
+     */
+    void buildSendMap(const Domain& domain);
+    /*!
+     * @brief Builds map between coords on SDD and "real cell" on neighbour SDD /
+     * boundary side
+     *
+     * @param domain parent domain of the SDD
+     */
+    void buildRecvMap(const Domain& domain);
+
+    /*!
+     * @brief Adds physical quantity (and thus data) used 
+     * in the scheme.
+     *
+     * @param name name of the quantity to add, used as reference when getting
+     * and setting a value, or when getting the whole quantity data
+     */
+    template<typename T> void addQuantity(std::string name);
+
+    /*!
+     * @brief Build subdomains on shared memory based on
+     * geometry type
+     *
+     * @param nSDS number of subdomains to be built
+     * @param geomType geometry type of subdomain (see
+     * the Geometry class for possible values)
+     */
+    void buildAllSDS(unsigned int nSDS,
+            std::string geomType);
+
+    /*!
+     * @brief Updates overlap cells by communicating through MPI with other SDDs
+     *
+     * @param qtiesToUpdate list of str. names of quantities to update
+     */
     void updateOverlapCells(const std::vector<std::string>& qtiesToUpdate);
+
+    /*!
+     * @brief Updates Neumann boundary cells of SDD according to values
+     * stored in memory.
+     *
+     * This does not require communication with other SDDs
+     * as long as overlap cells were update before.
+     *
+     * @param quantityName str. name of quantity to update
+     * @param changeToOpposite change to opposite value of reference
+     * according to value. This depends on the boundary and is useful for
+     * quantities traditionnally defined on edges.
+     */
     void updateNeumannCells(std::string quantityName,
             bool changeToOpposite = false);
+
+    /*!
+     * @brief Updates Dirichlet boundary cells of SDD according to values stored
+     * in memory.
+     *
+     * @param quantityName str. name of quantity to update
+     */
     void updateDirichletCells(std::string quantityName);
 
-    void addEquation(eqType eqFunc);
-    void execEquation();
+    /*!
+     * @brief Adds an equation to the stack of equations to be computed by
+     * the scheme.
+     *
+     * @param eqFunc function to be added to the task
+     */
+    void addEquation(std::string eqName, eqType eqFunc);
 
+    /*!
+     * @brief Computes equation in the order they were added to the task
+     * stack.
+     */
+    void execEquation(std::string eqName);
+
+    /*!
+     * @brief Builds thread pool given an amount of threads to build.
+     * 
+     * @param nThreads number of threads to build
+     */
     void initThreadPool(unsigned int nThreads);
-
-    void setValue(std::string quantityName, int coordX, int coordY, real value);
-    real getValue(std::string quantityName, int coordX, int coordY) const;
-    void addBoundaryCoords(unsigned int uid, std::pair<int, int> coords, char BCtype, real value);
 
   private:
 
-
+    // Attributes
+    
     /*!
      * map storing physical quantities in correspondance
      * with their names
@@ -231,14 +312,6 @@ class SDDistributed {
     Geometry _geometry;
 
     /*!
-     * mapping between overlap cells on this SDD to
-     * the corresponding neighbours with "real cell" values,
-     * with the associated pair (SDDid, coordsOnCorrespondingSDDid)
-     */
-    std::map< std::pair<int, int>,
-        std::pair< int, std::pair<int, int> > >
-            _overlapCellMap;
-    /*!
      * mapping between coords of cells on which are
      * set Dirichlet boundary conditions, and the
      * values of the BC
@@ -258,6 +331,7 @@ class SDDistributed {
     /*!
      * thread pool for executing equation on SDS in parallel
      */
+    //std::unique_ptr<ThreadPool> _threadPool;
     std::unique_ptr<ThreadPool> _threadPool;
 
     /*!
@@ -266,11 +340,21 @@ class SDDistributed {
     std::pair<int, int> _BL;
 
     // Communications between SDDs variables
+    /*!
+     * mapping between receiving coord on this SDD to sending coords on other SDDs
+     */
     std::map< std::pair<int, int>, std::pair<int, std::pair<int, int> >, compare_coords > _MPIRecv_map;
+    /*!
+     * mapping between receiving coords on other SDDs to sending coords on this SDD
+     */
     std::map< std::pair<int, std::pair<int, int> >, std::pair<int, int>, compare_sddandcoords > _MPISend_map;
 
+    /*!
+     * number of total SDDs
+     */
     unsigned int _nSDD;
 
+    std::vector<int> _neighbourSDDVector;
 
 };
 

@@ -2,6 +2,7 @@
 #include <getopt.h>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 #include "timestamp/timestamp.h"
 #include "exception/exception.hpp"
 #include "IO.hpp"
@@ -163,4 +164,34 @@ void Engine::setOptions(real T, real CFL) {
     _T = T;
     _CFL = CFL;
 }
+
+/*
+void Engine::updateGlobalUxmax() {
+
+    std::vector<real> _bufferUxmax;
+    int size = 0;
+    int rank = _MPI_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    _bufferUxmax.resize(size);
+
+    MPI_Allgather(&_local_uxmax, 1, MPI_REALTYPE,
+                  &_bufferUxmax[0], 1, MPI_REALTYPE, MPI_COMM_WORLD);
+
+    _global_uxmax = *(std::max_element(_bufferUxmax.begin(), _bufferUxmax.end()));
+}
+*/
+
+void Engine::updateGlobalUxmax() {
+
+    MPI_Allreduce(&_local_uxmax, &_global_uxmax, 1, MPI_REALTYPE,
+            MPI_MAX, MPI_COMM_WORLD);
+}
+
+void Engine::updateGlobalUymax() {
+
+    MPI_Allreduce(&_local_uymax, &_global_uymax, 1, MPI_REALTYPE,
+            MPI_MAX, MPI_COMM_WORLD);
+}
+
 

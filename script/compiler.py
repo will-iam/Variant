@@ -9,10 +9,17 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
 
 class Engine:
-    def __init__(self, project_name, compiler = 'intel',
+    def __init__(self, project_name, build = True, compiler = 'intel',
             mode = 'debug', precision = 'double', std='c++11'):
-        self.binary_path = self._build(project_name,
+        if build:
+            self.binary_path = self._build(project_name,
                 compiler, mode, precision, std)
+        else:
+            program_file = project_name + '-' \
+                    + mode + '-' \
+                    + compiler
+            self.binary_path = os.path.join(config.workspace, 'Variant',
+                    program_file)
 
     def _build(self, project_name, compiler, mode, precision, std):
         p = subprocess.Popen(['scons',

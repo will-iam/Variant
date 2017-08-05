@@ -3,23 +3,27 @@
 
 #include <cmath>
 #include <random>
+#include <limits>
 #include <mpi.h>
 
 #define positiveModulo(a, b) (((a) % (b)) + (b)) % (b)
 
 #if defined(PRECISION_FLOAT)
 typedef float real;
-typedef MPI_FLOAT MPI_REAL;
+const MPI_Datatype MPI_REALTYPE = MPI_FLOAT;
+typedef std::numeric_limits<float> oss_nl;
 #endif
 
 #if defined(PRECISION_DOUBLE)
 typedef double real;
 const MPI_Datatype MPI_REALTYPE = MPI_DOUBLE;
+typedef std::numeric_limits<double> oss_nl;
 #endif
 
 #if defined(PRECISION_LONG_DOUBLE)
 typedef long double real;
-typedef MPI_LONG_DOUBLE MPI_REAL;
+const MPI_Datatype MPI_REALTYPE = MPI_LONGDOUBLE;
+typedef std::numeric_limits<long double> oss_nl;
 #endif
 
 namespace Number {

@@ -16,14 +16,21 @@ SDShared::SDShared(unsigned int bottomLeft_X, unsigned int bottomLeft_Y,
 }
 
 SDShared::SDShared(const std::vector< std::pair<int, int> >& coords,
-        const CoordConverter& coordConverter):
+        const CoordConverter& coordConverter,
+        unsigned int index):
     std::vector< std::pair<int ,int> >(coords),
-    _coordConverter(coordConverter) {
+    _coordConverter(coordConverter),
+    _id(index) {
 }
 
-unsigned int SDShared::getMemIndex(int i, int j) const
-{
+unsigned int SDShared::getMemIndex(int i, int j) const {
+
     return _coordConverter.convert(i, j);
+}
+
+unsigned int SDShared::getId() const {
+
+    return _id;
 }
 
 void SDShared::execEquation(eqType eqFunc,

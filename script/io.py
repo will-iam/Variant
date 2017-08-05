@@ -85,7 +85,7 @@ def read_perfs(input_dir):
     perfs = dict()
     for line in f.readlines():
         line_list = line.split()
-        perfs[line_list[0]] = float(line_list[1])
+        perfs[line_list[0]] = int(line_list[1])
     return perfs
 
 def write_quantity(output_dir, data, domain_dir, quantity_name):
@@ -202,4 +202,18 @@ def write_bc(output_dir, coords_to_uid_and_bc):
 #        f.write(str(qbc[1]) + "\n")  # BC value
 #    f.close()
 
+def read_variant_info(data_dir, nSDD):
+    whole_data = []
+    for i in range(nSDD):
+        data = []
+        f = open(os.path.join(data_dir, 'sdd' + str(i), 'variant_info.dat'), 'r')
+        for line in f.readlines():
+            for el in line.split():
+                try:
+                    data.append(int(el))
+                except ValueError:
+                    data.append(el)
+        f.close()
+        whole_data.append(tuple(data))
 
+    return whole_data

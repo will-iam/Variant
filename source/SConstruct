@@ -53,7 +53,7 @@ env = Environment()
 env['ENV']['PATH'] = os.environ['PATH']
 #env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
 
-print 'First', env.Dump()
+#print 'First', env.Dump()
 
 env['workspace'] = workspace
 mycflags = []
