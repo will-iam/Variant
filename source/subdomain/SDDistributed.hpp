@@ -44,7 +44,7 @@ typedef std::pair<int, int> coords_type;
 
 struct compare_coords {
 
-    bool operator() (const coords_type& c1, const coords_type& c2) {
+    bool operator() (const coords_type& c1, const coords_type& c2) const {
         if (c1.second < c2.second)
             return true;
         if (c1.second == c2.second)
@@ -55,10 +55,10 @@ struct compare_coords {
 
 struct compare_sddandcoords {
 
-    bool operator()(const sddandcoords_type& s1, const sddandcoords_type& s2) {
+    bool operator()(const sddandcoords_type& s1, const sddandcoords_type& s2) const {
         if (s1.first < s2.first)
             return true;
-        if (s1.first == s2.first) 
+        if (s1.first == s2.first)
             return compare_coords()(s1.second, s2.second);
 
         return false;
@@ -73,7 +73,7 @@ struct compare_sddandcoords {
  * a part of a domain available as a single block of memory,
  * hence its definition as a rectangle.
  * It will then be sliced on geometric subdomains on this
- * block of shared memory (SDShared). 
+ * block of shared memory (SDShared).
  */
 class SDDistributed {
 
@@ -89,7 +89,7 @@ class SDDistributed {
      */
     SDDistributed(unsigned int sizeX, unsigned int sizeY,
             int BL_X, int BL_Y,
-            unsigned int boundaryThickness, 
+            unsigned int boundaryThickness,
             unsigned int id,
             unsigned int nSDD);
     /*!
@@ -105,9 +105,9 @@ class SDDistributed {
         std::pair< int, std::pair<int, int> > > getBoundaryMap();
 
     /*!
-     * @brief Gets physical quantity previously added 
-     * with method addQuantity. 
-     * 
+     * @brief Gets physical quantity previously added
+     * with method addQuantity.
+     *
      * @param name name of the quantity to get
      */
     Quantity<real>* getQuantity(std::string name);
@@ -149,7 +149,7 @@ class SDDistributed {
     /*!
      * @brief Returns mapping between overlap cells
      * and corresponding "real cells" on other SDDs.
-     * 
+     *
      * Used by the domain to communicate between SDDs
      * when updating overlap cells
      */
@@ -194,7 +194,7 @@ class SDDistributed {
     void buildRecvMap(const Domain& domain);
 
     /*!
-     * @brief Adds physical quantity (and thus data) used 
+     * @brief Adds physical quantity (and thus data) used
      * in the scheme.
      *
      * @param name name of the quantity to add, used as reference when getting
@@ -259,7 +259,7 @@ class SDDistributed {
 
     /*!
      * @brief Builds thread pool given an amount of threads to build.
-     * 
+     *
      * @param nThreads number of threads to build
      */
     void initThreadPool(unsigned int nThreads);
@@ -267,7 +267,7 @@ class SDDistributed {
   private:
 
     // Attributes
-    
+
     /*!
      * map storing physical quantities in correspondance
      * with their names
