@@ -1,68 +1,168 @@
-\hypertarget{classSDShared}{
-\section{SDShared Class Reference}
-\label{classSDShared}\index{SDShared@{SDShared}}
-}
+\hypertarget{classSDShared}{}\section{S\+D\+Shared Class Reference}
+\label{classSDShared}\index{S\+D\+Shared@{S\+D\+Shared}}
 
 
-Subdomain on shared memory (SDS).  
+Subdomain on shared memory (S\+DS)  
 
 
-{\ttfamily \#include $<$SDShared.hpp$>$}
 
-Inherits std::vector$<$ std::pair$<$ int, int $>$ $>$.\subsection*{Public Member Functions}
+
+{\ttfamily \#include $<$S\+D\+Shared.\+hpp$>$}
+
+Inheritance diagram for S\+D\+Shared\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classSDShared}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}{SDShared} (unsigned int bottomLeft\_\-X, unsigned int bottomLeft\_\-Y, unsigned int sizeX, unsigned int sizeY, const \hyperlink{classCoordConverter}{CoordConverter} \&coordConverter)
-\begin{DoxyCompactList}\small\item\em Constructor (rectangle-\/shaped SDS). \item\end{DoxyCompactList}\item 
-\hypertarget{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}{
-\hyperlink{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}{SDShared} (const std::vector$<$ std::pair$<$ int, int $>$ $>$ \&coords, const \hyperlink{classCoordConverter}{CoordConverter} \&coordConverter)}
-\label{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}
-
-\begin{DoxyCompactList}\small\item\em Copy constructor based on vector of coords. \item\end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDShared_a0ee0c276ea09e1bd0aea8e4930ebe253}{getMemIndex} (int i, int j) const 
-\begin{DoxyCompactList}\small\item\em Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the SDS. \item\end{DoxyCompactList}\item 
-void \hyperlink{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}{execEquation} (eqType eqFunc, const std::map$<$ std::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&quantityMap)
+\hyperlink{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}{S\+D\+Shared} (unsigned int bottom\+Left\+\_\+X, unsigned int bottom\+Left\+\_\+Y, unsigned int sizeX, unsigned int sizeY, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
+\begin{DoxyCompactList}\small\item\em Constructor (rectangle-\/shaped S\+DS) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSDShared_afc8718fef97226eed215c34e1b453503}\label{classSDShared_afc8718fef97226eed215c34e1b453503}} 
+\hyperlink{classSDShared_afc8718fef97226eed215c34e1b453503}{S\+D\+Shared} (const std\+::vector$<$ std\+::pair$<$ int, int $>$ $>$ \&coords, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter, unsigned int index)
+\begin{DoxyCompactList}\small\item\em Copy constructor based on vector of coords. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}{get\+Mem\+Index} (int i, int j) const
+\begin{DoxyCompactList}\small\item\em Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}{get\+Id} () const
+\begin{DoxyCompactList}\small\item\em Returns S\+DS id. \end{DoxyCompactList}\item 
+void \hyperlink{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}{exec\+Equation} (eq\+Type eq\+Func, const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
+\item 
+\hyperlink{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}{S\+D\+Shared} (unsigned int bottom\+Left\+\_\+X, unsigned int bottom\+Left\+\_\+Y, unsigned int sizeX, unsigned int sizeY, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
+\begin{DoxyCompactList}\small\item\em Constructor (rectangle-\/shaped S\+DS) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}\label{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}} 
+\hyperlink{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}{S\+D\+Shared} (const std\+::vector$<$ std\+::pair$<$ int, int $>$ $>$ \&coords, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
+\begin{DoxyCompactList}\small\item\em Copy constructor based on vector of coords. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}{get\+Mem\+Index} (int i, int j) const
+\begin{DoxyCompactList}\small\item\em Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. \end{DoxyCompactList}\item 
+void \hyperlink{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}{exec\+Equation} (eq\+Type eq\+Func, const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
 \end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-Subdomain on shared memory (SDS). Defines a subdomain on shared memory. Since the data is stored as one block on the SDD, a SDS is only an array of 2D-\/coordinates referencing to cells of the SDD. 
+Subdomain on shared memory (S\+DS) 
+
+Defines a subdomain on shared memory. Since the data is stored as one block on the S\+DD, a S\+DS is only an array of 2\+D-\/coordinates referencing to cells of the S\+DD. 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}{
-\index{SDShared@{SDShared}!SDShared@{SDShared}}
-\index{SDShared@{SDShared}!SDShared@{SDShared}}
-\subsubsection[{SDShared}]{\setlength{\rightskip}{0pt plus 5cm}SDShared::SDShared (unsigned int {\em bottomLeft\_\-X}, \/  unsigned int {\em bottomLeft\_\-Y}, \/  unsigned int {\em sizeX}, \/  unsigned int {\em sizeY}, \/  const {\bf CoordConverter} \& {\em coordConverter})}}
-\label{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}
+\mbox{\Hypertarget{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}\label{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
+\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{S\+D\+Shared()}{SDShared()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily S\+D\+Shared\+::\+S\+D\+Shared (\begin{DoxyParamCaption}\item[{unsigned int}]{bottom\+Left\+\_\+X,  }\item[{unsigned int}]{bottom\+Left\+\_\+Y,  }\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
 
 
-Constructor (rectangle-\/shaped SDS). 
+
+Constructor (rectangle-\/shaped S\+DS) 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em bottomLeft\_\-X}]: X-\/coord of the bottom-\/left corner \item[{\em bottomLeft\_\-Y}]: Y-\/coord of the bottom-\/left corner \item[{\em sizeX ,:}]width of the SDS \item[{\em sizeY ,:}]height of the SDS \item[{\em coordConverter}]: reference coordConverter of which the SDS will own a copy (should be the coordConverter of the parent SDS) \end{DoxyParams}
+{\em bottom\+Left\+\_\+X} & \+: X-\/coord of the bottom-\/left corner \\
+\hline
+{\em bottom\+Left\+\_\+Y} & \+: Y-\/coord of the bottom-\/left corner \\
+\hline
+{\em size\+X } & width of the S\+DS \\
+\hline
+{\em size\+Y } & height of the S\+DS \\
+\hline
+{\em coord\+Converter} & \+: reference coord\+Converter of which the S\+DS will own a copy (should be the coord\+Converter of the parent S\+DS) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}\label{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
+\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{S\+D\+Shared()}{SDShared()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily S\+D\+Shared\+::\+S\+D\+Shared (\begin{DoxyParamCaption}\item[{unsigned int}]{bottom\+Left\+\_\+X,  }\item[{unsigned int}]{bottom\+Left\+\_\+Y,  }\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
+
+
+
+Constructor (rectangle-\/shaped S\+DS) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bottom\+Left\+\_\+X} & \+: X-\/coord of the bottom-\/left corner \\
+\hline
+{\em bottom\+Left\+\_\+Y} & \+: Y-\/coord of the bottom-\/left corner \\
+\hline
+{\em size\+X } & width of the S\+DS \\
+\hline
+{\em size\+Y } & height of the S\+DS \\
+\hline
+{\em coord\+Converter} & \+: reference coord\+Converter of which the S\+DS will own a copy (should be the coord\+Converter of the parent S\+DS) \\
+\hline
+\end{DoxyParams}
 
 
 \subsection{Member Function Documentation}
-\hypertarget{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}{
-\index{SDShared@{SDShared}!execEquation@{execEquation}}
-\index{execEquation@{execEquation}!SDShared@{SDShared}}
-\subsubsection[{execEquation}]{\setlength{\rightskip}{0pt plus 5cm}void SDShared::execEquation (eqType {\em eqFunc}, \/  const std::map$<$ std::string, {\bf Quantity}$<$ real $>$ $\ast$ $>$ \& {\em quantityMap})}}
-\label{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}
-exec equation on SDS to be added as thread task \hypertarget{classSDShared_a0ee0c276ea09e1bd0aea8e4930ebe253}{
-\index{SDShared@{SDShared}!getMemIndex@{getMemIndex}}
-\index{getMemIndex@{getMemIndex}!SDShared@{SDShared}}
-\subsubsection[{getMemIndex}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int SDShared::getMemIndex (int {\em i}, \/  int {\em j}) const}}
-\label{classSDShared_a0ee0c276ea09e1bd0aea8e4930ebe253}
+\mbox{\Hypertarget{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}\label{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!exec\+Equation@{exec\+Equation}}
+\index{exec\+Equation@{exec\+Equation}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{exec\+Equation()}{execEquation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void S\+D\+Shared\+::exec\+Equation (\begin{DoxyParamCaption}\item[{eq\+Type}]{eq\+Func,  }\item[{const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&}]{quantity\+Map }\end{DoxyParamCaption})}
+
+exec equation on S\+DS to be added as thread task \mbox{\Hypertarget{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}\label{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!exec\+Equation@{exec\+Equation}}
+\index{exec\+Equation@{exec\+Equation}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{exec\+Equation()}{execEquation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void S\+D\+Shared\+::exec\+Equation (\begin{DoxyParamCaption}\item[{eq\+Type}]{eq\+Func,  }\item[{const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&}]{quantity\+Map }\end{DoxyParamCaption})}
+
+exec equation on S\+DS to be added as thread task \mbox{\Hypertarget{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}\label{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!get\+Id@{get\+Id}}
+\index{get\+Id@{get\+Id}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{get\+Id()}{getId()}}
+{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the SDS. 
+
+Returns S\+DS id. 
+
+\begin{DoxyReturn}{Returns}
+id of S\+DS 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}\label{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!get\+Mem\+Index@{get\+Mem\+Index}}
+\index{get\+Mem\+Index@{get\+Mem\+Index}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{get\+Mem\+Index()}{getMemIndex()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Mem\+Index (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption}) const}
+
+
+
+Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em i}]: X-\/coord \item[{\em j}]: Y-\/coord\end{DoxyParams}
+{\em i} & \+: X-\/coord \\
+\hline
+{\em j} & \+: Y-\/coord\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+corresponding memory index 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}\label{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!get\+Mem\+Index@{get\+Mem\+Index}}
+\index{get\+Mem\+Index@{get\+Mem\+Index}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{get\+Mem\+Index()}{getMemIndex()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Mem\+Index (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption}) const}
+
+
+
+Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & \+: X-\/coord \\
+\hline
+{\em j} & \+: Y-\/coord\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 corresponding memory index 
 \end{DoxyReturn}
 
 
-The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-subdomain/\hyperlink{SDShared_8hpp}{SDShared.hpp}\item 
-subdomain/SDShared.cpp\end{DoxyCompactItemize}
+source/subdomain/\hyperlink{source_2subdomain_2SDShared_8hpp}{S\+D\+Shared.\+hpp}\item 
+source/subdomain/S\+D\+Shared.\+cpp\end{DoxyCompactItemize}

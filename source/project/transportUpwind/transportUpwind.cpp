@@ -162,6 +162,8 @@ void TransportUpwind::writeState() {
 void TransportUpwind::writeState(std::string directory) {
 
     IO::writeQuantity(directory, "rho", *_domain);
+    IO::writeQuantity(directory, "ux", *_domain);
+    IO::writeQuantity(directory, "uy", *_domain);
     IO::writeVariantInfo(directory, *_domain);
 }
 

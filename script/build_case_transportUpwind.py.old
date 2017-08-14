@@ -1,0 +1,134 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+import __future__
+import numpy as np
+import sys
+import os
+import argparse
+from math import sqrt
+
+from io import make_sure_path_exists
+from analytical_solution import rho_init, cst_ux, cst_uy
+import build_case
+
+parser = argparse.ArgumentParser(description="Build case for the transport-upwind scheme")
+
+parser.add_argument("-W", type = float, help = "Width of domain")
+parser.add_argument("-H", type = float, help = "Height of domain")
+parser.add_argument("--Nx", type = int, help = "Number of cells on x-axis")
+parser.add_argument("--Ny", type = int, help = "Number of cells on y-axis")
+parser.add_argument("--CFL", type = float, help = "Courant-Friedrichs-Levy condition")
+parser.add_argument("-T", type = float, help = "Final time")
+parser.add_argument("--nSDD", type = int, help = "Number of subdomains on distributed memory")
+parser.add_argument("--nSDS", type = int, help = "Number of subdomains on shared memory per nSDD")
+parser.add_argument("--SDSgeom", type = str, choices = ['line', 'random'],
+        help = "Geometry type on subdomains on shared memory")
+parser.add_argument("--BCtype", type = str, choices=['P', 'D', 'N'], help = "Boundary conditions type")
+parser.add_argument("output_dir", type = str, help = "Path to output directory")
+args = parser.parse_args()
+
+output_dir = args.output_dir
+make_sure_path_exists(output_dir)
+
+# ------------------------------------------------------------------------------
+# Domain properties
+# ------------------------------------------------------------------------------
+lx = args.W
+ly = args.H
+
+Nx = args.Nx
+Ny = args.Ny
+
+dx = lx / Nx
+dy = ly / Ny
+
+coords_to_uid = build_case.write_domain(output_dir, lx, ly, Nx, Ny)
+
+# ------------------------------------------------------------------------------
+# Scheme execution options
+# ------------------------------------------------------------------------------
+T = args.T
+CFL = args.CFL
+nSDD = args.nSDD  # Number of distributed-memory subdomains
+nSDS = args.nSDS  # Number of shared-memory subdomains per distributed-memory subdomain
+SDSgeom = args.SDSgeom
+
+build_case.write_scheme(output_dir, T, CFL, nSDD, nSDS, SDSgeom)
+
+# ------------------------------------------------------------------------------
+# Boundary conditions
+# ------------------------------------------------------------------------------
+BCtype = args.BCtype
+uid_to_bc = dict()
+# Start new uid after last domain cell
+uid_tmp = max(coords_to_uid.itervalues()) + 1
+# Left side
+for j in range(-1, Ny):
+    uid_to_bc[uid_tmp] = [(-1, j), BCtype, 0]
+    uid_tmp += 1
+# Top side
+for i in range(-1, Nx):
+    uid_to_bc[uid_tmp] = [(i, Ny), BCtype, 0]
+    uid_tmp += 1
+# Right side
+for j in range(Ny, -1, -1):
+    uid_to_bc[uid_tmp] = [(Nx, j), BCtype, 0]
+    uid_tmp += 1
+# Bottom side
+for i in range(Nx, -1, -1):
+    uid_to_bc[uid_tmp] = [(i, -1), BCtype, 0]
+    uid_tmp += 1
+
+build_case.write_boundary_conditions(output_dir, "rho", uid_to_bc)
+
+# ------------------------------------------------------------------------------
+# Describe rho initial state
+# ------------------------------------------------------------------------------
+rho = dict()
+for i in range(Nx):
+    for j in range(Ny):
+        x = (i + 0.5) * dx
+        y = (j + 0.5) * dy
+        rho[coords_to_uid[(i, j)]] = rho_init(x, y)
+
+        #if abs(j - Ny / 2) < Ny / 4:
+        #if abs(i - Nx / 2) < Nx / 4 and abs(j - Ny / 2) < Ny / 4:
+        #    rho[coords_to_uid[(i, j)]] = rh1#float(i) / Nx
+        #else:
+        #    rho[coords_to_uid[(i, j)]] = 0
+
+build_case.write_quantity(output_dir, "rho", rho)
+
+# ------------------------------------------------------------------------------
+# Describe velocity states for the transport equation
+# ------------------------------------------------------------------------------
+ux = dict()
+uy = dict()
+for i in range(Nx):
+    for j in range(Ny):
+        x = i * dx - lx / 2
+        y = j * dy - ly / 2
+        if x != 0 or y != 0:
+            ux[coords_to_uid[(i, j)]] = cst_ux#2 * (x - lx / 4)#-y / (sqrt(x**2 + y**2))
+            uy[coords_to_uid[(i, j)]] = cst_uy#x / (sqrt(x**2 + y**2))
+        else:
+            ux[coords_to_uid[(i, j)]] = cst_ux#2 * (x - lx / 4)
+            uy[coords_to_uid[(i, j)]] = cst_uy
+
+build_case.write_quantity(output_dir, "ux", ux)
+build_case.write_quantity(output_dir, "uy", uy)
+
+# ------------------------------------------------------------------------------
+# Write gnuplot-readable speed vector field
+# ------------------------------------------------------------------------------
+normalize = min(dx, dy)
+f = open(os.path.join(output_dir, 'u.dat'), 'w+')
+for i in range(Nx):
+    for j in range(Ny):
+        f.write(str(i * dx) + " ")
+        f.write(str(j * dy) + " ")
+        f.write(str(normalize * ux[coords_to_uid[(i, j)]]) + " ")
+        f.write(str(normalize * uy[coords_to_uid[(i, j)]]) + "\n")
+f.close()
+

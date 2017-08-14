@@ -1,15 +1,21 @@
-find -iname "*.pyc" -type f -delete
-find -iname "*.o" -type f -delete
-find report/ -iname "*.log" -type f -delete
-find report/ -iname "*.out" -type f -delete
-find report/ -iname "*.toc" -type f -delete
-find report/ -iname "*.snm" -type f -delete
-find report/ -iname "*.bbl" -type f -delete
-find report/ -iname "*.blg" -type f -delete
-find report/ -iname "*.aux" -type f -delete
-find report/ -iname "*.nav" -type f -delete
-find -iname "*~" -type f -delete
-find -iname "transportUpwind-*" -type f -delete
-find -iname "isothermalHydrodynamics-*" -type f -delete
-rm -r tmp/
-find case/ -iname "tmp" -type d -exec rm -r {} +
+find -iname "*.pyc" -type f -delete 2> /dev/null
+find -iname "*.o" -type f -delete 2> /dev/null
+find report/ -iname "*.log" -type f -delete 2> /dev/null
+find report/ -iname "*.out" -type f -delete 2> /dev/null
+find report/ -iname "*.toc" -type f -delete 2> /dev/null
+find report/ -iname "*.snm" -type f -delete 2> /dev/null
+find report/ -iname "*.bbl" -type f -delete 2> /dev/null
+find report/ -iname "*.blg" -type f -delete 2> /dev/null
+find report/ -iname "*.aux" -type f -delete 2> /dev/null
+find report/ -iname "*.nav" -type f -delete 2> /dev/null
+find -iname "*~" -type f -delete 2> /dev/null
+find -iname "transportUpwind-*" -type f -delete 2> /dev/null
+find -iname "isothermalHydrodynamics-*" -type f -delete 2> /dev/null
+find -iname "hydrodynamics-*" -type f -delete 2> /dev/null
+find -iname "conservativeHydrodynamics-*" -type f -delete 2> /dev/null
+rm -r tmp/ 2> /dev/null
+find case/ -iname "tmp" -type d -exec rm -r {} + 2> /dev/null
+#python regression.py transportUpwind --clean-compile
+#python regression.py isothermalHydrodynamics --clean-compile
+#python regression.py hydrodynamics --clean-compile
+#python regression.py conservativeHydrodynamics --clean-compile

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['worker',['Worker',['../classWorker.html',1,'']]]
+  ['sddistributed',['SDDistributed',['../classSDDistributed.html',1,'']]],
+  ['sdshared',['SDShared',['../classSDShared.html',1,'']]]
 ];

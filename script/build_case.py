@@ -40,7 +40,12 @@ def build_case(root_dir, project_name, case_name, subdir = "tmp",
     for q_name, q in case.quantityDict.iteritems():
         io.write_quantity(output_dir, q_name, q)
 
+    # Write file with list of quantities
+    io.write_quantity_names(output_dir, case.quantityDict.keys())
+
     q_name_list = list(case.quantityDict.keys())
+
+    del case
 
     # Return path to case directory
     return output_dir, q_name_list

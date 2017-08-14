@@ -1,0 +1,83 @@
+\hypertarget{classConservativeHydrodynamics}{}\section{Conservative\+Hydrodynamics Class Reference}
+\label{classConservativeHydrodynamics}\index{Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}}
+
+
+Donor-\/cell scheme for the Euler hydrodynamics equations.  
+
+
+
+
+{\ttfamily \#include $<$conservative\+Hydrodynamics.\+hpp$>$}
+
+Inheritance diagram for Conservative\+Hydrodynamics\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classConservativeHydrodynamics}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classConservativeHydrodynamics_a474907c5d10daca792962b27089b89a7}\label{classConservativeHydrodynamics_a474907c5d10daca792962b27089b89a7}} 
+\hyperlink{classConservativeHydrodynamics_a474907c5d10daca792962b27089b89a7}{Conservative\+Hydrodynamics} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classConservativeHydrodynamics_a9cc94c01991b0b6133414b868b9db9dd}\label{classConservativeHydrodynamics_a9cc94c01991b0b6133414b868b9db9dd}} 
+\hyperlink{classConservativeHydrodynamics_a9cc94c01991b0b6133414b868b9db9dd}{$\sim$\+Conservative\+Hydrodynamics} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{classConservativeHydrodynamics_a563052ded453d68f5129ed17777d6671}{write\+State} (std\+::string directory)
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to a text file. \end{DoxyCompactList}\item 
+void \hyperlink{classConservativeHydrodynamics_abdbc9fef9b64618ae71d011684fcfa82}{write\+State} ()
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to the output file. \end{DoxyCompactList}\item 
+void \hyperlink{classConservativeHydrodynamics_a243cd5dc5e3615ec74ce0ccf19ad7908}{advection} (const \hyperlink{classSDShared}{S\+D\+Shared} \&sds, std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantity\+Map)
+\begin{DoxyCompactList}\small\item\em Solves mass/transport equation on given subdomain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classConservativeHydrodynamics_a42a6cf9890fa2029d0e83aba624a0308}\label{classConservativeHydrodynamics_a42a6cf9890fa2029d0e83aba624a0308}} 
+void {\bfseries source} (const \hyperlink{classSDShared}{S\+D\+Shared} \&sds, std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantity\+Map)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Donor-\/cell scheme for the Euler hydrodynamics equations. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classConservativeHydrodynamics_a243cd5dc5e3615ec74ce0ccf19ad7908}\label{classConservativeHydrodynamics_a243cd5dc5e3615ec74ce0ccf19ad7908}} 
+\index{Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}!advection@{advection}}
+\index{advection@{advection}!Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}}
+\subsubsection{\texorpdfstring{advection()}{advection()}}
+{\footnotesize\ttfamily void Conservative\+Hydrodynamics\+::advection (\begin{DoxyParamCaption}\item[{const \hyperlink{classSDShared}{S\+D\+Shared} \&}]{sds,  }\item[{std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$}]{quantity\+Map }\end{DoxyParamCaption})}
+
+
+
+Solves mass/transport equation on given subdomain. 
+
+This function computes one iteration in time of the transport equation on a given subdomain on shared memory. Solving on a \char`\"{}small\char`\"{} portion of the global domain such as a S\+DS leaves control to the user on how the computations are done (parallel threads, geometrical shape of the computed domain, etc.) \mbox{\Hypertarget{classConservativeHydrodynamics_a563052ded453d68f5129ed17777d6671}\label{classConservativeHydrodynamics_a563052ded453d68f5129ed17777d6671}} 
+\index{Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Conservative\+Hydrodynamics\+::write\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{directory }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to a text file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & folder path where output files will be written \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConservativeHydrodynamics_abdbc9fef9b64618ae71d011684fcfa82}\label{classConservativeHydrodynamics_abdbc9fef9b64618ae71d011684fcfa82}} 
+\index{Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Conservative\+Hydrodynamics@{Conservative\+Hydrodynamics}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Conservative\+Hydrodynamics\+::write\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to the output file. 
+
+Call right after iteration of the scheme without parameter to write current state 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+source/project/conservative\+Hydrodynamics/\hyperlink{conservativeHydrodynamics_8hpp}{conservative\+Hydrodynamics.\+hpp}\item 
+source/project/conservative\+Hydrodynamics/conservative\+Hydrodynamics.\+cpp\end{DoxyCompactItemize}

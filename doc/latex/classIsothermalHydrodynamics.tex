@@ -1,0 +1,83 @@
+\hypertarget{classIsothermalHydrodynamics}{}\section{Isothermal\+Hydrodynamics Class Reference}
+\label{classIsothermalHydrodynamics}\index{Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}}
+
+
+Donor-\/cell scheme for the isothermal hydrodynamics equations (mass and quantity of motion equations)  
+
+
+
+
+{\ttfamily \#include $<$isothermal\+Hydrodynamics.\+hpp$>$}
+
+Inheritance diagram for Isothermal\+Hydrodynamics\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classIsothermalHydrodynamics}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classIsothermalHydrodynamics_a19817c5b7905d50dda212fab3bcc30fa}\label{classIsothermalHydrodynamics_a19817c5b7905d50dda212fab3bcc30fa}} 
+\hyperlink{classIsothermalHydrodynamics_a19817c5b7905d50dda212fab3bcc30fa}{Isothermal\+Hydrodynamics} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classIsothermalHydrodynamics_a5b0e4b481852aa942c61dd7c28bb64e0}\label{classIsothermalHydrodynamics_a5b0e4b481852aa942c61dd7c28bb64e0}} 
+\hyperlink{classIsothermalHydrodynamics_a5b0e4b481852aa942c61dd7c28bb64e0}{$\sim$\+Isothermal\+Hydrodynamics} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{classIsothermalHydrodynamics_a58488558d3ca76d8f2ee50ad73f3a99f}{write\+State} (std\+::string directory)
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to a text file. \end{DoxyCompactList}\item 
+void \hyperlink{classIsothermalHydrodynamics_aee2e4f4a44742c9a93062bf64b4a8afa}{write\+State} ()
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to the output file. \end{DoxyCompactList}\item 
+void \hyperlink{classIsothermalHydrodynamics_a735f87131064a760670eb884743d513f}{advection} (const \hyperlink{classSDShared}{S\+D\+Shared} \&sds, std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantity\+Map)
+\begin{DoxyCompactList}\small\item\em Solves mass/transport equation on given subdomain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classIsothermalHydrodynamics_a55ca7b1792eff570eb8954469072a6fb}\label{classIsothermalHydrodynamics_a55ca7b1792eff570eb8954469072a6fb}} 
+void {\bfseries source} (const \hyperlink{classSDShared}{S\+D\+Shared} \&sds, std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantity\+Map)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Donor-\/cell scheme for the isothermal hydrodynamics equations (mass and quantity of motion equations) 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classIsothermalHydrodynamics_a735f87131064a760670eb884743d513f}\label{classIsothermalHydrodynamics_a735f87131064a760670eb884743d513f}} 
+\index{Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}!advection@{advection}}
+\index{advection@{advection}!Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}}
+\subsubsection{\texorpdfstring{advection()}{advection()}}
+{\footnotesize\ttfamily void Isothermal\+Hydrodynamics\+::advection (\begin{DoxyParamCaption}\item[{const \hyperlink{classSDShared}{S\+D\+Shared} \&}]{sds,  }\item[{std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$}]{quantity\+Map }\end{DoxyParamCaption})}
+
+
+
+Solves mass/transport equation on given subdomain. 
+
+This function computes one iteration in time of the transport equation on a given subdomain on shared memory. Solving on a \char`\"{}small\char`\"{} portion of the global domain such as a S\+DS leaves control to the user on how the computations are done (parallel threads, geometrical shape of the computed domain, etc.) \mbox{\Hypertarget{classIsothermalHydrodynamics_a58488558d3ca76d8f2ee50ad73f3a99f}\label{classIsothermalHydrodynamics_a58488558d3ca76d8f2ee50ad73f3a99f}} 
+\index{Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Isothermal\+Hydrodynamics\+::write\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{directory }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to a text file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & folder path where output files will be written \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classIsothermalHydrodynamics_aee2e4f4a44742c9a93062bf64b4a8afa}\label{classIsothermalHydrodynamics_aee2e4f4a44742c9a93062bf64b4a8afa}} 
+\index{Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Isothermal\+Hydrodynamics@{Isothermal\+Hydrodynamics}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Isothermal\+Hydrodynamics\+::write\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to the output file. 
+
+Call right after iteration of the scheme without parameter to write current state 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+source/project/isothermal\+Hydrodynamics/\hyperlink{isothermalHydrodynamics_8hpp}{isothermal\+Hydrodynamics.\+hpp}\item 
+source/project/isothermal\+Hydrodynamics/isothermal\+Hydrodynamics.\+cpp\end{DoxyCompactItemize}

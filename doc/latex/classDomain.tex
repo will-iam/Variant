@@ -1,435 +1,1122 @@
-\hypertarget{classDomain}{
-\section{Domain Class Reference}
+\hypertarget{classDomain}{}\section{Domain Class Reference}
 \label{classDomain}\index{Domain@{Domain}}
-}
 
 
 \hyperlink{classDomain}{Domain} on which a scheme is executed.  
 
 
-{\ttfamily \#include $<$Domain.hpp$>$}\subsection*{Public Member Functions}
+
+
+{\ttfamily \#include $<$Domain.\+hpp$>$}
+
+\subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hypertarget{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}{
-\hyperlink{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}{Domain} ()}
-\label{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}
-
-\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
-\hypertarget{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}{
-\hyperlink{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}{$\sim$Domain} ()}
-\label{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}
-
-\begin{DoxyCompactList}\small\item\em Destructor. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a853266061b629ff1f920b46c06c478d6}{initRect} (real lx, real ly, unsigned int Nx, unsigned int Ny)
-\begin{DoxyCompactList}\small\item\em Initializes domain rectangle. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}{setOptions} (unsigned int nSDD, unsigned int nSDD\_\-X, unsigned int nSDD\_\-Y, unsigned int nSDS, std::string SDSgeom, unsigned int nThreads)
-\begin{DoxyCompactList}\small\item\em Changes options for building SDDs and SDSs. \item\end{DoxyCompactList}\item 
-std::vector$<$ \hyperlink{classSDDistributed}{SDDistributed} $\ast$ $>$ \hyperlink{classDomain_abdf41aefa7cf64674bce2d4a065fa372}{getSDD} () const 
-\begin{DoxyCompactList}\small\item\em Returns vector of pointers to SDDs of the domain. \item\end{DoxyCompactList}\item 
-real \hyperlink{classDomain_a04980b3ddcccb30a79f8fa3c9441d904}{getlx} () const 
-\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable width of the domain. \item\end{DoxyCompactList}\item 
-real \hyperlink{classDomain_a742a544929b9b82e0d654de8a85ab49b}{getly} () const 
-\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable height of the domain. \item\end{DoxyCompactList}\item 
-unsigned int \hyperlink{classDomain_a3185aba80f5397341e5a81d84e2bc8f9}{getSizeX} () const 
-\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable number of cells on the x-\/axis. \item\end{DoxyCompactList}\item 
-unsigned int \hyperlink{classDomain_a0e7519f6560ddaea2c7c84785441da9a}{getSizeY} () const 
-\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable number of cells on the y-\/axis. \item\end{DoxyCompactList}\item 
-real \hyperlink{classDomain_acdf83ef9d3dad3bbc1ae3101f4b2e323}{getdx} () const 
-\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable space step on the x-\/axis (ie. the width of a cell). \item\end{DoxyCompactList}\item 
-real \hyperlink{classDomain_a5d72188d7c1873c08da8ef387dee33c6}{getdy} () const 
-\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable space step on the y-\/axis (ie. the height of a cell). \item\end{DoxyCompactList}\item 
-\hypertarget{classDomain_a6f8a520ffdec82aedbc075c64792517d}{
-std::vector$<$ unsigned int $>$ \hyperlink{classDomain_a6f8a520ffdec82aedbc075c64792517d}{getUidList} () const }
-\label{classDomain_a6f8a520ffdec82aedbc075c64792517d}
-
-\begin{DoxyCompactList}\small\item\em Returns vector containing unique ids of all cells. \item\end{DoxyCompactList}\item 
-std::vector$<$ unsigned int $>$ \hyperlink{classDomain_a4d0296a4bb86c28b9896951cd1ada6e9}{getBoundaryUidList} () const 
-\begin{DoxyCompactList}\small\item\em Returns vector containing unique ids of all cells outside of the computed domain, ie. on the boundary. \item\end{DoxyCompactList}\item 
-unsigned int \hyperlink{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}{getBoundaryThickness} ()
-\begin{DoxyCompactList}\small\item\em Returns boundary thickness of the domain, ie. the number of layers of cells outside the computed domain. \item\end{DoxyCompactList}\item 
-real \hyperlink{classDomain_a6023c81f9233bcc48ad6f315829e9725}{getValue} (std::string quantityName, unsigned int uid, int onNext=0) const 
-\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable quantity value of a cell given by its id. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a9319e738fbd4ada8145998d5392c9334}{setValue} (std::string quantityName, unsigned int uid, real value, int onNext=0)
-\begin{DoxyCompactList}\small\item\em Modifies quantity value of a cell given by its id. \item\end{DoxyCompactList}\item 
-std::pair$<$ int, int $>$ \hyperlink{classDomain_ab304fc5121bd34e817526fd2d4ccaa62}{getBLOfSDD} (unsigned int SDDid) const 
-\begin{DoxyCompactList}\small\item\em Gets bottom-\/left coordinates of SDD given by its id. \item\end{DoxyCompactList}\item 
-std::pair$<$ int, int $>$ \hyperlink{classDomain_a792c1fd5763b5a5d9c32d085500671fb}{getCoordsOnDomain} (unsigned int uid) const 
-\begin{DoxyCompactList}\small\item\em Gets coordinates on computed domain of cell given by its unique id. \item\end{DoxyCompactList}\item 
-\hyperlink{classSDDistributed}{SDDistributed} $\ast$ \hyperlink{classDomain_a893851a7caff52261beb79888d46be1f}{getSDDforCoords} (std::pair$<$ int, int $>$ coordsOnDomain)
-\begin{DoxyCompactList}\small\item\em Gets pointer to SDD in charge of the computation of a cell given by its coordinates on the domain. \item\end{DoxyCompactList}\item 
-std::pair$<$ char, real $>$ \hyperlink{classDomain_af320a2bc1abbef2f8f7d7f768799194f}{getBoundaryCondition} (unsigned int uid) const 
-\begin{DoxyCompactList}\small\item\em Returns boundary condition on a cell given by its uid. \item\end{DoxyCompactList}\item 
-std::pair$<$ char, real $>$ \hyperlink{classDomain_a7c1da36a59bd95dd5f7c91365f2372bd}{getBoundaryCondition} (std::pair$<$ int, int $>$ coords) const 
-\begin{DoxyCompactList}\small\item\em Returns boundary condition on a cell given by its coordinates on the domain. \item\end{DoxyCompactList}\item 
-\hypertarget{classDomain_aa94b72b9c8ab8ca8dfe15ad3744cdf13}{
-unsigned int \hyperlink{classDomain_aa94b72b9c8ab8ca8dfe15ad3744cdf13}{getUid} (std::pair$<$ int, int $>$ coordsOnDomain) const }
-\label{classDomain_aa94b72b9c8ab8ca8dfe15ad3744cdf13}
-
-\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable unique id of cell given by its coordinates on the domain. \item\end{DoxyCompactList}\item 
-\hypertarget{classDomain_add94ccfc20fc9421c5c631823da16fc8}{
-int \hyperlink{classDomain_add94ccfc20fc9421c5c631823da16fc8}{getBoundarySide} (std::pair$<$ int, int $>$ coords) const }
-\label{classDomain_add94ccfc20fc9421c5c631823da16fc8}
-
-\begin{DoxyCompactList}\small\item\em Returns boundary side (left, right, top, bottom or inside if not on boundary) of a cell given by its coordinates on the domain. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a1463e043dbcda6e6755dda83c26d6b73}{addCoord} (unsigned int uid, std::pair$<$ int, int $>$ coords)
-\begin{DoxyCompactList}\small\item\em Adds new unique id $<$-\/$>$ coords on domain correspondence on a given cell. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a139f4270151467a3380922e98c644f79}{addBoundaryCoords} (unsigned int uid, std::pair$<$ int, int $>$ coords, char BCtype, real value)
-\begin{DoxyCompactList}\small\item\em Adds new unique id $<$-\/$>$ coords on domain correspondencPieśnie and boundary condition for a cell on the boundary. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a9c33ac08523c95967ad2a51c59fd8d96}{addQuantity} (std::string quantityName)
-\begin{DoxyCompactList}\small\item\em Adds new quantity to be managed by the scheme. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_ab24a61d835dbebec7ff689ec8c7f2a95}{addEquation} (eqType eqFunc)
-\begin{DoxyCompactList}\small\item\em Adds function that resolves a new equation on a SDS to be computed for each iteration by the domain. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a29537b651bacd922cae449357969d900}{buildSubDomains} ()
-\begin{DoxyCompactList}\small\item\em Builds subdomains according to set options. \item\end{DoxyCompactList}\item 
-\hypertarget{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}{
-void \hyperlink{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}{buildBoundaryMap} ()}
-\label{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}
-
-\begin{DoxyCompactList}\small\item\em Builds all info needed by the domain to compute the boundary according to the boundary conditions set on boundary cells. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_aa2e6cebf44a57323f3c6344d131126c1}{buildThreads} ()
-\begin{DoxyCompactList}\small\item\em Builds the task pool for each SDD. \item\end{DoxyCompactList}\item 
-\hypertarget{classDomain_ae587a47610505c21fdd32a9f82d70402}{
-void \hyperlink{classDomain_ae587a47610505c21fdd32a9f82d70402}{execEquation} ()}
-\label{classDomain_ae587a47610505c21fdd32a9f82d70402}
-
-\begin{DoxyCompactList}\small\item\em Calls all added equations, ie. computes an iteration of the scheme on the domain. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_abcd8aa2529907b8022e41e45c85f5144}{updateOverlapCells} (std::string quantityName)
-\begin{DoxyCompactList}\small\item\em updates overlap cells of all SDDs according to their values on reference cells on other SDDs, for a given quantity. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_af169473470489edc4235399887c10da0}{updateBoundaryCells} (std::string quantityName, bool changeNeumannToOpposite=false)
-\begin{DoxyCompactList}\small\item\em updates boundary of all SDDs according to their values on reference cells on other SDDs, for a given quantity. \item\end{DoxyCompactList}\item 
-std::pair$<$ int, std::pair$<$ int, int $>$ $>$ \hyperlink{classDomain_accb471dd6649bd38403cd28a2bbccd79}{getSDDandCoords} (std::pair$<$ int, int $>$ coordsOnDomain) const 
-\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable id of SDD and coordinates on SDD of cell given by its coordinates on the domain. \item\end{DoxyCompactList}\item 
-std::pair$<$ int, std::pair$<$ int, int $>$ $>$ \hyperlink{classDomain_afc46286fa167e7a2ebccacced8d31c34}{getSDDandCoords} (unsigned int SDDid, std::pair$<$ int, int $>$ coords) const 
-\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable id of SDD and coordinates on SDD of cell given by its coordinates on the domain. \item\end{DoxyCompactList}\item 
-void \hyperlink{classDomain_a1163559d75540c4cd29c7aa775feca80}{printState} (std::string quantityName)
-\begin{DoxyCompactList}\small\item\em Prints quantity values for all cells. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\Hypertarget{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}\label{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}} 
+\hyperlink{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}{Domain} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}\label{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}} 
+\hyperlink{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}{$\sim$\+Domain} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a853266061b629ff1f920b46c06c478d6}{init\+Rect} (real lx, real ly, unsigned int Nx, unsigned int Ny)
+\begin{DoxyCompactList}\small\item\em Initializes domain rectangle. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}{set\+Options} (unsigned int n\+S\+DD, unsigned int n\+S\+D\+D\+\_\+X, unsigned int n\+S\+D\+D\+\_\+Y, unsigned int n\+S\+DS, std\+::string S\+D\+Sgeom, unsigned int n\+Threads)
+\begin{DoxyCompactList}\small\item\em Changes options for building S\+D\+Ds and S\+D\+Ss. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_a510afad91fe81eb2ccef203a980f4223}{getlx} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable width of the domain. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_ac9cedab179bb0611fc0e9fcfbcedb835}{getly} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable height of the domain. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classDomain_a75f299e3871fe9cec01637b140429ef9}{get\+SizeX} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable number of cells on the x-\/axis. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classDomain_a66692b4f23353c9b1fe884e583770cb3}{get\+SizeY} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable number of cells on the y-\/axis. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_acdb586f6ef994a1621680ec9b946aeb4}{getdx} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable space step on the x-\/axis (ie. the width of a cell). \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_a5e62ab8a8b53f67cc3c30b6066b10aac}{getdy} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable space step on the y-\/axis (ie. the height of a cell). \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a978917d5bf263dd1345f1a41c9edf661}\label{classDomain_a978917d5bf263dd1345f1a41c9edf661}} 
+unsigned int {\bfseries get\+Number\+S\+DD} () const
+\item 
+\mbox{\Hypertarget{classDomain_a02cc51cc2e5d976810039e7118382cde}\label{classDomain_a02cc51cc2e5d976810039e7118382cde}} 
+unsigned int {\bfseries get\+Number\+S\+D\+D\+\_\+X} () const
+\item 
+\mbox{\Hypertarget{classDomain_a8e8d6c959123597f6e2d8779a836d32c}\label{classDomain_a8e8d6c959123597f6e2d8779a836d32c}} 
+unsigned int {\bfseries get\+Number\+S\+D\+D\+\_\+Y} () const
+\item 
+\mbox{\Hypertarget{classDomain_a985c94d1108a0a206f0201908d944a0d}\label{classDomain_a985c94d1108a0a206f0201908d944a0d}} 
+unsigned int {\bfseries get\+Number\+Neighbour\+S\+D\+Ds} () const
+\item 
+\mbox{\Hypertarget{classDomain_a428011ce5e842c9f05545c57480ed30e}\label{classDomain_a428011ce5e842c9f05545c57480ed30e}} 
+unsigned int {\bfseries get\+Number\+Physical\+Cells} () const
+\item 
+\mbox{\Hypertarget{classDomain_adbbd89acedd87b8b4814e367027551cd}\label{classDomain_adbbd89acedd87b8b4814e367027551cd}} 
+unsigned int {\bfseries get\+Number\+Overlap\+Cells} () const
+\item 
+\mbox{\Hypertarget{classDomain_ab3a77c402326dc31a855125536348a6f}\label{classDomain_ab3a77c402326dc31a855125536348a6f}} 
+unsigned int {\bfseries get\+Number\+Boundary\+Cells} () const
+\item 
+\mbox{\Hypertarget{classDomain_a25e60a79720035ab95a1eb4a41efb53c}\label{classDomain_a25e60a79720035ab95a1eb4a41efb53c}} 
+unsigned int {\bfseries get\+Number\+S\+DS} () const
+\item 
+\mbox{\Hypertarget{classDomain_a388103cf2adcc7224f77d4c26a471d6a}\label{classDomain_a388103cf2adcc7224f77d4c26a471d6a}} 
+std\+::string {\bfseries get\+S\+D\+S\+Geometry} () const
+\item 
+\mbox{\Hypertarget{classDomain_ac1e1ec57c7c0401dbee987d1c760ced7}\label{classDomain_ac1e1ec57c7c0401dbee987d1c760ced7}} 
+unsigned int {\bfseries get\+Number\+Threads} () const
+\item 
+std\+::vector$<$ unsigned int $>$ \hyperlink{classDomain_a6f7d5f16ca53367feabc00b9efa05be8}{get\+Uid\+List} () const
+\begin{DoxyCompactList}\small\item\em Returns vector containing unique ids of all cells. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}{get\+Boundary\+Thickness} ()
+\begin{DoxyCompactList}\small\item\em Returns boundary thickness of the domain, ie. the number of layers of cells outside the computed domain. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, int $>$ \hyperlink{classDomain_a29e2005bed3aa17f036b8d2b36084153}{get\+B\+L\+Of\+S\+DD} (unsigned int S\+D\+Did) const
+\begin{DoxyCompactList}\small\item\em Gets bottom-\/left coordinates of S\+DD given by its id. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, int $>$ \hyperlink{classDomain_a1d2f7ee9336c682d4d6b01893d0beb4f}{get\+Coords\+On\+Domain} (unsigned int uid) const
+\begin{DoxyCompactList}\small\item\em Gets coordinates on computed domain of cell given by its unique id. \end{DoxyCompactList}\item 
+std\+::pair$<$ char, real $>$ \hyperlink{classDomain_a1f219d1f46645da98f538dada37432f9}{get\+Boundary\+Condition} (std\+::pair$<$ int, int $>$ coords\+On\+S\+DD) const
+\begin{DoxyCompactList}\small\item\em Returns boundary condition on a cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a657f0b6750e14d1d3cde6afd8b1e9b48}\label{classDomain_a657f0b6750e14d1d3cde6afd8b1e9b48}} 
+unsigned int \hyperlink{classDomain_a657f0b6750e14d1d3cde6afd8b1e9b48}{get\+Uid} (std\+::pair$<$ int, int $>$ coords\+On\+Domain) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable unique id of cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a677ba729e74d00b167b51ab6c921782a}\label{classDomain_a677ba729e74d00b167b51ab6c921782a}} 
+int \hyperlink{classDomain_a677ba729e74d00b167b51ab6c921782a}{get\+Boundary\+Side} (std\+::pair$<$ int, int $>$ coords) const
+\begin{DoxyCompactList}\small\item\em Returns boundary side (left, right, top, bottom or inside if not on boundary) of a cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a1463e043dbcda6e6755dda83c26d6b73}{add\+Coord} (unsigned int uid, std\+::pair$<$ int, int $>$ coords)
+\begin{DoxyCompactList}\small\item\em Adds new unique id $<$-\/$>$ coords on domain correspondence on a given cell. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a139f4270151467a3380922e98c644f79}{add\+Boundary\+Coords} (unsigned int uid, std\+::pair$<$ int, int $>$ coords, char B\+Ctype, real value)
+\begin{DoxyCompactList}\small\item\em Adds new unique id $<$-\/$>$ coords on domain correspondenc\+Pieśnie and boundary condition for a cell on the boundary. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a4bad9ce1ce7d7fc7ef5b564bd5ac21e1}{add\+Quantity} (std\+::string quantity\+Name, bool constant=false)
+\begin{DoxyCompactList}\small\item\em Adds new quantity to be managed by the scheme. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a3be46362fe91960104764d9eb89f1d29}{add\+Equation} (std\+::string eq\+Name, eq\+Type eq\+Func)
+\begin{DoxyCompactList}\small\item\em Adds function that resolves a new equation on a S\+DS to be computed for each iteration by the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_af1262b85d13fbbf90388e453d9602372}{build\+Sub\+Domains\+M\+PI} ()
+\begin{DoxyCompactList}\small\item\em Builds subdomains according to set options. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}\label{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}} 
+void \hyperlink{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}{build\+Boundary\+Map} ()
+\begin{DoxyCompactList}\small\item\em Builds all info needed by the domain to compute the boundary according to the boundary conditions set on boundary cells. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_aa2e6cebf44a57323f3c6344d131126c1}{build\+Threads} ()
+\begin{DoxyCompactList}\small\item\em Builds the task pool for each S\+DD. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a25f3b3d25cb0a864f0c3e380cb9044be}\label{classDomain_a25f3b3d25cb0a864f0c3e380cb9044be}} 
+void \hyperlink{classDomain_a25f3b3d25cb0a864f0c3e380cb9044be}{exec\+Equation} (std\+::string eq\+Name)
+\begin{DoxyCompactList}\small\item\em Calls all added equations, ie. computes an iteration of the scheme on the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a4411f8eb6c118c84f16d62a411b4432a}{update\+Overlap\+Cells} ()
+\begin{DoxyCompactList}\small\item\em updates overlap cells of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a3e6670e39e3a6265ee57baeb70aa8867}\label{classDomain_a3e6670e39e3a6265ee57baeb70aa8867}} 
+void {\bfseries update\+Overlap\+Cells} (std\+::string qty\+Name)
+\item 
+void \hyperlink{classDomain_af169473470489edc4235399887c10da0}{update\+Boundary\+Cells} (std\+::string quantity\+Name, bool change\+Neumann\+To\+Opposite=false)
+\begin{DoxyCompactList}\small\item\em updates boundary of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ \hyperlink{classDomain_a5b3fd7cbe29576ea63219b326c15680e}{get\+S\+D\+Dand\+Coords} (std\+::pair$<$ int, int $>$ coords\+On\+Domain) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ \hyperlink{classDomain_af6442039d5c64b9a59b7a1bd94fc6bbb}{get\+S\+D\+Dand\+Coords} (unsigned int S\+D\+Did, std\+::pair$<$ int, int $>$ coords) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a1163559d75540c4cd29c7aa775feca80}{print\+State} (std\+::string quantity\+Name)
+\begin{DoxyCompactList}\small\item\em Prints quantity values for all cells. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_acc1225a3c5e6e2a808c88d187adc7d3c}{set\+S\+D\+D\+Info} (unsigned int B\+L\+\_\+X, unsigned int B\+L\+\_\+Y, unsigned int Nx, unsigned int Ny)
+\begin{DoxyCompactList}\small\item\em Change characteristics of S\+DD (bottom-\/left and size) \end{DoxyCompactList}\item 
+\hyperlink{classSDDistributed}{S\+D\+Distributed} \& \hyperlink{classDomain_a26ceb37145bc70b3cc85e15e24a54287}{get\+S\+DD} ()
+\begin{DoxyCompactList}\small\item\em Returns reference to S\+DD possessed by this M\+PI node. \end{DoxyCompactList}\item 
+const \hyperlink{classSDDistributed}{S\+D\+Distributed} \& \hyperlink{classDomain_a8172470afa3d3ec4c7202c8ee25ab3b8}{get\+S\+D\+Dconst} () const
+\begin{DoxyCompactList}\small\item\em Returns const reference to S\+DD possessed by this M\+PI node. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a9f12ce216ba0fdb5e46147875f9a97a3}\label{classDomain_a9f12ce216ba0fdb5e46147875f9a97a3}} 
+void {\bfseries switch\+Quantity\+Prev\+Next} (std\+::string quantity\+Name)
+\item 
+\mbox{\Hypertarget{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}\label{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}} 
+\hyperlink{classDomain_a6adccae537e53d4fde2b70f875e6b8d0}{Domain} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}\label{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}} 
+\hyperlink{classDomain_a29cec9afb2e54c810ba1f3c1a49543a8}{$\sim$\+Domain} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a853266061b629ff1f920b46c06c478d6}{init\+Rect} (real lx, real ly, unsigned int Nx, unsigned int Ny)
+\begin{DoxyCompactList}\small\item\em Initializes domain rectangle. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}{set\+Options} (unsigned int n\+S\+DD, unsigned int n\+S\+D\+D\+\_\+X, unsigned int n\+S\+D\+D\+\_\+Y, unsigned int n\+S\+DS, std\+::string S\+D\+Sgeom, unsigned int n\+Threads)
+\begin{DoxyCompactList}\small\item\em Changes options for building S\+D\+Ds and S\+D\+Ss. \end{DoxyCompactList}\item 
+std\+::vector$<$ \hyperlink{classSDDistributed}{S\+D\+Distributed} $\ast$ $>$ \hyperlink{classDomain_ae560ad14f723c01663bbb783ede30fd8}{get\+S\+DD} () const
+\begin{DoxyCompactList}\small\item\em Returns vector of pointers to S\+D\+Ds of the domain. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_a510afad91fe81eb2ccef203a980f4223}{getlx} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable width of the domain. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_ac9cedab179bb0611fc0e9fcfbcedb835}{getly} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable height of the domain. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classDomain_a75f299e3871fe9cec01637b140429ef9}{get\+SizeX} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable number of cells on the x-\/axis. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classDomain_a66692b4f23353c9b1fe884e583770cb3}{get\+SizeY} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable number of cells on the y-\/axis. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_acdb586f6ef994a1621680ec9b946aeb4}{getdx} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable space step on the x-\/axis (ie. the width of a cell). \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_a5e62ab8a8b53f67cc3c30b6066b10aac}{getdy} () const
+\begin{DoxyCompactList}\small\item\em Returns the non-\/modifiable space step on the y-\/axis (ie. the height of a cell). \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_accc1ec9b45f0430fa4bb8c7d3eb8d9f4}\label{classDomain_accc1ec9b45f0430fa4bb8c7d3eb8d9f4}} 
+std\+::vector$<$ unsigned int $>$ \hyperlink{classDomain_accc1ec9b45f0430fa4bb8c7d3eb8d9f4}{get\+Uid\+List} () const
+\begin{DoxyCompactList}\small\item\em Returns vector containing unique ids of all cells. \end{DoxyCompactList}\item 
+std\+::vector$<$ unsigned int $>$ \hyperlink{classDomain_af3b780bfe072c70ac437f0f31f10d5c4}{get\+Boundary\+Uid\+List} () const
+\begin{DoxyCompactList}\small\item\em Returns vector containing unique ids of all cells outside of the computed domain, ie. on the boundary. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}{get\+Boundary\+Thickness} ()
+\begin{DoxyCompactList}\small\item\em Returns boundary thickness of the domain, ie. the number of layers of cells outside the computed domain. \end{DoxyCompactList}\item 
+real \hyperlink{classDomain_ad99f85d4d30525bac3ac258a0032bdf7}{get\+Value} (std\+::string quantity\+Name, unsigned int uid, int on\+Next=0) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable quantity value of a cell given by its id. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a9319e738fbd4ada8145998d5392c9334}{set\+Value} (std\+::string quantity\+Name, unsigned int uid, real value, int on\+Next=0)
+\begin{DoxyCompactList}\small\item\em Modifies quantity value of a cell given by its id. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, int $>$ \hyperlink{classDomain_a9dd93464e05e2a631f01cc30277db885}{get\+B\+L\+Of\+S\+DD} (unsigned int S\+D\+Did) const
+\begin{DoxyCompactList}\small\item\em Gets bottom-\/left coordinates of S\+DD given by its id. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, int $>$ \hyperlink{classDomain_a7eba31dcda6d3a45f41a3839a34706c8}{get\+Coords\+On\+Domain} (unsigned int uid) const
+\begin{DoxyCompactList}\small\item\em Gets coordinates on computed domain of cell given by its unique id. \end{DoxyCompactList}\item 
+\hyperlink{classSDDistributed}{S\+D\+Distributed} $\ast$ \hyperlink{classDomain_a893851a7caff52261beb79888d46be1f}{get\+S\+D\+Dfor\+Coords} (std\+::pair$<$ int, int $>$ coords\+On\+Domain)
+\begin{DoxyCompactList}\small\item\em Gets pointer to S\+DD in charge of the computation of a cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+std\+::pair$<$ char, real $>$ \hyperlink{classDomain_a23641933f63bd9b7ff51ee67791823b4}{get\+Boundary\+Condition} (unsigned int uid) const
+\begin{DoxyCompactList}\small\item\em Returns boundary condition on a cell given by its uid. \end{DoxyCompactList}\item 
+std\+::pair$<$ char, real $>$ \hyperlink{classDomain_aeb1110620465fc735aac4f37962fbf3d}{get\+Boundary\+Condition} (std\+::pair$<$ int, int $>$ coords) const
+\begin{DoxyCompactList}\small\item\em Returns boundary condition on a cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a657f0b6750e14d1d3cde6afd8b1e9b48}\label{classDomain_a657f0b6750e14d1d3cde6afd8b1e9b48}} 
+unsigned int \hyperlink{classDomain_a657f0b6750e14d1d3cde6afd8b1e9b48}{get\+Uid} (std\+::pair$<$ int, int $>$ coords\+On\+Domain) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable unique id of cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a677ba729e74d00b167b51ab6c921782a}\label{classDomain_a677ba729e74d00b167b51ab6c921782a}} 
+int \hyperlink{classDomain_a677ba729e74d00b167b51ab6c921782a}{get\+Boundary\+Side} (std\+::pair$<$ int, int $>$ coords) const
+\begin{DoxyCompactList}\small\item\em Returns boundary side (left, right, top, bottom or inside if not on boundary) of a cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a1463e043dbcda6e6755dda83c26d6b73}{add\+Coord} (unsigned int uid, std\+::pair$<$ int, int $>$ coords)
+\begin{DoxyCompactList}\small\item\em Adds new unique id $<$-\/$>$ coords on domain correspondence on a given cell. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a139f4270151467a3380922e98c644f79}{add\+Boundary\+Coords} (unsigned int uid, std\+::pair$<$ int, int $>$ coords, char B\+Ctype, real value)
+\begin{DoxyCompactList}\small\item\em Adds new unique id $<$-\/$>$ coords on domain correspondenc\+Pieśnie and boundary condition for a cell on the boundary. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a9c33ac08523c95967ad2a51c59fd8d96}{add\+Quantity} (std\+::string quantity\+Name)
+\begin{DoxyCompactList}\small\item\em Adds new quantity to be managed by the scheme. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_ab24a61d835dbebec7ff689ec8c7f2a95}{add\+Equation} (eq\+Type eq\+Func)
+\begin{DoxyCompactList}\small\item\em Adds function that resolves a new equation on a S\+DS to be computed for each iteration by the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a29537b651bacd922cae449357969d900}{build\+Sub\+Domains} ()
+\begin{DoxyCompactList}\small\item\em Builds subdomains according to set options. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}\label{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}} 
+void \hyperlink{classDomain_a4d1ecd27481f6c7c0b077225fa48bc99}{build\+Boundary\+Map} ()
+\begin{DoxyCompactList}\small\item\em Builds all info needed by the domain to compute the boundary according to the boundary conditions set on boundary cells. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_aa2e6cebf44a57323f3c6344d131126c1}{build\+Threads} ()
+\begin{DoxyCompactList}\small\item\em Builds the task pool for each S\+DD. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classDomain_ae587a47610505c21fdd32a9f82d70402}\label{classDomain_ae587a47610505c21fdd32a9f82d70402}} 
+void \hyperlink{classDomain_ae587a47610505c21fdd32a9f82d70402}{exec\+Equation} ()
+\begin{DoxyCompactList}\small\item\em Calls all added equations, ie. computes an iteration of the scheme on the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_abcd8aa2529907b8022e41e45c85f5144}{update\+Overlap\+Cells} (std\+::string quantity\+Name)
+\begin{DoxyCompactList}\small\item\em updates overlap cells of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_af169473470489edc4235399887c10da0}{update\+Boundary\+Cells} (std\+::string quantity\+Name, bool change\+Neumann\+To\+Opposite=false)
+\begin{DoxyCompactList}\small\item\em updates boundary of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ \hyperlink{classDomain_a155bbf1a1abd44c98cf78c090259b5a4}{get\+S\+D\+Dand\+Coords} (std\+::pair$<$ int, int $>$ coords\+On\+Domain) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ \hyperlink{classDomain_a777cc4eed9570aea2477ef41f26566ff}{get\+S\+D\+Dand\+Coords} (unsigned int S\+D\+Did, std\+::pair$<$ int, int $>$ coords) const
+\begin{DoxyCompactList}\small\item\em Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. \end{DoxyCompactList}\item 
+void \hyperlink{classDomain_a1163559d75540c4cd29c7aa775feca80}{print\+State} (std\+::string quantity\+Name)
+\begin{DoxyCompactList}\small\item\em Prints quantity values for all cells. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-\hyperlink{classDomain}{Domain} on which a scheme is executed. A domain is the physical discrete set on which a finite volumes scheme is solved. Its space is divided into subdomains on distributed memory (SDD), in order to allow MPI parallel execution on several machines. These subdomains are then split in smaller subdomains (SDS), each one being treated as a task assigned to a thread. 
+\hyperlink{classDomain}{Domain} on which a scheme is executed. 
+
+A domain is the physical discrete set on which a finite volumes scheme is solved. Its space is divided into subdomains on distributed memory (S\+DD), in order to allow M\+PI parallel execution on several machines. These subdomains are then split in smaller subdomains (S\+DS), each one being treated as a task assigned to a thread. 
 
 \subsection{Member Function Documentation}
-\hypertarget{classDomain_a139f4270151467a3380922e98c644f79}{
-\index{Domain@{Domain}!addBoundaryCoords@{addBoundaryCoords}}
-\index{addBoundaryCoords@{addBoundaryCoords}!Domain@{Domain}}
-\subsubsection[{addBoundaryCoords}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::addBoundaryCoords (unsigned int {\em uid}, \/  std::pair$<$ int, int $>$ {\em coords}, \/  char {\em BCtype}, \/  real {\em value})}}
-\label{classDomain_a139f4270151467a3380922e98c644f79}
+\mbox{\Hypertarget{classDomain_a139f4270151467a3380922e98c644f79}\label{classDomain_a139f4270151467a3380922e98c644f79}} 
+\index{Domain@{Domain}!add\+Boundary\+Coords@{add\+Boundary\+Coords}}
+\index{add\+Boundary\+Coords@{add\+Boundary\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Boundary\+Coords()}{addBoundaryCoords()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Boundary\+Coords (\begin{DoxyParamCaption}\item[{unsigned int}]{uid,  }\item[{std\+::pair$<$ int, int $>$}]{coords,  }\item[{char}]{B\+Ctype,  }\item[{real}]{value }\end{DoxyParamCaption})}
 
 
-Adds new unique id $<$-\/$>$ coords on domain correspondencPieśnie and boundary condition for a cell on the boundary. 
+
+Adds new unique id $<$-\/$>$ coords on domain correspondenc\+Pieśnie and boundary condition for a cell on the boundary. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em uid}]unique id of new cell \item[{\em coords}]coordinates of new cell on the domain \item[{\em BCtype}]boundary condition type \item[{\em value}]boundary condition value \end{DoxyParams}
-\hypertarget{classDomain_a1463e043dbcda6e6755dda83c26d6b73}{
-\index{Domain@{Domain}!addCoord@{addCoord}}
-\index{addCoord@{addCoord}!Domain@{Domain}}
-\subsubsection[{addCoord}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::addCoord (unsigned int {\em uid}, \/  std::pair$<$ int, int $>$ {\em coords})}}
-\label{classDomain_a1463e043dbcda6e6755dda83c26d6b73}
+{\em uid} & unique id of new cell \\
+\hline
+{\em coords} & coordinates of new cell on the domain \\
+\hline
+{\em B\+Ctype} & boundary condition type \\
+\hline
+{\em value} & boundary condition value \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a139f4270151467a3380922e98c644f79}\label{classDomain_a139f4270151467a3380922e98c644f79}} 
+\index{Domain@{Domain}!add\+Boundary\+Coords@{add\+Boundary\+Coords}}
+\index{add\+Boundary\+Coords@{add\+Boundary\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Boundary\+Coords()}{addBoundaryCoords()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Boundary\+Coords (\begin{DoxyParamCaption}\item[{unsigned int}]{uid,  }\item[{std\+::pair$<$ int, int $>$}]{coords,  }\item[{char}]{B\+Ctype,  }\item[{real}]{value }\end{DoxyParamCaption})}
+
+
+
+Adds new unique id $<$-\/$>$ coords on domain correspondenc\+Pieśnie and boundary condition for a cell on the boundary. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em uid} & unique id of new cell \\
+\hline
+{\em coords} & coordinates of new cell on the domain \\
+\hline
+{\em B\+Ctype} & boundary condition type \\
+\hline
+{\em value} & boundary condition value \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a1463e043dbcda6e6755dda83c26d6b73}\label{classDomain_a1463e043dbcda6e6755dda83c26d6b73}} 
+\index{Domain@{Domain}!add\+Coord@{add\+Coord}}
+\index{add\+Coord@{add\+Coord}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Coord()}{addCoord()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Coord (\begin{DoxyParamCaption}\item[{unsigned int}]{uid,  }\item[{std\+::pair$<$ int, int $>$}]{coords }\end{DoxyParamCaption})}
+
 
 
 Adds new unique id $<$-\/$>$ coords on domain correspondence on a given cell. 
-\begin{DoxyParams}{Parameters}
-\item[{\em uid}]unique id of new cell \item[{\em coords}]coordinates of new cell on the domain \end{DoxyParams}
-\hypertarget{classDomain_ab24a61d835dbebec7ff689ec8c7f2a95}{
-\index{Domain@{Domain}!addEquation@{addEquation}}
-\index{addEquation@{addEquation}!Domain@{Domain}}
-\subsubsection[{addEquation}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::addEquation (eqType {\em eqFunc})}}
-\label{classDomain_ab24a61d835dbebec7ff689ec8c7f2a95}
 
 
-Adds function that resolves a new equation on a SDS to be computed for each iteration by the domain. 
 \begin{DoxyParams}{Parameters}
-\item[{\em equation}]function \end{DoxyParams}
-\hypertarget{classDomain_a9c33ac08523c95967ad2a51c59fd8d96}{
-\index{Domain@{Domain}!addQuantity@{addQuantity}}
-\index{addQuantity@{addQuantity}!Domain@{Domain}}
-\subsubsection[{addQuantity}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::addQuantity (std::string {\em quantityName})}}
-\label{classDomain_a9c33ac08523c95967ad2a51c59fd8d96}
+{\em uid} & unique id of new cell \\
+\hline
+{\em coords} & coordinates of new cell on the domain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a1463e043dbcda6e6755dda83c26d6b73}\label{classDomain_a1463e043dbcda6e6755dda83c26d6b73}} 
+\index{Domain@{Domain}!add\+Coord@{add\+Coord}}
+\index{add\+Coord@{add\+Coord}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Coord()}{addCoord()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Coord (\begin{DoxyParamCaption}\item[{unsigned int}]{uid,  }\item[{std\+::pair$<$ int, int $>$}]{coords }\end{DoxyParamCaption})}
+
+
+
+Adds new unique id $<$-\/$>$ coords on domain correspondence on a given cell. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em uid} & unique id of new cell \\
+\hline
+{\em coords} & coordinates of new cell on the domain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a3be46362fe91960104764d9eb89f1d29}\label{classDomain_a3be46362fe91960104764d9eb89f1d29}} 
+\index{Domain@{Domain}!add\+Equation@{add\+Equation}}
+\index{add\+Equation@{add\+Equation}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Equation()}{addEquation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Equation (\begin{DoxyParamCaption}\item[{std\+::string}]{eq\+Name,  }\item[{eq\+Type}]{eq\+Func }\end{DoxyParamCaption})}
+
+
+
+Adds function that resolves a new equation on a S\+DS to be computed for each iteration by the domain. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em equation} & function \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_ab24a61d835dbebec7ff689ec8c7f2a95}\label{classDomain_ab24a61d835dbebec7ff689ec8c7f2a95}} 
+\index{Domain@{Domain}!add\+Equation@{add\+Equation}}
+\index{add\+Equation@{add\+Equation}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Equation()}{addEquation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Equation (\begin{DoxyParamCaption}\item[{eq\+Type}]{eq\+Func }\end{DoxyParamCaption})}
+
+
+
+Adds function that resolves a new equation on a S\+DS to be computed for each iteration by the domain. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em equation} & function \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a4bad9ce1ce7d7fc7ef5b564bd5ac21e1}\label{classDomain_a4bad9ce1ce7d7fc7ef5b564bd5ac21e1}} 
+\index{Domain@{Domain}!add\+Quantity@{add\+Quantity}}
+\index{add\+Quantity@{add\+Quantity}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Quantity()}{addQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name,  }\item[{bool}]{constant = {\ttfamily false} }\end{DoxyParamCaption})}
+
 
 
 Adds new quantity to be managed by the scheme. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em name}]of new quantity \end{DoxyParams}
-\hypertarget{classDomain_a29537b651bacd922cae449357969d900}{
-\index{Domain@{Domain}!buildSubDomains@{buildSubDomains}}
-\index{buildSubDomains@{buildSubDomains}!Domain@{Domain}}
-\subsubsection[{buildSubDomains}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::buildSubDomains ()}}
-\label{classDomain_a29537b651bacd922cae449357969d900}
+{\em name} & of new quantity \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a9c33ac08523c95967ad2a51c59fd8d96}\label{classDomain_a9c33ac08523c95967ad2a51c59fd8d96}} 
+\index{Domain@{Domain}!add\+Quantity@{add\+Quantity}}
+\index{add\+Quantity@{add\+Quantity}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{add\+Quantity()}{addQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::add\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name }\end{DoxyParamCaption})}
 
 
-Builds subdomains according to set options. This creates the SDDs and their SDSs according to options set in function setOptions, that has to be called before calling this function. \hypertarget{classDomain_aa2e6cebf44a57323f3c6344d131126c1}{
-\index{Domain@{Domain}!buildThreads@{buildThreads}}
-\index{buildThreads@{buildThreads}!Domain@{Domain}}
-\subsubsection[{buildThreads}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::buildThreads ()}}
-\label{classDomain_aa2e6cebf44a57323f3c6344d131126c1}
+
+Adds new quantity to be managed by the scheme. 
 
 
-Builds the task pool for each SDD. This can only be called after options were set and subdomains were built. \hypertarget{classDomain_ab304fc5121bd34e817526fd2d4ccaa62}{
-\index{Domain@{Domain}!getBLOfSDD@{getBLOfSDD}}
-\index{getBLOfSDD@{getBLOfSDD}!Domain@{Domain}}
-\subsubsection[{getBLOfSDD}]{\setlength{\rightskip}{0pt plus 5cm}std::pair$<$ int, int $>$ Domain::getBLOfSDD (unsigned int {\em SDDid}) const}}
-\label{classDomain_ab304fc5121bd34e817526fd2d4ccaa62}
-
-
-Gets bottom-\/left coordinates of SDD given by its id. 
 \begin{DoxyParams}{Parameters}
-\item[{\em SSDid}]id of desired SDD, with $0 \leq \texttt{SDDid} < \texttt{nSDD}$\end{DoxyParams}
+{\em name} & of new quantity \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a29537b651bacd922cae449357969d900}\label{classDomain_a29537b651bacd922cae449357969d900}} 
+\index{Domain@{Domain}!build\+Sub\+Domains@{build\+Sub\+Domains}}
+\index{build\+Sub\+Domains@{build\+Sub\+Domains}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{build\+Sub\+Domains()}{buildSubDomains()}}
+{\footnotesize\ttfamily void Domain\+::build\+Sub\+Domains (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Builds subdomains according to set options. 
+
+This creates the S\+D\+Ds and their S\+D\+Ss according to options set in function set\+Options, that has to be called before calling this function. \mbox{\Hypertarget{classDomain_af1262b85d13fbbf90388e453d9602372}\label{classDomain_af1262b85d13fbbf90388e453d9602372}} 
+\index{Domain@{Domain}!build\+Sub\+Domains\+M\+PI@{build\+Sub\+Domains\+M\+PI}}
+\index{build\+Sub\+Domains\+M\+PI@{build\+Sub\+Domains\+M\+PI}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{build\+Sub\+Domains\+M\+P\+I()}{buildSubDomainsMPI()}}
+{\footnotesize\ttfamily void Domain\+::build\+Sub\+Domains\+M\+PI (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Builds subdomains according to set options. 
+
+This creates the S\+D\+Ds and their S\+D\+Ss according to options set in function set\+Options, that has to be called before calling this function. \mbox{\Hypertarget{classDomain_aa2e6cebf44a57323f3c6344d131126c1}\label{classDomain_aa2e6cebf44a57323f3c6344d131126c1}} 
+\index{Domain@{Domain}!build\+Threads@{build\+Threads}}
+\index{build\+Threads@{build\+Threads}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{build\+Threads()}{buildThreads()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::build\+Threads (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Builds the task pool for each S\+DD. 
+
+This can only be called after options were set and subdomains were built. \mbox{\Hypertarget{classDomain_aa2e6cebf44a57323f3c6344d131126c1}\label{classDomain_aa2e6cebf44a57323f3c6344d131126c1}} 
+\index{Domain@{Domain}!build\+Threads@{build\+Threads}}
+\index{build\+Threads@{build\+Threads}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{build\+Threads()}{buildThreads()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::build\+Threads (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Builds the task pool for each S\+DD. 
+
+This can only be called after options were set and subdomains were built. \mbox{\Hypertarget{classDomain_a29e2005bed3aa17f036b8d2b36084153}\label{classDomain_a29e2005bed3aa17f036b8d2b36084153}} 
+\index{Domain@{Domain}!get\+B\+L\+Of\+S\+DD@{get\+B\+L\+Of\+S\+DD}}
+\index{get\+B\+L\+Of\+S\+DD@{get\+B\+L\+Of\+S\+DD}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+B\+L\+Of\+S\+D\+D()}{getBLOfSDD()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::pair$<$ int, int $>$ Domain\+::get\+B\+L\+Of\+S\+DD (\begin{DoxyParamCaption}\item[{unsigned int}]{S\+D\+Did }\end{DoxyParamCaption}) const}
+
+
+
+Gets bottom-\/left coordinates of S\+DD given by its id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em S\+S\+Did} & id of desired S\+DD, with $0 \leq \texttt{SDDid} < \texttt{nSDD}$\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-coordinates of bottom-\/left cell of desired SDD 
+coordinates of bottom-\/left cell of desired S\+DD 
 \end{DoxyReturn}
-\hypertarget{classDomain_a7c1da36a59bd95dd5f7c91365f2372bd}{
-\index{Domain@{Domain}!getBoundaryCondition@{getBoundaryCondition}}
-\index{getBoundaryCondition@{getBoundaryCondition}!Domain@{Domain}}
-\subsubsection[{getBoundaryCondition}]{\setlength{\rightskip}{0pt plus 5cm}std::pair$<$ char, real $>$ Domain::getBoundaryCondition (std::pair$<$ int, int $>$ {\em coords}) const}}
-\label{classDomain_a7c1da36a59bd95dd5f7c91365f2372bd}
+\mbox{\Hypertarget{classDomain_a9dd93464e05e2a631f01cc30277db885}\label{classDomain_a9dd93464e05e2a631f01cc30277db885}} 
+\index{Domain@{Domain}!get\+B\+L\+Of\+S\+DD@{get\+B\+L\+Of\+S\+DD}}
+\index{get\+B\+L\+Of\+S\+DD@{get\+B\+L\+Of\+S\+DD}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+B\+L\+Of\+S\+D\+D()}{getBLOfSDD()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::pair$<$int, int$>$ Domain\+::get\+B\+L\+Of\+S\+DD (\begin{DoxyParamCaption}\item[{unsigned int}]{S\+D\+Did }\end{DoxyParamCaption}) const}
+
+
+
+Gets bottom-\/left coordinates of S\+DD given by its id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em S\+S\+Did} & id of desired S\+DD, with $0 \leq \texttt{SDDid} < \texttt{nSDD}$\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+coordinates of bottom-\/left cell of desired S\+DD 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a1f219d1f46645da98f538dada37432f9}\label{classDomain_a1f219d1f46645da98f538dada37432f9}} 
+\index{Domain@{Domain}!get\+Boundary\+Condition@{get\+Boundary\+Condition}}
+\index{get\+Boundary\+Condition@{get\+Boundary\+Condition}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Boundary\+Condition()}{getBoundaryCondition()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily std\+::pair$<$ char, real $>$ Domain\+::get\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{std\+::pair$<$ int, int $>$}]{coords\+On\+S\+DD }\end{DoxyParamCaption}) const}
+
 
 
 Returns boundary condition on a cell given by its coordinates on the domain. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em coords}]on the domain of desired cell\end{DoxyParams}
+{\em coords} & on the domain of desired cell\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 boundary condition (type and value) assigned to cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_af320a2bc1abbef2f8f7d7f768799194f}{
-\index{Domain@{Domain}!getBoundaryCondition@{getBoundaryCondition}}
-\index{getBoundaryCondition@{getBoundaryCondition}!Domain@{Domain}}
-\subsubsection[{getBoundaryCondition}]{\setlength{\rightskip}{0pt plus 5cm}std::pair$<$ char, real $>$ Domain::getBoundaryCondition (unsigned int {\em uid}) const}}
-\label{classDomain_af320a2bc1abbef2f8f7d7f768799194f}
+\mbox{\Hypertarget{classDomain_a23641933f63bd9b7ff51ee67791823b4}\label{classDomain_a23641933f63bd9b7ff51ee67791823b4}} 
+\index{Domain@{Domain}!get\+Boundary\+Condition@{get\+Boundary\+Condition}}
+\index{get\+Boundary\+Condition@{get\+Boundary\+Condition}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Boundary\+Condition()}{getBoundaryCondition()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily std\+::pair$<$ char, real $>$ Domain\+::get\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{unsigned int}]{uid }\end{DoxyParamCaption}) const}
+
 
 
 Returns boundary condition on a cell given by its uid. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em uid}]unique id of desired cell\end{DoxyParams}
+{\em uid} & unique id of desired cell\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 boundary condition (type and value) assigned to cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}{
-\index{Domain@{Domain}!getBoundaryThickness@{getBoundaryThickness}}
-\index{getBoundaryThickness@{getBoundaryThickness}!Domain@{Domain}}
-\subsubsection[{getBoundaryThickness}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int Domain::getBoundaryThickness ()}}
-\label{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}
+\mbox{\Hypertarget{classDomain_aeb1110620465fc735aac4f37962fbf3d}\label{classDomain_aeb1110620465fc735aac4f37962fbf3d}} 
+\index{Domain@{Domain}!get\+Boundary\+Condition@{get\+Boundary\+Condition}}
+\index{get\+Boundary\+Condition@{get\+Boundary\+Condition}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Boundary\+Condition()}{getBoundaryCondition()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily std\+::pair$<$char, real$>$ Domain\+::get\+Boundary\+Condition (\begin{DoxyParamCaption}\item[{std\+::pair$<$ int, int $>$}]{coords }\end{DoxyParamCaption}) const}
 
 
-Returns boundary thickness of the domain, ie. the number of layers of cells outside the computed domain. \begin{DoxyReturn}{Returns}
+
+Returns boundary condition on a cell given by its coordinates on the domain. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em coords} & on the domain of desired cell\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boundary condition (type and value) assigned to cell 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}\label{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}} 
+\index{Domain@{Domain}!get\+Boundary\+Thickness@{get\+Boundary\+Thickness}}
+\index{get\+Boundary\+Thickness@{get\+Boundary\+Thickness}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Boundary\+Thickness()}{getBoundaryThickness()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily unsigned int Domain\+::get\+Boundary\+Thickness (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns boundary thickness of the domain, ie. the number of layers of cells outside the computed domain. 
+
+\begin{DoxyReturn}{Returns}
 boundary thickness 
 \end{DoxyReturn}
-\hypertarget{classDomain_a4d0296a4bb86c28b9896951cd1ada6e9}{
-\index{Domain@{Domain}!getBoundaryUidList@{getBoundaryUidList}}
-\index{getBoundaryUidList@{getBoundaryUidList}!Domain@{Domain}}
-\subsubsection[{getBoundaryUidList}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ unsigned int $>$ Domain::getBoundaryUidList () const}}
-\label{classDomain_a4d0296a4bb86c28b9896951cd1ada6e9}
+\mbox{\Hypertarget{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}\label{classDomain_aa0d225e23c6a454058a3df5b7b5973fa}} 
+\index{Domain@{Domain}!get\+Boundary\+Thickness@{get\+Boundary\+Thickness}}
+\index{get\+Boundary\+Thickness@{get\+Boundary\+Thickness}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Boundary\+Thickness()}{getBoundaryThickness()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily unsigned int Domain\+::get\+Boundary\+Thickness (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
-Returns vector containing unique ids of all cells outside of the computed domain, ie. on the boundary. \begin{DoxyReturn}{Returns}
+
+Returns boundary thickness of the domain, ie. the number of layers of cells outside the computed domain. 
+
+\begin{DoxyReturn}{Returns}
+boundary thickness 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_af3b780bfe072c70ac437f0f31f10d5c4}\label{classDomain_af3b780bfe072c70ac437f0f31f10d5c4}} 
+\index{Domain@{Domain}!get\+Boundary\+Uid\+List@{get\+Boundary\+Uid\+List}}
+\index{get\+Boundary\+Uid\+List@{get\+Boundary\+Uid\+List}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Boundary\+Uid\+List()}{getBoundaryUidList()}}
+{\footnotesize\ttfamily std\+::vector$<$ unsigned int $>$ Domain\+::get\+Boundary\+Uid\+List (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns vector containing unique ids of all cells outside of the computed domain, ie. on the boundary. 
+
+\begin{DoxyReturn}{Returns}
 vector of unique ids of all cells on boundary 
 \end{DoxyReturn}
-\hypertarget{classDomain_a792c1fd5763b5a5d9c32d085500671fb}{
-\index{Domain@{Domain}!getCoordsOnDomain@{getCoordsOnDomain}}
-\index{getCoordsOnDomain@{getCoordsOnDomain}!Domain@{Domain}}
-\subsubsection[{getCoordsOnDomain}]{\setlength{\rightskip}{0pt plus 5cm}std::pair$<$ int, int $>$ Domain::getCoordsOnDomain (unsigned int {\em uid}) const}}
-\label{classDomain_a792c1fd5763b5a5d9c32d085500671fb}
+\mbox{\Hypertarget{classDomain_a1d2f7ee9336c682d4d6b01893d0beb4f}\label{classDomain_a1d2f7ee9336c682d4d6b01893d0beb4f}} 
+\index{Domain@{Domain}!get\+Coords\+On\+Domain@{get\+Coords\+On\+Domain}}
+\index{get\+Coords\+On\+Domain@{get\+Coords\+On\+Domain}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Coords\+On\+Domain()}{getCoordsOnDomain()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::pair$<$ int, int $>$ Domain\+::get\+Coords\+On\+Domain (\begin{DoxyParamCaption}\item[{unsigned int}]{uid }\end{DoxyParamCaption}) const}
+
 
 
 Gets coordinates on computed domain of cell given by its unique id. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em uid}]unique id of desired cell\end{DoxyParams}
+{\em uid} & unique id of desired cell\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 coordinates on domain of desired cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_acdf83ef9d3dad3bbc1ae3101f4b2e323}{
+\mbox{\Hypertarget{classDomain_a7eba31dcda6d3a45f41a3839a34706c8}\label{classDomain_a7eba31dcda6d3a45f41a3839a34706c8}} 
+\index{Domain@{Domain}!get\+Coords\+On\+Domain@{get\+Coords\+On\+Domain}}
+\index{get\+Coords\+On\+Domain@{get\+Coords\+On\+Domain}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Coords\+On\+Domain()}{getCoordsOnDomain()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::pair$<$int, int$>$ Domain\+::get\+Coords\+On\+Domain (\begin{DoxyParamCaption}\item[{unsigned int}]{uid }\end{DoxyParamCaption}) const}
+
+
+
+Gets coordinates on computed domain of cell given by its unique id. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em uid} & unique id of desired cell\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+coordinates on domain of desired cell 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_acdb586f6ef994a1621680ec9b946aeb4}\label{classDomain_acdb586f6ef994a1621680ec9b946aeb4}} 
 \index{Domain@{Domain}!getdx@{getdx}}
 \index{getdx@{getdx}!Domain@{Domain}}
-\subsubsection[{getdx}]{\setlength{\rightskip}{0pt plus 5cm}real Domain::getdx () const}}
-\label{classDomain_acdf83ef9d3dad3bbc1ae3101f4b2e323}
+\subsubsection{\texorpdfstring{getdx()}{getdx()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily real Domain\+::getdx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns the non-\/modifiable space step on the x-\/axis (ie. the width of a cell). \begin{DoxyReturn}{Returns}
+
+Returns the non-\/modifiable space step on the x-\/axis (ie. the width of a cell). 
+
+\begin{DoxyReturn}{Returns}
 space step on the x-\/axis 
 \end{DoxyReturn}
-\hypertarget{classDomain_a5d72188d7c1873c08da8ef387dee33c6}{
+\mbox{\Hypertarget{classDomain_acdb586f6ef994a1621680ec9b946aeb4}\label{classDomain_acdb586f6ef994a1621680ec9b946aeb4}} 
+\index{Domain@{Domain}!getdx@{getdx}}
+\index{getdx@{getdx}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{getdx()}{getdx()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily real Domain\+::getdx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the non-\/modifiable space step on the x-\/axis (ie. the width of a cell). 
+
+\begin{DoxyReturn}{Returns}
+space step on the x-\/axis 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a5e62ab8a8b53f67cc3c30b6066b10aac}\label{classDomain_a5e62ab8a8b53f67cc3c30b6066b10aac}} 
 \index{Domain@{Domain}!getdy@{getdy}}
 \index{getdy@{getdy}!Domain@{Domain}}
-\subsubsection[{getdy}]{\setlength{\rightskip}{0pt plus 5cm}real Domain::getdy () const}}
-\label{classDomain_a5d72188d7c1873c08da8ef387dee33c6}
+\subsubsection{\texorpdfstring{getdy()}{getdy()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily real Domain\+::getdy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns the non-\/modifiable space step on the y-\/axis (ie. the height of a cell). \begin{DoxyReturn}{Returns}
+
+Returns the non-\/modifiable space step on the y-\/axis (ie. the height of a cell). 
+
+\begin{DoxyReturn}{Returns}
 space step on the y-\/axis 
 \end{DoxyReturn}
-\hypertarget{classDomain_a04980b3ddcccb30a79f8fa3c9441d904}{
+\mbox{\Hypertarget{classDomain_a5e62ab8a8b53f67cc3c30b6066b10aac}\label{classDomain_a5e62ab8a8b53f67cc3c30b6066b10aac}} 
+\index{Domain@{Domain}!getdy@{getdy}}
+\index{getdy@{getdy}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{getdy()}{getdy()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily real Domain\+::getdy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the non-\/modifiable space step on the y-\/axis (ie. the height of a cell). 
+
+\begin{DoxyReturn}{Returns}
+space step on the y-\/axis 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a510afad91fe81eb2ccef203a980f4223}\label{classDomain_a510afad91fe81eb2ccef203a980f4223}} 
 \index{Domain@{Domain}!getlx@{getlx}}
 \index{getlx@{getlx}!Domain@{Domain}}
-\subsubsection[{getlx}]{\setlength{\rightskip}{0pt plus 5cm}real Domain::getlx () const}}
-\label{classDomain_a04980b3ddcccb30a79f8fa3c9441d904}
+\subsubsection{\texorpdfstring{getlx()}{getlx()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily real Domain\+::getlx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns the non-\/modifiable width of the domain. \begin{DoxyReturn}{Returns}
+
+Returns the non-\/modifiable width of the domain. 
+
+\begin{DoxyReturn}{Returns}
 width of the domain 
 \end{DoxyReturn}
-\hypertarget{classDomain_a742a544929b9b82e0d654de8a85ab49b}{
+\mbox{\Hypertarget{classDomain_a510afad91fe81eb2ccef203a980f4223}\label{classDomain_a510afad91fe81eb2ccef203a980f4223}} 
+\index{Domain@{Domain}!getlx@{getlx}}
+\index{getlx@{getlx}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{getlx()}{getlx()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily real Domain\+::getlx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the non-\/modifiable width of the domain. 
+
+\begin{DoxyReturn}{Returns}
+width of the domain 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_ac9cedab179bb0611fc0e9fcfbcedb835}\label{classDomain_ac9cedab179bb0611fc0e9fcfbcedb835}} 
 \index{Domain@{Domain}!getly@{getly}}
 \index{getly@{getly}!Domain@{Domain}}
-\subsubsection[{getly}]{\setlength{\rightskip}{0pt plus 5cm}real Domain::getly () const}}
-\label{classDomain_a742a544929b9b82e0d654de8a85ab49b}
+\subsubsection{\texorpdfstring{getly()}{getly()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily real Domain\+::getly (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns the non-\/modifiable height of the domain. \begin{DoxyReturn}{Returns}
+
+Returns the non-\/modifiable height of the domain. 
+
+\begin{DoxyReturn}{Returns}
 height of the domain 
 \end{DoxyReturn}
-\hypertarget{classDomain_abdf41aefa7cf64674bce2d4a065fa372}{
-\index{Domain@{Domain}!getSDD@{getSDD}}
-\index{getSDD@{getSDD}!Domain@{Domain}}
-\subsubsection[{getSDD}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf SDDistributed} $\ast$ $>$ Domain::getSDD () const}}
-\label{classDomain_abdf41aefa7cf64674bce2d4a065fa372}
+\mbox{\Hypertarget{classDomain_ac9cedab179bb0611fc0e9fcfbcedb835}\label{classDomain_ac9cedab179bb0611fc0e9fcfbcedb835}} 
+\index{Domain@{Domain}!getly@{getly}}
+\index{getly@{getly}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{getly()}{getly()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily real Domain\+::getly (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns vector of pointers to SDDs of the domain. \begin{DoxyReturn}{Returns}
-vector of pointers to SDDs of the domain. 
+
+Returns the non-\/modifiable height of the domain. 
+
+\begin{DoxyReturn}{Returns}
+height of the domain 
 \end{DoxyReturn}
-\hypertarget{classDomain_afc46286fa167e7a2ebccacced8d31c34}{
-\index{Domain@{Domain}!getSDDandCoords@{getSDDandCoords}}
-\index{getSDDandCoords@{getSDDandCoords}!Domain@{Domain}}
-\subsubsection[{getSDDandCoords}]{\setlength{\rightskip}{0pt plus 5cm}std::pair$<$ int, std::pair$<$ int, int $>$ $>$ Domain::getSDDandCoords (unsigned int {\em SDDid}, \/  std::pair$<$ int, int $>$ {\em coords}) const}}
-\label{classDomain_afc46286fa167e7a2ebccacced8d31c34}
+\mbox{\Hypertarget{classDomain_ae560ad14f723c01663bbb783ede30fd8}\label{classDomain_ae560ad14f723c01663bbb783ede30fd8}} 
+\index{Domain@{Domain}!get\+S\+DD@{get\+S\+DD}}
+\index{get\+S\+DD@{get\+S\+DD}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+D()}{getSDD()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ \hyperlink{classSDDistributed}{S\+D\+Distributed} $\ast$ $>$ Domain\+::get\+S\+DD (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns non-\/modifiable id of SDD and coordinates on SDD of cell given by its coordinates on the domain. The returned SDD is the one that owns the cell on its computed area, ie. not as an overlap cell.
+
+Returns vector of pointers to S\+D\+Ds of the domain. 
+
+\begin{DoxyReturn}{Returns}
+vector of pointers to S\+D\+Ds of the domain. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a26ceb37145bc70b3cc85e15e24a54287}\label{classDomain_a26ceb37145bc70b3cc85e15e24a54287}} 
+\index{Domain@{Domain}!get\+S\+DD@{get\+S\+DD}}
+\index{get\+S\+DD@{get\+S\+DD}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+D()}{getSDD()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{classSDDistributed}{S\+D\+Distributed} \& Domain\+::get\+S\+DD (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns reference to S\+DD possessed by this M\+PI node. 
+
+\begin{DoxyReturn}{Returns}
+reference to S\+DD 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a5b3fd7cbe29576ea63219b326c15680e}\label{classDomain_a5b3fd7cbe29576ea63219b326c15680e}} 
+\index{Domain@{Domain}!get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}}
+\index{get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+Dand\+Coords()}{getSDDandCoords()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ Domain\+::get\+S\+D\+Dand\+Coords (\begin{DoxyParamCaption}\item[{std\+::pair$<$ int, int $>$}]{coords\+On\+Domain }\end{DoxyParamCaption}) const}
+
+
+
+Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. 
+
+The returned S\+DD is the one that owns the cell on its computed area, ie. not as an overlap cell.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em coordinates}]of desired cell on domain\end{DoxyParams}
+{\em coordinates} & of desired cell on domain\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-id of SDD and coordinates on SDD of desired cell 
+id of S\+DD and coordinates on S\+DD of desired cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_accb471dd6649bd38403cd28a2bbccd79}{
-\index{Domain@{Domain}!getSDDandCoords@{getSDDandCoords}}
-\index{getSDDandCoords@{getSDDandCoords}!Domain@{Domain}}
-\subsubsection[{getSDDandCoords}]{\setlength{\rightskip}{0pt plus 5cm}std::pair$<$ int, std::pair$<$ int, int $>$ $>$ Domain::getSDDandCoords (std::pair$<$ int, int $>$ {\em coordsOnDomain}) const}}
-\label{classDomain_accb471dd6649bd38403cd28a2bbccd79}
+\mbox{\Hypertarget{classDomain_af6442039d5c64b9a59b7a1bd94fc6bbb}\label{classDomain_af6442039d5c64b9a59b7a1bd94fc6bbb}} 
+\index{Domain@{Domain}!get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}}
+\index{get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+Dand\+Coords()}{getSDDandCoords()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ Domain\+::get\+S\+D\+Dand\+Coords (\begin{DoxyParamCaption}\item[{unsigned int}]{S\+D\+Did,  }\item[{std\+::pair$<$ int, int $>$}]{coords }\end{DoxyParamCaption}) const}
 
 
-Returns non-\/modifiable id of SDD and coordinates on SDD of cell given by its coordinates on the domain. The returned SDD is the one that owns the cell on its computed area, ie. not as an overlap cell.
+
+Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. 
+
+The returned S\+DD is the one that owns the cell on its computed area, ie. not as an overlap cell.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em coordinates}]of desired cell on domain\end{DoxyParams}
+{\em coordinates} & of desired cell on domain\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-id of SDD and coordinates on SDD of desired cell 
+id of S\+DD and coordinates on S\+DD of desired cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_a893851a7caff52261beb79888d46be1f}{
-\index{Domain@{Domain}!getSDDforCoords@{getSDDforCoords}}
-\index{getSDDforCoords@{getSDDforCoords}!Domain@{Domain}}
-\subsubsection[{getSDDforCoords}]{\setlength{\rightskip}{0pt plus 5cm}{\bf SDDistributed} $\ast$ Domain::getSDDforCoords (std::pair$<$ int, int $>$ {\em coordsOnDomain})}}
-\label{classDomain_a893851a7caff52261beb79888d46be1f}
+\mbox{\Hypertarget{classDomain_a155bbf1a1abd44c98cf78c090259b5a4}\label{classDomain_a155bbf1a1abd44c98cf78c090259b5a4}} 
+\index{Domain@{Domain}!get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}}
+\index{get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+Dand\+Coords()}{getSDDandCoords()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily std\+::pair$<$int, std\+::pair$<$int, int$>$ $>$ Domain\+::get\+S\+D\+Dand\+Coords (\begin{DoxyParamCaption}\item[{std\+::pair$<$ int, int $>$}]{coords\+On\+Domain }\end{DoxyParamCaption}) const}
 
 
-Gets pointer to SDD in charge of the computation of a cell given by its coordinates on the domain. 
+
+Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. 
+
+The returned S\+DD is the one that owns the cell on its computed area, ie. not as an overlap cell.
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em coordsOnDomain}]coordinates on the domain of the cell\end{DoxyParams}
+{\em coordinates} & of desired cell on domain\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-pointer to SDD 
+id of S\+DD and coordinates on S\+DD of desired cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_a3185aba80f5397341e5a81d84e2bc8f9}{
-\index{Domain@{Domain}!getSizeX@{getSizeX}}
-\index{getSizeX@{getSizeX}!Domain@{Domain}}
-\subsubsection[{getSizeX}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int Domain::getSizeX () const}}
-\label{classDomain_a3185aba80f5397341e5a81d84e2bc8f9}
+\mbox{\Hypertarget{classDomain_a777cc4eed9570aea2477ef41f26566ff}\label{classDomain_a777cc4eed9570aea2477ef41f26566ff}} 
+\index{Domain@{Domain}!get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}}
+\index{get\+S\+D\+Dand\+Coords@{get\+S\+D\+Dand\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+Dand\+Coords()}{getSDDandCoords()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily std\+::pair$<$int, std\+::pair$<$int, int$>$ $>$ Domain\+::get\+S\+D\+Dand\+Coords (\begin{DoxyParamCaption}\item[{unsigned int}]{S\+D\+Did,  }\item[{std\+::pair$<$ int, int $>$}]{coords }\end{DoxyParamCaption}) const}
 
 
-Returns the non-\/modifiable number of cells on the x-\/axis. \begin{DoxyReturn}{Returns}
+
+Returns non-\/modifiable id of S\+DD and coordinates on S\+DD of cell given by its coordinates on the domain. 
+
+The returned S\+DD is the one that owns the cell on its computed area, ie. not as an overlap cell.
+
+
+\begin{DoxyParams}{Parameters}
+{\em coordinates} & of desired cell on domain\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+id of S\+DD and coordinates on S\+DD of desired cell 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a8172470afa3d3ec4c7202c8ee25ab3b8}\label{classDomain_a8172470afa3d3ec4c7202c8ee25ab3b8}} 
+\index{Domain@{Domain}!get\+S\+D\+Dconst@{get\+S\+D\+Dconst}}
+\index{get\+S\+D\+Dconst@{get\+S\+D\+Dconst}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+Dconst()}{getSDDconst()}}
+{\footnotesize\ttfamily const \hyperlink{classSDDistributed}{S\+D\+Distributed} \& Domain\+::get\+S\+D\+Dconst (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns const reference to S\+DD possessed by this M\+PI node. 
+
+\begin{DoxyReturn}{Returns}
+const reference to S\+DD 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a893851a7caff52261beb79888d46be1f}\label{classDomain_a893851a7caff52261beb79888d46be1f}} 
+\index{Domain@{Domain}!get\+S\+D\+Dfor\+Coords@{get\+S\+D\+Dfor\+Coords}}
+\index{get\+S\+D\+Dfor\+Coords@{get\+S\+D\+Dfor\+Coords}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+S\+D\+Dfor\+Coords()}{getSDDforCoords()}}
+{\footnotesize\ttfamily \hyperlink{classSDDistributed}{S\+D\+Distributed} $\ast$ Domain\+::get\+S\+D\+Dfor\+Coords (\begin{DoxyParamCaption}\item[{std\+::pair$<$ int, int $>$}]{coords\+On\+Domain }\end{DoxyParamCaption})}
+
+
+
+Gets pointer to S\+DD in charge of the computation of a cell given by its coordinates on the domain. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em coords\+On\+Domain} & coordinates on the domain of the cell\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pointer to S\+DD 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a75f299e3871fe9cec01637b140429ef9}\label{classDomain_a75f299e3871fe9cec01637b140429ef9}} 
+\index{Domain@{Domain}!get\+SizeX@{get\+SizeX}}
+\index{get\+SizeX@{get\+SizeX}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Size\+X()}{getSizeX()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily unsigned int Domain\+::get\+SizeX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the non-\/modifiable number of cells on the x-\/axis. 
+
+\begin{DoxyReturn}{Returns}
 number of cells on x-\/axis 
 \end{DoxyReturn}
-\hypertarget{classDomain_a0e7519f6560ddaea2c7c84785441da9a}{
-\index{Domain@{Domain}!getSizeY@{getSizeY}}
-\index{getSizeY@{getSizeY}!Domain@{Domain}}
-\subsubsection[{getSizeY}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int Domain::getSizeY () const}}
-\label{classDomain_a0e7519f6560ddaea2c7c84785441da9a}
+\mbox{\Hypertarget{classDomain_a75f299e3871fe9cec01637b140429ef9}\label{classDomain_a75f299e3871fe9cec01637b140429ef9}} 
+\index{Domain@{Domain}!get\+SizeX@{get\+SizeX}}
+\index{get\+SizeX@{get\+SizeX}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Size\+X()}{getSizeX()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily unsigned int Domain\+::get\+SizeX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns the non-\/modifiable number of cells on the y-\/axis. \begin{DoxyReturn}{Returns}
+
+Returns the non-\/modifiable number of cells on the x-\/axis. 
+
+\begin{DoxyReturn}{Returns}
+number of cells on x-\/axis 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a66692b4f23353c9b1fe884e583770cb3}\label{classDomain_a66692b4f23353c9b1fe884e583770cb3}} 
+\index{Domain@{Domain}!get\+SizeY@{get\+SizeY}}
+\index{get\+SizeY@{get\+SizeY}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Size\+Y()}{getSizeY()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily unsigned int Domain\+::get\+SizeY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the non-\/modifiable number of cells on the y-\/axis. 
+
+\begin{DoxyReturn}{Returns}
 number of cells on y-\/axis 
 \end{DoxyReturn}
-\hypertarget{classDomain_a6023c81f9233bcc48ad6f315829e9725}{
-\index{Domain@{Domain}!getValue@{getValue}}
-\index{getValue@{getValue}!Domain@{Domain}}
-\subsubsection[{getValue}]{\setlength{\rightskip}{0pt plus 5cm}real Domain::getValue (std::string {\em quantityName}, \/  unsigned int {\em uid}, \/  int {\em onNext} = {\ttfamily 0}) const}}
-\label{classDomain_a6023c81f9233bcc48ad6f315829e9725}
+\mbox{\Hypertarget{classDomain_a66692b4f23353c9b1fe884e583770cb3}\label{classDomain_a66692b4f23353c9b1fe884e583770cb3}} 
+\index{Domain@{Domain}!get\+SizeY@{get\+SizeY}}
+\index{get\+SizeY@{get\+SizeY}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Size\+Y()}{getSizeY()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily unsigned int Domain\+::get\+SizeY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
-Returns non-\/modifiable quantity value of a cell given by its id. /!$\backslash$ Iterating over all cells with this function is much slower than iterating on SDDs and then getting values.
+
+Returns the non-\/modifiable number of cells on the y-\/axis. 
+
+\begin{DoxyReturn}{Returns}
+number of cells on y-\/axis 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_a6f7d5f16ca53367feabc00b9efa05be8}\label{classDomain_a6f7d5f16ca53367feabc00b9efa05be8}} 
+\index{Domain@{Domain}!get\+Uid\+List@{get\+Uid\+List}}
+\index{get\+Uid\+List@{get\+Uid\+List}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Uid\+List()}{getUidList()}}
+{\footnotesize\ttfamily std\+::vector$<$ unsigned int $>$ Domain\+::get\+Uid\+List (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns vector containing unique ids of all cells. 
+
+\begin{DoxyReturn}{Returns}
+vector of uids of all domain cells (unordered) (unordered) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDomain_ad99f85d4d30525bac3ac258a0032bdf7}\label{classDomain_ad99f85d4d30525bac3ac258a0032bdf7}} 
+\index{Domain@{Domain}!get\+Value@{get\+Value}}
+\index{get\+Value@{get\+Value}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{get\+Value()}{getValue()}}
+{\footnotesize\ttfamily real Domain\+::get\+Value (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name,  }\item[{unsigned int}]{uid,  }\item[{int}]{on\+Next = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+Returns non-\/modifiable quantity value of a cell given by its id. 
+
+/!\textbackslash{} Iterating over all cells with this function is much slower than iterating on S\+D\+Ds and then getting values.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em quantityName}]name of desired quantity \item[{\em uid}]unique id of desired cell \item[{\em onNext}]get value on current time step if == 0, on previous time step if == 1\end{DoxyParams}
+{\em quantity\+Name} & name of desired quantity \\
+\hline
+{\em uid} & unique id of desired cell \\
+\hline
+{\em on\+Next} & get value on current time step if == 0, on previous time step if == 1\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 value of quantity on desired cell 
 \end{DoxyReturn}
-\hypertarget{classDomain_a853266061b629ff1f920b46c06c478d6}{
-\index{Domain@{Domain}!initRect@{initRect}}
-\index{initRect@{initRect}!Domain@{Domain}}
-\subsubsection[{initRect}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::initRect (real {\em lx}, \/  real {\em ly}, \/  unsigned int {\em Nx}, \/  unsigned int {\em Ny})}}
-\label{classDomain_a853266061b629ff1f920b46c06c478d6}
+\mbox{\Hypertarget{classDomain_a853266061b629ff1f920b46c06c478d6}\label{classDomain_a853266061b629ff1f920b46c06c478d6}} 
+\index{Domain@{Domain}!init\+Rect@{init\+Rect}}
+\index{init\+Rect@{init\+Rect}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{init\+Rect()}{initRect()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::init\+Rect (\begin{DoxyParamCaption}\item[{real}]{lx,  }\item[{real}]{ly,  }\item[{unsigned int}]{Nx,  }\item[{unsigned int}]{Ny }\end{DoxyParamCaption})}
+
 
 
 Initializes domain rectangle. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em lx}]physical width of the domain \item[{\em ly}]physical width of the domain \item[{\em Nx}]number of cells on the x-\/axis \item[{\em Ny}]number of cells on the y-\/axis \end{DoxyParams}
-\hypertarget{classDomain_a1163559d75540c4cd29c7aa775feca80}{
-\index{Domain@{Domain}!printState@{printState}}
-\index{printState@{printState}!Domain@{Domain}}
-\subsubsection[{printState}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::printState (std::string {\em quantityName})}}
-\label{classDomain_a1163559d75540c4cd29c7aa775feca80}
+{\em lx} & physical width of the domain \\
+\hline
+{\em ly} & physical width of the domain \\
+\hline
+{\em Nx} & number of cells on the x-\/axis \\
+\hline
+{\em Ny} & number of cells on the y-\/axis \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a853266061b629ff1f920b46c06c478d6}\label{classDomain_a853266061b629ff1f920b46c06c478d6}} 
+\index{Domain@{Domain}!init\+Rect@{init\+Rect}}
+\index{init\+Rect@{init\+Rect}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{init\+Rect()}{initRect()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::init\+Rect (\begin{DoxyParamCaption}\item[{real}]{lx,  }\item[{real}]{ly,  }\item[{unsigned int}]{Nx,  }\item[{unsigned int}]{Ny }\end{DoxyParamCaption})}
+
+
+
+Initializes domain rectangle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lx} & physical width of the domain \\
+\hline
+{\em ly} & physical width of the domain \\
+\hline
+{\em Nx} & number of cells on the x-\/axis \\
+\hline
+{\em Ny} & number of cells on the y-\/axis \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a1163559d75540c4cd29c7aa775feca80}\label{classDomain_a1163559d75540c4cd29c7aa775feca80}} 
+\index{Domain@{Domain}!print\+State@{print\+State}}
+\index{print\+State@{print\+State}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{print\+State()}{printState()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::print\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name }\end{DoxyParamCaption})}
+
 
 
 Prints quantity values for all cells. 
-\begin{DoxyParams}{Parameters}
-\item[{\em quantityName}]name of quantity to print \end{DoxyParams}
-\hypertarget{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}{
-\index{Domain@{Domain}!setOptions@{setOptions}}
-\index{setOptions@{setOptions}!Domain@{Domain}}
-\subsubsection[{setOptions}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::setOptions (unsigned int {\em nSDD}, \/  unsigned int {\em nSDD\_\-X}, \/  unsigned int {\em nSDD\_\-Y}, \/  unsigned int {\em nSDS}, \/  std::string {\em SDSgeom}, \/  unsigned int {\em nThreads})}}
-\label{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}
-
-
-Changes options for building SDDs and SDSs. 
-\begin{DoxyParams}{Parameters}
-\item[{\em nSDD}]number of SDDs on the domain \item[{\em nSDD\_\-X}]number of SDDs along the x-\/axis \item[{\em nSDD\_\-Y}]number of SDDs along the y-\/axis \item[{\em nSDS}]number of SDS per SDD \item[{\em SDSgeom}]type of SDS split \item[{\em nThreads}]number of threads per SDD \end{DoxyParams}
-\hypertarget{classDomain_a9319e738fbd4ada8145998d5392c9334}{
-\index{Domain@{Domain}!setValue@{setValue}}
-\index{setValue@{setValue}!Domain@{Domain}}
-\subsubsection[{setValue}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::setValue (std::string {\em quantityName}, \/  unsigned int {\em uid}, \/  real {\em value}, \/  int {\em onNext} = {\ttfamily 0})}}
-\label{classDomain_a9319e738fbd4ada8145998d5392c9334}
-
-
-Modifies quantity value of a cell given by its id. /!$\backslash$ Iterating over all cells with this function is much slower than iterating on SDDs and then setting values.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em quantityName}]name of quantity to set \item[{\em uid}]unique id of cell to modify \item[{\em new}]value to set \item[{\em onNext}]get value on current time step if == 0, on previous time step if == 1 \end{DoxyParams}
-\hypertarget{classDomain_af169473470489edc4235399887c10da0}{
-\index{Domain@{Domain}!updateBoundaryCells@{updateBoundaryCells}}
-\index{updateBoundaryCells@{updateBoundaryCells}!Domain@{Domain}}
-\subsubsection[{updateBoundaryCells}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::updateBoundaryCells (std::string {\em quantityName}, \/  bool {\em changeNeumannToOpposite} = {\ttfamily false})}}
-\label{classDomain_af169473470489edc4235399887c10da0}
+{\em quantity\+Name} & name of quantity to print \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a1163559d75540c4cd29c7aa775feca80}\label{classDomain_a1163559d75540c4cd29c7aa775feca80}} 
+\index{Domain@{Domain}!print\+State@{print\+State}}
+\index{print\+State@{print\+State}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{print\+State()}{printState()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::print\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name }\end{DoxyParamCaption})}
 
 
-updates boundary of all SDDs according to their values on reference cells on other SDDs, for a given quantity. /!$\backslash$ This has to be called AFTER updating overlap cells, since boundary cells may be updated with values on overlap cells. The boolean parameter is optional and can be used for some physical quantities that require the Neumann boundary condition to be opposite.
+
+Prints quantity values for all cells. 
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em quantityName}]name of quantity to update \item[{\em changeNeumannToOpposite}]if true, this changes the value into its opposite on cells that have Neumann BC. \end{DoxyParams}
-\hypertarget{classDomain_abcd8aa2529907b8022e41e45c85f5144}{
-\index{Domain@{Domain}!updateOverlapCells@{updateOverlapCells}}
-\index{updateOverlapCells@{updateOverlapCells}!Domain@{Domain}}
-\subsubsection[{updateOverlapCells}]{\setlength{\rightskip}{0pt plus 5cm}void Domain::updateOverlapCells (std::string {\em quantityName})}}
-\label{classDomain_abcd8aa2529907b8022e41e45c85f5144}
+{\em quantity\+Name} & name of quantity to print \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}\label{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}} 
+\index{Domain@{Domain}!set\+Options@{set\+Options}}
+\index{set\+Options@{set\+Options}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{set\+Options()}{setOptions()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::set\+Options (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+S\+DD,  }\item[{unsigned int}]{n\+S\+D\+D\+\_\+X,  }\item[{unsigned int}]{n\+S\+D\+D\+\_\+Y,  }\item[{unsigned int}]{n\+S\+DS,  }\item[{std\+::string}]{S\+D\+Sgeom,  }\item[{unsigned int}]{n\+Threads }\end{DoxyParamCaption})}
 
 
-updates overlap cells of all SDDs according to their values on reference cells on other SDDs, for a given quantity. 
+
+Changes options for building S\+D\+Ds and S\+D\+Ss. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em quantityName}]name of quantity to update \end{DoxyParams}
+{\em n\+S\+DD} & number of S\+D\+Ds on the domain \\
+\hline
+{\em n\+S\+D\+D\+\_\+X} & number of S\+D\+Ds along the x-\/axis \\
+\hline
+{\em n\+S\+D\+D\+\_\+Y} & number of S\+D\+Ds along the y-\/axis \\
+\hline
+{\em n\+S\+DS} & number of S\+DS per S\+DD \\
+\hline
+{\em S\+D\+Sgeom} & type of S\+DS split \\
+\hline
+{\em n\+Threads} & number of threads per S\+DD \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}\label{classDomain_a10a5e8384b21bb3c968699c2a6c89bf7}} 
+\index{Domain@{Domain}!set\+Options@{set\+Options}}
+\index{set\+Options@{set\+Options}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{set\+Options()}{setOptions()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::set\+Options (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+S\+DD,  }\item[{unsigned int}]{n\+S\+D\+D\+\_\+X,  }\item[{unsigned int}]{n\+S\+D\+D\+\_\+Y,  }\item[{unsigned int}]{n\+S\+DS,  }\item[{std\+::string}]{S\+D\+Sgeom,  }\item[{unsigned int}]{n\+Threads }\end{DoxyParamCaption})}
 
 
-The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+
+Changes options for building S\+D\+Ds and S\+D\+Ss. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n\+S\+DD} & number of S\+D\+Ds on the domain \\
+\hline
+{\em n\+S\+D\+D\+\_\+X} & number of S\+D\+Ds along the x-\/axis \\
+\hline
+{\em n\+S\+D\+D\+\_\+Y} & number of S\+D\+Ds along the y-\/axis \\
+\hline
+{\em n\+S\+DS} & number of S\+DS per S\+DD \\
+\hline
+{\em S\+D\+Sgeom} & type of S\+DS split \\
+\hline
+{\em n\+Threads} & number of threads per S\+DD \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_acc1225a3c5e6e2a808c88d187adc7d3c}\label{classDomain_acc1225a3c5e6e2a808c88d187adc7d3c}} 
+\index{Domain@{Domain}!set\+S\+D\+D\+Info@{set\+S\+D\+D\+Info}}
+\index{set\+S\+D\+D\+Info@{set\+S\+D\+D\+Info}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{set\+S\+D\+D\+Info()}{setSDDInfo()}}
+{\footnotesize\ttfamily void Domain\+::set\+S\+D\+D\+Info (\begin{DoxyParamCaption}\item[{unsigned int}]{B\+L\+\_\+X,  }\item[{unsigned int}]{B\+L\+\_\+Y,  }\item[{unsigned int}]{Nx,  }\item[{unsigned int}]{Ny }\end{DoxyParamCaption})}
+
+
+
+Change characteristics of S\+DD (bottom-\/left and size) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em B\+L\+\_\+X} & X-\/coordinate of bottom-\/left coords on domain \\
+\hline
+{\em B\+L\+\_\+Y} & Y-\/coordinate of bottom-\/left coords on domain \\
+\hline
+{\em Nx} & width of S\+DD \\
+\hline
+{\em Ny} & height of S\+DD \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a9319e738fbd4ada8145998d5392c9334}\label{classDomain_a9319e738fbd4ada8145998d5392c9334}} 
+\index{Domain@{Domain}!set\+Value@{set\+Value}}
+\index{set\+Value@{set\+Value}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{set\+Value()}{setValue()}}
+{\footnotesize\ttfamily void Domain\+::set\+Value (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name,  }\item[{unsigned int}]{uid,  }\item[{real}]{value,  }\item[{int}]{on\+Next = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Modifies quantity value of a cell given by its id. 
+
+/!\textbackslash{} Iterating over all cells with this function is much slower than iterating on S\+D\+Ds and then setting values.
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & name of quantity to set \\
+\hline
+{\em uid} & unique id of cell to modify \\
+\hline
+{\em new} & value to set \\
+\hline
+{\em on\+Next} & get value on current time step if == 0, on previous time step if == 1 \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_af169473470489edc4235399887c10da0}\label{classDomain_af169473470489edc4235399887c10da0}} 
+\index{Domain@{Domain}!update\+Boundary\+Cells@{update\+Boundary\+Cells}}
+\index{update\+Boundary\+Cells@{update\+Boundary\+Cells}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{update\+Boundary\+Cells()}{updateBoundaryCells()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::update\+Boundary\+Cells (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name,  }\item[{bool}]{change\+Neumann\+To\+Opposite = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+updates boundary of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. 
+
+/!\textbackslash{} This has to be called A\+F\+T\+ER updating overlap cells, since boundary // Updating umax for computation of the next dt \+\_\+umax = std\+::max(\+\_\+umax, std\+::abs(ux.\+get(0, i, j))); \+\_\+umax = std\+::max(\+\_\+umax, std\+::abs(uy.\+get(0, i, j)));
+
+cells may be updated with values on overlap cells. The boolean parameter is optional and can be used for some physical quantities that require the Neumann boundary condition to be opposite.
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & name of quantity to update \\
+\hline
+{\em change\+Neumann\+To\+Opposite} & if true, this changes the value into its opposite on cells that have Neumann BC. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_af169473470489edc4235399887c10da0}\label{classDomain_af169473470489edc4235399887c10da0}} 
+\index{Domain@{Domain}!update\+Boundary\+Cells@{update\+Boundary\+Cells}}
+\index{update\+Boundary\+Cells@{update\+Boundary\+Cells}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{update\+Boundary\+Cells()}{updateBoundaryCells()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::update\+Boundary\+Cells (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name,  }\item[{bool}]{change\+Neumann\+To\+Opposite = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+updates boundary of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. 
+
+/!\textbackslash{} This has to be called A\+F\+T\+ER updating overlap cells, since boundary cells may be updated with values on overlap cells. The boolean parameter is optional and can be used for some physical quantities that require the Neumann boundary condition to be opposite.
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & name of quantity to update \\
+\hline
+{\em change\+Neumann\+To\+Opposite} & if true, this changes the value into its opposite on cells that have Neumann BC. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_a4411f8eb6c118c84f16d62a411b4432a}\label{classDomain_a4411f8eb6c118c84f16d62a411b4432a}} 
+\index{Domain@{Domain}!update\+Overlap\+Cells@{update\+Overlap\+Cells}}
+\index{update\+Overlap\+Cells@{update\+Overlap\+Cells}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{update\+Overlap\+Cells()}{updateOverlapCells()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Domain\+::update\+Overlap\+Cells (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+updates overlap cells of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & name of quantity to update \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classDomain_abcd8aa2529907b8022e41e45c85f5144}\label{classDomain_abcd8aa2529907b8022e41e45c85f5144}} 
+\index{Domain@{Domain}!update\+Overlap\+Cells@{update\+Overlap\+Cells}}
+\index{update\+Overlap\+Cells@{update\+Overlap\+Cells}!Domain@{Domain}}
+\subsubsection{\texorpdfstring{update\+Overlap\+Cells()}{updateOverlapCells()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Domain\+::update\+Overlap\+Cells (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name }\end{DoxyParamCaption})}
+
+
+
+updates overlap cells of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & name of quantity to update \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-subdomain/\hyperlink{Domain_8hpp}{Domain.hpp}\item 
-subdomain/Domain.cpp\end{DoxyCompactItemize}
+source/subdomain/\hyperlink{source_2subdomain_2Domain_8hpp}{Domain.\+hpp}\item 
+source/subdomain/Domain.\+cpp\end{DoxyCompactItemize}

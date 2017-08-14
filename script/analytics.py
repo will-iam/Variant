@@ -19,16 +19,16 @@ def norm(data, p, dx, dy):
 
 def compare_data(input_path1, input_path2, quantityNameList):
     for q in quantityNameList:
-        data1 = read_quantity(input_path1, q)
-        data2 = read_quantity(input_path2, q)
-        if not data1[2].shape == data2[2].shape:
+        dx1, dy1, data1 = read_quantity(input_path1, q)
+        dx2, dy2, data2 = read_quantity(input_path2, q)
+        if not data1.shape == data2.shape:
             print("Shape mismatch between data")
-            return False, q, data1[2]
-        comparedata = data2[2] - data1[2]
-        if not data1[0] == data2[0] \
-            or not data1[1] == data2[1] \
-            or not np.array_equal(data1[2], data2[2]):
-                return False, q, comparedata
+            return False, q, (None, None, None)
+        comparedata = data2 - data1
+        if not dx1 == dx2 \
+            or not dy1 == dy2 \
+            or not np.array_equal(data1, data2):
+                return False, q, (dx1, dy1, comparedata)
 
-    return True, "", np.empty([1, 1])
+    return True, None, (None, None, None)
 

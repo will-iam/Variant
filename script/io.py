@@ -16,7 +16,7 @@ def make_sure_path_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
-def read_quantity(input_dir, quantity_name):
+def read_quantity(input_dir, quantity_name, dtype = 'decimal'):
     domain_f = open(os.path.join(input_dir, 'domain.dat'), 'r')
 
     # Reading mesh info on the first line
@@ -37,16 +37,24 @@ def read_quantity(input_dir, quantity_name):
             uid_to_coords[line_list[0]] = (int(line_list[1]), int(line_list[2]))
     domain_f.close()
 
-    data = np.zeros((Nx, Ny), dtype = np.dtype(Decimal))
+    data = None
+    if dtype == 'decimal':
+        data = np.zeros((Nx, Ny), dtype = np.dtype(Decimal))
+    elif dtype == 'str':
+        data = np.zeros((Nx, Ny), dtype = object)
     quantity_f = open(os.path.join(input_dir, quantity_name + '.dat'), 'r')
     for line in quantity_f:
         line_list = line.split(' ')
         coords = uid_to_coords[line_list[0]]
-        value = Decimal(line_list[1])
+        if dtype == 'decimal':
+            value = Decimal(line_list[1])
+        elif dtype == 'str':
+            value = line_list[1]
+
         data[coords[0]][coords[1]] = value
 
     quantity_f.close()
-    return [dx, dy, data]
+    return dx, dy, data
 
 def read_exec_options(input_dir):
     f = open(os.path.join(output_dir, 'exec_options.dat'), 'r')
@@ -88,7 +96,7 @@ def read_perfs(input_dir):
         perfs[line_list[0]] = int(line_list[1])
     return perfs
 
-def write_quantity(output_dir, data, domain_dir, quantity_name):
+def write_quantity_from_array(output_dir, data, domain_dir, quantity_name):
     # Reading domain first
     domain_f = open(os.path.join(domain_dir, 'domain.dat'), 'r')
 
@@ -113,7 +121,8 @@ def write_quantity(output_dir, data, domain_dir, quantity_name):
     domain_f.close()
 
     # Copying domain file to output directory
-    copy2(os.path.join(domain_dir, 'domain.dat'), output_dir)
+    if not os.path.isfile(os.path.join(domain_dir, 'domain.dat')):
+        copy2(os.path.join(domain_dir, 'domain.dat'), output_dir)
     quantity_f = open(os.path.join(output_dir, quantity_name + '.dat'), 'w')
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
@@ -217,3 +226,15 @@ def read_variant_info(data_dir, nSDD):
         whole_data.append(tuple(data))
 
     return whole_data
+
+def write_quantity_names(output_dir, qty_names):
+    f = open(os.path.join(output_dir, 'quantities.dat'), 'w')
+    f.write(' '.join(qty_names) + '\n')
+    f.close()
+
+def read_quantity_names(input_dir):
+    f = open(os.path.join(input_dir, 'quantities.dat'), 'r')
+    qty_names = f.readline().split()
+    f.close()
+    return qty_names
+

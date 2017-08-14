@@ -1,52 +1,54 @@
-\hypertarget{classThreadPool}{
-\section{ThreadPool Class Reference}
-\label{classThreadPool}\index{ThreadPool@{ThreadPool}}
-}
+\hypertarget{classThreadPool}{}\section{Thread\+Pool Class Reference}
+\label{classThreadPool}\index{Thread\+Pool@{Thread\+Pool}}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hypertarget{classThreadPool_ac291710e33dbbed96ee20711080d506d}{
-{\bfseries ThreadPool} (size\_\-t)}
-\label{classThreadPool_ac291710e33dbbed96ee20711080d506d}
-
+\mbox{\Hypertarget{classThreadPool_ac291710e33dbbed96ee20711080d506d}\label{classThreadPool_ac291710e33dbbed96ee20711080d506d}} 
+{\bfseries Thread\+Pool} (size\+\_\+t)
 \item 
-\hypertarget{classThreadPool_ac291710e33dbbed96ee20711080d506d}{
-{\bfseries ThreadPool} (size\_\-t)}
-\label{classThreadPool_ac291710e33dbbed96ee20711080d506d}
-
+\mbox{\Hypertarget{classThreadPool_a8bc38c40ecf3916d28e1e721b4eaa3ac}\label{classThreadPool_a8bc38c40ecf3916d28e1e721b4eaa3ac}} 
+void {\bfseries wait} () const
 \item 
-\hypertarget{classThreadPool_a55cbf8340d97adab7a2d625c63aec316}{
-void {\bfseries wait} () const }
-\label{classThreadPool_a55cbf8340d97adab7a2d625c63aec316}
-
+\mbox{\Hypertarget{classThreadPool_af6a320632c1109c92cffafa6098cdaf2}\label{classThreadPool_af6a320632c1109c92cffafa6098cdaf2}} 
+void {\bfseries add\+Task} (std\+::string task\+List\+\_\+name, std\+::function$<$ void()$>$ f)
 \item 
-\hypertarget{classThreadPool_a2e9207443f99bdbebf0f4dd51e8efd69}{
-void {\bfseries addTask} (std::function$<$ void()$>$ f)}
-\label{classThreadPool_a2e9207443f99bdbebf0f4dd51e8efd69}
-
+\mbox{\Hypertarget{classThreadPool_a703b053c68ddb205a1c8c74539750bfe}\label{classThreadPool_a703b053c68ddb205a1c8c74539750bfe}} 
+void {\bfseries start} (std\+::string task\+List\+\_\+name)
 \item 
-\hypertarget{classThreadPool_a74e85ff1e6605531acdd8e0e3cf903df}{
-void {\bfseries start} ()}
-\label{classThreadPool_a74e85ff1e6605531acdd8e0e3cf903df}
-
+\mbox{\Hypertarget{classThreadPool_acedf753fca0af3a8d23cea609273183c}\label{classThreadPool_acedf753fca0af3a8d23cea609273183c}} 
+size\+\_\+t \hyperlink{classThreadPool_acedf753fca0af3a8d23cea609273183c}{worker\+Size} () const
+\begin{DoxyCompactList}\small\item\em Return the actual queue size. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classThreadPool_ac291710e33dbbed96ee20711080d506d}\label{classThreadPool_ac291710e33dbbed96ee20711080d506d}} 
+{\bfseries Thread\+Pool} (size\+\_\+t)
 \item 
-\hypertarget{classThreadPool_a4276426c5f9a821f418b32a050976e0c}{
-size\_\-t \hyperlink{classThreadPool_a4276426c5f9a821f418b32a050976e0c}{workerSize} () const }
-\label{classThreadPool_a4276426c5f9a821f418b32a050976e0c}
-
-\begin{DoxyCompactList}\small\item\em Return the actual queue size. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\Hypertarget{classThreadPool_a8f628893c030552d9714c25f68656adc}\label{classThreadPool_a8f628893c030552d9714c25f68656adc}} 
+{\footnotesize template$<$class F , class... Args$>$ }\\auto {\bfseries enqueue} (F \&\&f, Args \&\&... args) -\/$>$ std\+::future$<$ typename std\+::result\+\_\+of$<$ F(Args...)$>$\+::type $>$
+\item 
+\mbox{\Hypertarget{classThreadPool_ac291710e33dbbed96ee20711080d506d}\label{classThreadPool_ac291710e33dbbed96ee20711080d506d}} 
+{\bfseries Thread\+Pool} (size\+\_\+t)
+\item 
+\mbox{\Hypertarget{classThreadPool_a8bc38c40ecf3916d28e1e721b4eaa3ac}\label{classThreadPool_a8bc38c40ecf3916d28e1e721b4eaa3ac}} 
+void {\bfseries wait} () const
+\item 
+\mbox{\Hypertarget{classThreadPool_a2e9207443f99bdbebf0f4dd51e8efd69}\label{classThreadPool_a2e9207443f99bdbebf0f4dd51e8efd69}} 
+void {\bfseries add\+Task} (std\+::function$<$ void()$>$ f)
+\item 
+\mbox{\Hypertarget{classThreadPool_a74e85ff1e6605531acdd8e0e3cf903df}\label{classThreadPool_a74e85ff1e6605531acdd8e0e3cf903df}} 
+void {\bfseries start} ()
+\item 
+\mbox{\Hypertarget{classThreadPool_acedf753fca0af3a8d23cea609273183c}\label{classThreadPool_acedf753fca0af3a8d23cea609273183c}} 
+size\+\_\+t \hyperlink{classThreadPool_acedf753fca0af3a8d23cea609273183c}{worker\+Size} () const
+\begin{DoxyCompactList}\small\item\em Return the actual queue size. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Friends}
 \begin{DoxyCompactItemize}
 \item 
-\hypertarget{classThreadPool_a9de4a9533dff2ecc0919852d4c05a67b}{
-class \hyperlink{classThreadPool_a9de4a9533dff2ecc0919852d4c05a67b}{Worker}}
-\label{classThreadPool_a9de4a9533dff2ecc0919852d4c05a67b}
-
+\mbox{\Hypertarget{classThreadPool_ae6071f2a70b19dd2d09379cddb8d6442}\label{classThreadPool_ae6071f2a70b19dd2d09379cddb8d6442}} 
+class {\bfseries Worker}
 \end{DoxyCompactItemize}
 
 
-The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-toolkit/threadpool/ThreadPool.h\item 
-toolkit/threadpool/threadpool.hpp\item 
-toolkit/threadpool/threadpool.cpp\end{DoxyCompactItemize}
+source/toolkit/threadpool/threadpool.\+hpp\item 
+Variant/source/toolkit/threadpool/Thread\+Pool.\+h\item 
+source/toolkit/threadpool/threadpool.\+cpp\end{DoxyCompactItemize}

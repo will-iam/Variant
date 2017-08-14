@@ -10,8 +10,11 @@ import config
 
 class Engine:
     def __init__(self, project_name, build = True, compiler = 'intel',
-            mode = 'debug', precision = 'double', std='c++11'):
-        if build:
+            mode = 'debug', precision = 'double', std='c++11',
+            clean = False):
+        if clean:
+            self._clean(project_name, compiler, mode, precision, std)
+        elif build:
             self.binary_path = self._build(project_name,
                 compiler, mode, precision, std)
         else:
@@ -41,18 +44,40 @@ class Engine:
         return os.path.join(config.workspace, 'Variant',
                 program_file)
 
-    def run(self, input_path, output_path, mpi_nprocs = 0, gdb = False):
+    def _clean(self, project_name, compiler, mode, precision, std):
+        p = subprocess.Popen(['scons',
+            'workspace=' + config.workspace,
+            'project=' + project_name,
+            'compiler=' + compiler,
+            'mode=' + mode,
+            'precision=' + precision,
+            'std=' + std,
+            '-c'],
+            cwd = os.path.join(config.workspace,
+                'Variant', 'source'))
+        p.wait()
+
+    def run(self, input_path, output_path, mpi_nprocs = 0, gdb = False, valgrind
+            = False):
         if mpi_nprocs > 0:
             if gdb:
-                subprocess.check_call([config.mpi_RUN, '--tag-output', '-n', str(mpi_nprocs),
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs),
                     'xterm', '-e', 'gdb', '--args',
                     self.binary_path, '-i', input_path, '-o', output_path])
+            elif valgrind:
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs),
+                    'valgrind', '--leak-check=yes',
+                    '--log-file=valgrind-out.txt',
+                    self.binary_path, '-i', input_path, '-o', output_path])
             else:
-                subprocess.check_call([config.mpi_RUN, '--tag-output', '-n', str(mpi_nprocs),
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs),
                     self.binary_path, '-i', input_path, '-o', output_path])
         else:
             if gdb:
                 subprocess.check_call(['gdb', '--args', self.binary_path, '-i', input_path, '-o', output_path])
+            elif valgrind:
+                subprocess.check_call(['valgrind', '--leak-check=yes',
+                    self.binary_path, '-i', input_path, '-o', output_path])
             else:
                 subprocess.check_call([self.binary_path, '-i', input_path, '-o', output_path])
 

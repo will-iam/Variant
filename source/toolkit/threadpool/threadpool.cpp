@@ -7,7 +7,7 @@ void Worker::work() {
 
     std::function<void()> task;
     while (true) {
-
+        
         {   // acquire lock
             std::lock_guard<std::mutex> lock(_pool._taskMutex);
 
@@ -17,11 +17,11 @@ void Worker::work() {
                 //assert(_pool._busyWorkerNumber > 0 && _pool._busyWorkerNumber <= _pool._workerVectorSize + 1);
 
                 // get the task from the list
-                task = _pool._currentTaskList[_pool._nextTaskCursor];
+                task = _pool._currentTaskList->operator[](_pool._nextTaskCursor);
                 _pool._busyWorkerNumber++;
                 _pool._nextTaskCursor++;
                 //std::cout << _pool._nextTaskCursor << " ";
-                if (_pool._nextTaskCursor.load() >= _pool._currentTaskList.size())
+                if (_pool._nextTaskCursor.load() >= _pool._currentTaskList->size())
                     _pool._nextTaskCursor = SYNC;
 
             }
@@ -30,8 +30,8 @@ void Worker::work() {
         // execute the task
         if (task) {
             task();
-            _pool._busyWorkerNumber--;
             task = std::function<void()>();
+            _pool._busyWorkerNumber--;
         }
 
         // If main thread, return when done
@@ -85,9 +85,10 @@ void ThreadPool::start(std::string taskList_name) {
     // This launches tasks for all threads
     //_doneTasks.resize(_taskVector.size());
     //std::fill(_doneTasks.begin(), _doneTasks.end(), 0);
+    //
 
     // Go !
-    _currentTaskList = _taskList_map[taskList_name];
+    _currentTaskList = &(_taskList_map[taskList_name]);
     _nextTaskCursor = 0;
 #if PROFILE >= 1
     _timer.start();
@@ -99,8 +100,10 @@ void ThreadPool::start(std::string taskList_name) {
     wait();
 
     // Check if all tasks were done
-    //for (const auto& it: _doneTasks)
-    //    assert(it == 1);
-    //getchar();
+    /*
+    for (const auto& it: _doneTasks)
+        assert(it == 1);
+    getchar();
+    */
 }
 

@@ -16,8 +16,8 @@ import script.io as io
 lx = 1.0
 ly = 1.0
 
-Nx = 100
-Ny = 100
+Nx = 128
+Ny = 128
 
 dx = lx / Nx
 dy = ly / Ny
@@ -48,7 +48,7 @@ for i in range(Nx):
 # ------------------------------------------------------------------------------
 # Boundary conditions
 # ------------------------------------------------------------------------------
-BCtype = 'P'
+BCtype = 'N'
 coords_to_bc = dict()
 # Start new uid after last domain cell
 # Left border

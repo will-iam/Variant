@@ -9,9 +9,9 @@
 #include <map>
 #include <cassert>
 /*#ifdef __GXX_EXPERIMENTAL_CXX0X__
-    #include <cstdatomic>
+#include <cstdatomic>
 #elif __cplusplus >= 201103L*/
-    #include <atomic>
+#include <atomic>
 //#endif
 
 #if PROFILE >= 1
@@ -42,11 +42,10 @@ class ThreadPool {
 
         void wait() const {
 
-            while (_nextTaskCursor != SYNC || _busyWorkerNumber.load() > 0) {}
+            while (_nextTaskCursor != SYNC && _busyWorkerNumber.load() > 0) {}
         }
 
         void addTask(std::string taskList_name, std::function<void()> f);
-        void setNewTaskList();
 
         void start(std::string taskList_name);
 
@@ -63,9 +62,11 @@ class ThreadPool {
         std::atomic<size_t> _busyWorkerNumber;
 
         std::map<std::string, std::vector< std::function<void()> > > _taskList_map;
-        std::vector< std::function<void()> > _currentTaskList;
+        //std::map<std::string, std::vector<int> > _doneTasks_map;
+        std::vector< std::function<void()> >* _currentTaskList;
         std::atomic<int> _nextTaskCursor;
         bool _finished;
+        
 
         // synchronization
         std::mutex _taskMutex;

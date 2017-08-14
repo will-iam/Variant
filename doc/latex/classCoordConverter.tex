@@ -1,53 +1,106 @@
-\hypertarget{classCoordConverter}{
-\section{CoordConverter Class Reference}
-\label{classCoordConverter}\index{CoordConverter@{CoordConverter}}
-}
+\hypertarget{classCoordConverter}{}\section{Coord\+Converter Class Reference}
+\label{classCoordConverter}\index{Coord\+Converter@{Coord\+Converter}}
 
 
-Converts 2D-\/coordinates to memory index for given SDD size.  
+Converts 2\+D-\/coordinates to memory index for given S\+DD size.  
 
 
-{\ttfamily \#include $<$CoordConverter.hpp$>$}\subsection*{Public Member Functions}
+
+
+{\ttfamily \#include $<$Coord\+Converter.\+hpp$>$}
+
+\subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}{CoordConverter} (unsigned int sizeSDD\_\-X, unsigned int sizeSDD\_\-Y, unsigned int boundaryThickness)
-\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
-\hyperlink{classCoordConverter_af11209a489a46dd335db0635d811999d}{CoordConverter} (const \hyperlink{classCoordConverter}{CoordConverter} \&coordConverter)
-\begin{DoxyCompactList}\small\item\em Copy constructor. \item\end{DoxyCompactList}\item 
-\hypertarget{classCoordConverter_a3c3acdaa77608aec958ce91431a36757}{
-unsigned int \hyperlink{classCoordConverter_a3c3acdaa77608aec958ce91431a36757}{convert} (int coordX, int coordY) const }
-\label{classCoordConverter_a3c3acdaa77608aec958ce91431a36757}
-
-\begin{DoxyCompactList}\small\item\em convert 2D-\/coordinates to the memory index of the data on the SDD \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\hyperlink{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}{Coord\+Converter} (unsigned int size\+S\+D\+D\+\_\+X, unsigned int size\+S\+D\+D\+\_\+Y, unsigned int boundary\+Thickness)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\hyperlink{classCoordConverter_af11209a489a46dd335db0635d811999d}{Coord\+Converter} (const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
+\begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classCoordConverter_ae62fc899a25ed7b6455927a6ddcccf52}\label{classCoordConverter_ae62fc899a25ed7b6455927a6ddcccf52}} 
+unsigned int \hyperlink{classCoordConverter_ae62fc899a25ed7b6455927a6ddcccf52}{convert} (int coordX, int coordY) const
+\begin{DoxyCompactList}\small\item\em convert 2\+D-\/coordinates to the memory index of the data on the S\+DD \end{DoxyCompactList}\item 
+\hyperlink{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}{Coord\+Converter} (unsigned int size\+S\+D\+D\+\_\+X, unsigned int size\+S\+D\+D\+\_\+Y, unsigned int boundary\+Thickness)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\hyperlink{classCoordConverter_af11209a489a46dd335db0635d811999d}{Coord\+Converter} (const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
+\begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classCoordConverter_ae62fc899a25ed7b6455927a6ddcccf52}\label{classCoordConverter_ae62fc899a25ed7b6455927a6ddcccf52}} 
+unsigned int \hyperlink{classCoordConverter_ae62fc899a25ed7b6455927a6ddcccf52}{convert} (int coordX, int coordY) const
+\begin{DoxyCompactList}\small\item\em convert 2\+D-\/coordinates to the memory index of the data on the S\+DD \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-Converts 2D-\/coordinates to memory index for given SDD size. The data on the SDD is stored as a one-\/dimensional array, hence the need of a converter. 
+Converts 2\+D-\/coordinates to memory index for given S\+DD size. 
+
+The data on the S\+DD is stored as a one-\/dimensional array, hence the need of a converter. 
 
 \subsection{Constructor \& Destructor Documentation}
-\hypertarget{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}{
-\index{CoordConverter@{CoordConverter}!CoordConverter@{CoordConverter}}
-\index{CoordConverter@{CoordConverter}!CoordConverter@{CoordConverter}}
-\subsubsection[{CoordConverter}]{\setlength{\rightskip}{0pt plus 5cm}CoordConverter::CoordConverter (unsigned int {\em sizeSDD\_\-X}, \/  unsigned int {\em sizeSDD\_\-Y}, \/  unsigned int {\em boundaryThickness})}}
-\label{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}
+\mbox{\Hypertarget{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}\label{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}} 
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\subsubsection{\texorpdfstring{Coord\+Converter()}{CoordConverter()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily Coord\+Converter\+::\+Coord\+Converter (\begin{DoxyParamCaption}\item[{unsigned int}]{size\+S\+D\+D\+\_\+X,  }\item[{unsigned int}]{size\+S\+D\+D\+\_\+Y,  }\item[{unsigned int}]{boundary\+Thickness }\end{DoxyParamCaption})}
+
 
 
 Constructor. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em sizeSDD\_\-X}]: width of SDD \item[{\em sizeSDD\_\-Y}]: height of SDD \end{DoxyParams}
-\hypertarget{classCoordConverter_af11209a489a46dd335db0635d811999d}{
-\index{CoordConverter@{CoordConverter}!CoordConverter@{CoordConverter}}
-\index{CoordConverter@{CoordConverter}!CoordConverter@{CoordConverter}}
-\subsubsection[{CoordConverter}]{\setlength{\rightskip}{0pt plus 5cm}CoordConverter::CoordConverter (const {\bf CoordConverter} \& {\em coordConverter})}}
-\label{classCoordConverter_af11209a489a46dd335db0635d811999d}
+{\em size\+S\+D\+D\+\_\+X} & \+: width of S\+DD \\
+\hline
+{\em size\+S\+D\+D\+\_\+Y} & \+: height of S\+DD \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classCoordConverter_af11209a489a46dd335db0635d811999d}\label{classCoordConverter_af11209a489a46dd335db0635d811999d}} 
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\subsubsection{\texorpdfstring{Coord\+Converter()}{CoordConverter()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily Coord\+Converter\+::\+Coord\+Converter (\begin{DoxyParamCaption}\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
+
 
 
 Copy constructor. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em coordConverter}]: coordinates converter to copy \end{DoxyParams}
+{\em coord\+Converter} & \+: coordinates converter to copy \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}\label{classCoordConverter_a0e773a3ee5461119d7ff285fde45427d}} 
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\subsubsection{\texorpdfstring{Coord\+Converter()}{CoordConverter()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily Coord\+Converter\+::\+Coord\+Converter (\begin{DoxyParamCaption}\item[{unsigned int}]{size\+S\+D\+D\+\_\+X,  }\item[{unsigned int}]{size\+S\+D\+D\+\_\+Y,  }\item[{unsigned int}]{boundary\+Thickness }\end{DoxyParamCaption})}
 
 
-The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size\+S\+D\+D\+\_\+X} & \+: width of S\+DD \\
+\hline
+{\em size\+S\+D\+D\+\_\+Y} & \+: height of S\+DD \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classCoordConverter_af11209a489a46dd335db0635d811999d}\label{classCoordConverter_af11209a489a46dd335db0635d811999d}} 
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\index{Coord\+Converter@{Coord\+Converter}!Coord\+Converter@{Coord\+Converter}}
+\subsubsection{\texorpdfstring{Coord\+Converter()}{CoordConverter()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily Coord\+Converter\+::\+Coord\+Converter (\begin{DoxyParamCaption}\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
+
+
+
+Copy constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em coord\+Converter} & \+: coordinates converter to copy \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-subdomain/\hyperlink{CoordConverter_8hpp}{CoordConverter.hpp}\item 
-subdomain/CoordConverter.cpp\end{DoxyCompactItemize}
+source/subdomain/\hyperlink{source_2subdomain_2CoordConverter_8hpp}{Coord\+Converter.\+hpp}\item 
+source/subdomain/Coord\+Converter.\+cpp\end{DoxyCompactItemize}

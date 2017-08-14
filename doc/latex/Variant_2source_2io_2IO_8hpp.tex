@@ -1,0 +1,50 @@
+\hypertarget{Variant_2source_2io_2IO_8hpp}{}\section{Variant/source/io/\+IO.hpp File Reference}
+\label{Variant_2source_2io_2IO_8hpp}\index{Variant/source/io/\+I\+O.\+hpp@{Variant/source/io/\+I\+O.\+hpp}}
+
+
+Input/\+Output tools.  
+
+
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}Domain.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}engine.\+hpp\char`\"{}}\newline
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespaceIO}{IO}
+\begin{DoxyCompactList}\small\item\em Namespace containing all input/output tools. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{Variant_2source_2io_2IO_8hpp_a097d0a1524d3abca4650ec49fa5cf30f}\label{Variant_2source_2io_2IO_8hpp_a097d0a1524d3abca4650ec49fa5cf30f}} 
+void {\bfseries stor} (std\+::string tmp\+Str, float \&target)
+\item 
+\mbox{\Hypertarget{Variant_2source_2io_2IO_8hpp_a2544cb1ea17fdac65838238798406920}\label{Variant_2source_2io_2IO_8hpp_a2544cb1ea17fdac65838238798406920}} 
+void {\bfseries stor} (std\+::string tmp\+Str, double \&target)
+\item 
+\mbox{\Hypertarget{Variant_2source_2io_2IO_8hpp_a54d92adff743c035dab8ad234126e96f}\label{Variant_2source_2io_2IO_8hpp_a54d92adff743c035dab8ad234126e96f}} 
+void {\bfseries stor} (std\+::string tmp\+Str, long double \&target)
+\item 
+int \hyperlink{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}{I\+O\+::load\+Domain} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads domain info and writes all necessary. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a63332902621fd10f3117978585af8a27}{I\+O\+::write\+Domain} (std\+::string directory, const \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Writes domain info to output directory. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}{I\+O\+::load\+Scheme\+Info} (std\+::string directory, \hyperlink{classEngine}{Engine} \&engine)
+\begin{DoxyCompactList}\small\item\em Loads scheme info. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}{I\+O\+::load\+Exec\+Options} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads execution options. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a0b5a994855e5e391320a431095d66400}{I\+O\+::load\+Quantity} (std\+::string directory, std\+::string quantity\+Name, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads quantity data from file directory/quantity\+Name.\+dat. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}{I\+O\+::write\+Quantity} (std\+::string directory, std\+::string quantity\+Name, const \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Writes quantity data into output file. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a71dbd4f86b34210a0d9837185032f845}{I\+O\+::load\+Boundary\+Conditions} (std\+::string directory, std\+::string quantity\+Name, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads boundary conditions for quantity. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}{I\+O\+::write\+Boundary\+Conditions} (std\+::string directory, std\+::string quantity\+Name, const \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Writes boundary conditions for quantity. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Input/\+Output tools. 
+
+Contains tools to read and write domain, physical quantities, scheme info, etc. 

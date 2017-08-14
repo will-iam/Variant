@@ -1,66 +1,50 @@
-\hypertarget{Domain_8hpp}{
-\section{subdomain/Domain.hpp File Reference}
-\label{Domain_8hpp}\index{subdomain/Domain.hpp@{subdomain/Domain.hpp}}
-}
+\hypertarget{Domain_8hpp}{}\section{source/subdomain/\+Domain.hpp File Reference}
+\label{Domain_8hpp}\index{source/subdomain/\+Domain.\+hpp@{source/subdomain/\+Domain.\+hpp}}
 
 
 Defines the \hyperlink{classDomain}{Domain} class.  
-{\ttfamily \#include $<$map$>$}\par
-{\ttfamily \#include $<$string$>$}\par
-{\ttfamily \#include $<$vector$>$}\par
-{\ttfamily \#include \char`\"{}SDDistributed.hpp\char`\"{}}\par
-{\ttfamily \#include \char`\"{}number/number.hpp\char`\"{}}\par
+
+
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$mpi.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}S\+D\+Distributed.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}number/number.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}exception/exception.\+hpp\char`\"{}}\newline
 \subsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
 class \hyperlink{classDomain}{Domain}
-\begin{DoxyCompactList}\small\item\em \hyperlink{classDomain}{Domain} on which a scheme is executed. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
-\subsection*{Defines}
-\begin{DoxyCompactItemize}
-\item 
-\hypertarget{Domain_8hpp_a1a58ace3d61e5eddb10aaee57d9fcba9}{
-\#define {\bfseries INSIDE}~0}
-\label{Domain_8hpp_a1a58ace3d61e5eddb10aaee57d9fcba9}
-
-\item 
-\hypertarget{Domain_8hpp_a437ef08681e7210d6678427030446a54}{
-\#define {\bfseries LEFT}~-\/1}
-\label{Domain_8hpp_a437ef08681e7210d6678427030446a54}
-
-\item 
-\hypertarget{Domain_8hpp_a80fb826a684cf3f0d306b22aa100ddac}{
-\#define {\bfseries RIGHT}~-\/2}
-\label{Domain_8hpp_a80fb826a684cf3f0d306b22aa100ddac}
-
-\item 
-\hypertarget{Domain_8hpp_afc0eef637f1016e8786e45e106a4881e}{
-\#define {\bfseries TOP}~-\/3}
-\label{Domain_8hpp_afc0eef637f1016e8786e45e106a4881e}
-
-\item 
-\hypertarget{Domain_8hpp_ae420caa0af9cbdf102ed255034e27c5b}{
-\#define {\bfseries BOTTOM}~-\/4}
-\label{Domain_8hpp_ae420caa0af9cbdf102ed255034e27c5b}
-
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em \hyperlink{classDomain}{Domain} on which a scheme is executed. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-int \hyperlink{Domain_8hpp_a6903b26593721539bf47d813a2a5ce86}{isPowerOf} (unsigned int N, unsigned int r)
-\begin{DoxyCompactList}\small\item\em If $N = r^p$, returns $p$. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+int \hyperlink{Domain_8hpp_a6903b26593721539bf47d813a2a5ce86}{is\+Power\+Of} (unsigned int N, unsigned int r)
+\begin{DoxyCompactList}\small\item\em If $N = r^p$, returns $p$. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 Defines the \hyperlink{classDomain}{Domain} class. 
 
+
+
 \subsection{Function Documentation}
-\hypertarget{Domain_8hpp_a6903b26593721539bf47d813a2a5ce86}{
-\index{Domain.hpp@{Domain.hpp}!isPowerOf@{isPowerOf}}
-\index{isPowerOf@{isPowerOf}!Domain.hpp@{Domain.hpp}}
-\subsubsection[{isPowerOf}]{\setlength{\rightskip}{0pt plus 5cm}int isPowerOf (unsigned int {\em N}, \/  unsigned int {\em r})}}
-\label{Domain_8hpp_a6903b26593721539bf47d813a2a5ce86}
+\mbox{\Hypertarget{Domain_8hpp_a6903b26593721539bf47d813a2a5ce86}\label{Domain_8hpp_a6903b26593721539bf47d813a2a5ce86}} 
+\index{Domain.\+hpp@{Domain.\+hpp}!is\+Power\+Of@{is\+Power\+Of}}
+\index{is\+Power\+Of@{is\+Power\+Of}!Domain.\+hpp@{Domain.\+hpp}}
+\subsubsection{\texorpdfstring{is\+Power\+Of()}{isPowerOf()}}
+{\footnotesize\ttfamily int is\+Power\+Of (\begin{DoxyParamCaption}\item[{unsigned int}]{N,  }\item[{unsigned int}]{r }\end{DoxyParamCaption})}
+
 
 
 If $N = r^p$, returns $p$. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em N}]number to test \item[{\em r}]corresponding power \end{DoxyParams}
+{\em N} & number to test \\
+\hline
+{\em r} & corresponding power \\
+\hline
+\end{DoxyParams}

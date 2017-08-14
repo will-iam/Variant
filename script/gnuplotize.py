@@ -53,9 +53,13 @@ if quantity_type == 'scalar':
     output_f.write(str(ly) + '\n')
     output_f.write(str(Nx) + '\n')
     output_f.write(str(Ny) + '\n')
+    current_x = -1
     for line in quantity_f:
         line_list = line.split(' ')
         coords = uid_to_coords[line_list[0]]
+        if coords[0] != current_x:
+            current_x = coords[0]
+            output_f.write('\n')
         value = line_list[1]
         output_f.write(str(dx * coords[0]) + ' ' + str(dy * coords[1]) + ' ' + value)
 

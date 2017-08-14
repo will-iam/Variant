@@ -18,20 +18,28 @@ from analytics import compare_data
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
-def gen_ref_result(root_dir, tmp_dir, project_name, cn, comp, precision):
+def gen_ref_result(root_dir, tmp_dir, project_name, cn, comp, mode, precision):
     test = dict()
     test['nSDD'] = (1, 1)
     test['nSDS'] = 1
     test['SDSgeom'] = 'line'
     test['nThreads'] = 1
-    return launch_test(root_dir, tmp_dir, project_name, cn, comp, 'debug', precision,
-    'c++11', True, test, False, "ref")
+    return launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision,
+    'c++11', True, test, False, False, "ref")
 
 def check_test(test_path, ref_path):
-    return compare_data(ref_path, test_path, ["rho"])
+    print("Checking test " + test_path)
+    qties_to_compare = io.read_quantity_names(test_path)
+    #results = compare_data(ref_path, test_path, ['rho'])
+    results = compare_data(ref_path, test_path, qties_to_compare)
+    if results[0]:
+        print("OK for all quantities")
+    else:
+        print("Error for quantity " + str(results[1]))
+    return results
 
 def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
-        bool_compile, test, gdb = False, ref_case = "tmp"):
+        bool_compile, test, gdb = False, valgrind = False, ref_case = "tmp"):
     # Start time
     start = timer()
 
@@ -80,7 +88,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     engine = compiler.Engine(project_name, bool_compile, comp, mode, precision, std)
     nprocs = nSDD_X * nSDD_Y
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    engine.run(input_path, output_path, nprocs, gdb)
+    engine.run(input_path, output_path, nprocs, gdb, valgrind)
 
     # Variant info
     variant_info = io.read_variant_info(output_path,
@@ -88,6 +96,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
     if ref_case == "ref":
         final_path = os.path.abspath(os.path.join(case_path, os.pardir, "final"))
+        print(final_path)
     else:
         final_path = os.path.join(tmp_dir, 'full_domain')
     io.make_sure_path_exists(final_path)
@@ -100,9 +109,12 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
     end = timer()
 
-    # Copying perf results to final path
+    # Copying perf results and quantity names to final path
     copyfile(os.path.join(output_path, 'perfs.dat'),
              os.path.join(final_path, 'perfs.dat'))
+    copyfile(os.path.join(case_path, 'quantities.dat'),
+             os.path.join(final_path, 'quantities.dat'))
+
 
     return final_path, int((end - start) * 1000), variant_info
 

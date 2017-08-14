@@ -1,147 +1,327 @@
-\hypertarget{namespaceIO}{
-\section{IO Namespace Reference}
+\hypertarget{namespaceIO}{}\section{IO Namespace Reference}
 \label{namespaceIO}\index{IO@{IO}}
-}
 
 
 Namespace containing all input/output tools.  
+
+
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-int \hyperlink{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}{loadDomain} (std::string directory, \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Loads domain info and writes all necessary. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_a63332902621fd10f3117978585af8a27}{writeDomain} (std::string directory, const \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Writes domain info to output directory. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}{loadSchemeInfo} (std::string directory, \hyperlink{classEngine}{Engine} \&engine)
-\begin{DoxyCompactList}\small\item\em Loads scheme info. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}{loadExecOptions} (std::string directory, \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Loads execution options. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_a0b5a994855e5e391320a431095d66400}{loadQuantity} (std::string directory, std::string quantityName, \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Loads quantity data from file directory/quantityName.dat. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}{writeQuantity} (std::string directory, std::string quantityName, const \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Writes quantity data into output file. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_a71dbd4f86b34210a0d9837185032f845}{loadBoundaryConditions} (std::string directory, std::string quantityName, \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Loads boundary conditions for quantity. \item\end{DoxyCompactList}\item 
-int \hyperlink{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}{writeBoundaryConditions} (std::string directory, std::string quantityName, const \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Writes boundary conditions for quantity. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+int \hyperlink{namespaceIO_ab1b5447a50be31c6e04b64a13c58a05d}{load\+Domain\+Info} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads domain info and writes all necessary. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}{load\+Scheme\+Info} (std\+::string directory, \hyperlink{classEngine}{Engine} \&engine)
+\begin{DoxyCompactList}\small\item\em Loads scheme info. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}{load\+Exec\+Options} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads execution options. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a2d97d3a808e25f48fa483719b3927273}{load\+S\+D\+D\+Info} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads characteristics of this node\textquotesingle{}s S\+DD. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a47fb805af862597094a0d366736fadb2}{load\+Quantity} (std\+::string directory, std\+::string quantity\+Name, \hyperlink{classDomain}{Domain} \&domain, bool constant=false)
+\begin{DoxyCompactList}\small\item\em Loads quantity data from file directory/quantity\+Name.\+dat. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a7710f22e4bbbd375162154b69289e5e0}{load\+Boundary\+Conditions} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads boundary conditions. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}{write\+Quantity} (std\+::string directory, std\+::string quantity\+Name, const \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Writes quantity data into output file. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a3d084b6a7dd69ca5da733e0602df5f8d}{write\+Perf\+Results} (std\+::string directory, const std\+::map$<$ std\+::string, double $>$ results)
+\begin{DoxyCompactList}\small\item\em Writes boundary conditions for quantity. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespaceIO_a9388e688bab072c402da7a19e5527ead}\label{namespaceIO_a9388e688bab072c402da7a19e5527ead}} 
+int {\bfseries write\+Variant\+Info} (std\+::string directory, const \hyperlink{classDomain}{Domain} \&domain)
+\item 
+int \hyperlink{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}{load\+Domain} (std\+::string directory, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads domain info and writes all necessary. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a63332902621fd10f3117978585af8a27}{write\+Domain} (std\+::string directory, const \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Writes domain info to output directory. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a0b5a994855e5e391320a431095d66400}{load\+Quantity} (std\+::string directory, std\+::string quantity\+Name, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads quantity data from file directory/quantity\+Name.\+dat. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a71dbd4f86b34210a0d9837185032f845}{load\+Boundary\+Conditions} (std\+::string directory, std\+::string quantity\+Name, \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Loads boundary conditions for quantity. \end{DoxyCompactList}\item 
+int \hyperlink{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}{write\+Boundary\+Conditions} (std\+::string directory, std\+::string quantity\+Name, const \hyperlink{classDomain}{Domain} \&domain)
+\begin{DoxyCompactList}\small\item\em Writes boundary conditions for quantity. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 Namespace containing all input/output tools. 
 
 \subsection{Function Documentation}
-\hypertarget{namespaceIO_a71dbd4f86b34210a0d9837185032f845}{
-\index{IO@{IO}!loadBoundaryConditions@{loadBoundaryConditions}}
-\index{loadBoundaryConditions@{loadBoundaryConditions}!IO@{IO}}
-\subsubsection[{loadBoundaryConditions}]{\setlength{\rightskip}{0pt plus 5cm}int IO::loadBoundaryConditions (std::string {\em directory}, \/  std::string {\em quantityName}, \/  {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_a71dbd4f86b34210a0d9837185032f845}
+\mbox{\Hypertarget{namespaceIO_a7710f22e4bbbd375162154b69289e5e0}\label{namespaceIO_a7710f22e4bbbd375162154b69289e5e0}} 
+\index{IO@{IO}!load\+Boundary\+Conditions@{load\+Boundary\+Conditions}}
+\index{load\+Boundary\+Conditions@{load\+Boundary\+Conditions}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Boundary\+Conditions()}{loadBoundaryConditions()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int I\+O\+::load\+Boundary\+Conditions (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
+
+
+Loads boundary conditions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & destination folder \\
+\hline
+{\em domain} & domain data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceIO_a71dbd4f86b34210a0d9837185032f845}\label{namespaceIO_a71dbd4f86b34210a0d9837185032f845}} 
+\index{IO@{IO}!load\+Boundary\+Conditions@{load\+Boundary\+Conditions}}
+\index{load\+Boundary\+Conditions@{load\+Boundary\+Conditions}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Boundary\+Conditions()}{loadBoundaryConditions()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily int I\+O\+::load\+Boundary\+Conditions (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{std\+::string}]{quantity\+Name,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
 
 
 Loads boundary conditions for quantity. 
-\begin{DoxyParams}{Parameters}
-\item[{\em directory}]destination folder \item[{\em quantityName}]name of the quantity to output \item[{\em domain}]domain data \end{DoxyParams}
-\hypertarget{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}{
-\index{IO@{IO}!loadDomain@{loadDomain}}
-\index{loadDomain@{loadDomain}!IO@{IO}}
-\subsubsection[{loadDomain}]{\setlength{\rightskip}{0pt plus 5cm}int IO::loadDomain (std::string {\em directory}, \/  {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}
-
-
-Loads domain info and writes all necessary. Data is written into file directory/domain.dat
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em directory}]input folder \item[{\em domain}]domain to be updated with read data\end{DoxyParams}
+{\em directory} & destination folder \\
+\hline
+{\em quantity\+Name} & name of the quantity to output \\
+\hline
+{\em domain} & domain data \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}\label{namespaceIO_a418e0be241e707d7d99718c3a1dacf6b}} 
+\index{IO@{IO}!load\+Domain@{load\+Domain}}
+\index{load\+Domain@{load\+Domain}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Domain()}{loadDomain()}}
+{\footnotesize\ttfamily int I\+O\+::load\+Domain (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
+
+
+Loads domain info and writes all necessary. 
+
+Data is written into file directory/domain.\+dat
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & input folder \\
+\hline
+{\em domain} & domain to be updated with read data\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 0 if loading succeeded, -\/1 otherwise 
 \end{DoxyReturn}
-\hypertarget{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}{
-\index{IO@{IO}!loadExecOptions@{loadExecOptions}}
-\index{loadExecOptions@{loadExecOptions}!IO@{IO}}
-\subsubsection[{loadExecOptions}]{\setlength{\rightskip}{0pt plus 5cm}int IO::loadExecOptions (std::string {\em directory}, \/  {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}
+\mbox{\Hypertarget{namespaceIO_ab1b5447a50be31c6e04b64a13c58a05d}\label{namespaceIO_ab1b5447a50be31c6e04b64a13c58a05d}} 
+\index{IO@{IO}!load\+Domain\+Info@{load\+Domain\+Info}}
+\index{load\+Domain\+Info@{load\+Domain\+Info}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Domain\+Info()}{loadDomainInfo()}}
+{\footnotesize\ttfamily int I\+O\+::load\+Domain\+Info (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
 
 
-Loads execution options. Loaded parameters are:
+
+Loads domain info and writes all necessary. 
+
+Data is written into file directory/domain.\+dat
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & input folder \\
+\hline
+{\em domain} & domain to be updated with read data\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if loading succeeded, -\/1 otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}\label{namespaceIO_ae9baa8f2d704798ba4b669718c5630c6}} 
+\index{IO@{IO}!load\+Exec\+Options@{load\+Exec\+Options}}
+\index{load\+Exec\+Options@{load\+Exec\+Options}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Exec\+Options()}{loadExecOptions()}}
+{\footnotesize\ttfamily int I\+O\+::load\+Exec\+Options (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
+
+
+Loads execution options. 
+
+Loaded parameters are\+:
 \begin{DoxyItemize}
-\item number of SDDs
-\item number of SDSs
-\item SDS geometry
+\item number of S\+D\+Ds
+\item number of S\+D\+Ss
+\item S\+DS geometry
 \end{DoxyItemize}
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em directory}]input folder \item[{\em domain}]domain\end{DoxyParams}
+{\em directory} & input folder \\
+\hline
+{\em domain} & domain\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 0 if loading succeeded, -\/1 otherwise 
 \end{DoxyReturn}
-\hypertarget{namespaceIO_a0b5a994855e5e391320a431095d66400}{
-\index{IO@{IO}!loadQuantity@{loadQuantity}}
-\index{loadQuantity@{loadQuantity}!IO@{IO}}
-\subsubsection[{loadQuantity}]{\setlength{\rightskip}{0pt plus 5cm}int IO::loadQuantity (std::string {\em directory}, \/  std::string {\em quantityName}, \/  {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_a0b5a994855e5e391320a431095d66400}
+\mbox{\Hypertarget{namespaceIO_a0b5a994855e5e391320a431095d66400}\label{namespaceIO_a0b5a994855e5e391320a431095d66400}} 
+\index{IO@{IO}!load\+Quantity@{load\+Quantity}}
+\index{load\+Quantity@{load\+Quantity}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Quantity()}{loadQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int I\+O\+::load\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{std\+::string}]{quantity\+Name,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
 
 
-Loads quantity data from file directory/quantityName.dat. 
+
+Loads quantity data from file directory/quantity\+Name.\+dat. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em directory}]input folder \item[{\em quantityName}]string name of quantity to be written \item[{\em domain}]domain \end{DoxyParams}
-\hypertarget{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}{
-\index{IO@{IO}!loadSchemeInfo@{loadSchemeInfo}}
-\index{loadSchemeInfo@{loadSchemeInfo}!IO@{IO}}
-\subsubsection[{loadSchemeInfo}]{\setlength{\rightskip}{0pt plus 5cm}int IO::loadSchemeInfo (std::string {\em directory}, \/  {\bf Engine} \& {\em engine})}}
-\label{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}
+{\em directory} & input folder \\
+\hline
+{\em quantity\+Name} & string name of quantity to be written \\
+\hline
+{\em domain} & domain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceIO_a47fb805af862597094a0d366736fadb2}\label{namespaceIO_a47fb805af862597094a0d366736fadb2}} 
+\index{IO@{IO}!load\+Quantity@{load\+Quantity}}
+\index{load\+Quantity@{load\+Quantity}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Quantity()}{loadQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily int I\+O\+::load\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{std\+::string}]{quantity\+Name,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain,  }\item[{bool}]{constant = {\ttfamily false} }\end{DoxyParamCaption})}
 
 
-Loads scheme info. Loaded parameters are:
+
+Loads quantity data from file directory/quantity\+Name.\+dat. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & input folder \\
+\hline
+{\em quantity\+Name} & string name of quantity to be written \\
+\hline
+{\em domain} & domain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}\label{namespaceIO_acc60681d98975d0ce0d3580de4f70ecd}} 
+\index{IO@{IO}!load\+Scheme\+Info@{load\+Scheme\+Info}}
+\index{load\+Scheme\+Info@{load\+Scheme\+Info}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+Scheme\+Info()}{loadSchemeInfo()}}
+{\footnotesize\ttfamily int I\+O\+::load\+Scheme\+Info (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{\hyperlink{classEngine}{Engine} \&}]{engine }\end{DoxyParamCaption})}
+
+
+
+Loads scheme info. 
+
+Loaded parameters are\+:
 \begin{DoxyItemize}
 \item final time T
-\item CFL condition
+\item C\+FL condition
 \end{DoxyItemize}
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em directory}]input folder \item[{\em engine}]scheme engine\end{DoxyParams}
+{\em directory} & input folder \\
+\hline
+{\em engine} & scheme engine\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 0 if loading succeeded, -\/1 otherwise 
 \end{DoxyReturn}
-\hypertarget{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}{
-\index{IO@{IO}!writeBoundaryConditions@{writeBoundaryConditions}}
-\index{writeBoundaryConditions@{writeBoundaryConditions}!IO@{IO}}
-\subsubsection[{writeBoundaryConditions}]{\setlength{\rightskip}{0pt plus 5cm}int IO::writeBoundaryConditions (std::string {\em directory}, \/  std::string {\em quantityName}, \/  const {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}
+\mbox{\Hypertarget{namespaceIO_a2d97d3a808e25f48fa483719b3927273}\label{namespaceIO_a2d97d3a808e25f48fa483719b3927273}} 
+\index{IO@{IO}!load\+S\+D\+D\+Info@{load\+S\+D\+D\+Info}}
+\index{load\+S\+D\+D\+Info@{load\+S\+D\+D\+Info}!IO@{IO}}
+\subsubsection{\texorpdfstring{load\+S\+D\+D\+Info()}{loadSDDInfo()}}
+{\footnotesize\ttfamily int I\+O\+::load\+S\+D\+D\+Info (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{\hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
+
+
+Loads characteristics of this node\textquotesingle{}s S\+DD. 
+
+Loaded parameters are\+:
+\begin{DoxyItemize}
+\item bottom-\/left coordinates of S\+DD on domain
+\item width and height of S\+DD
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & input folder \\
+\hline
+{\em domain} & domain \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}\label{namespaceIO_a07f46c0c99961c52b5f6410a84d58a64}} 
+\index{IO@{IO}!write\+Boundary\+Conditions@{write\+Boundary\+Conditions}}
+\index{write\+Boundary\+Conditions@{write\+Boundary\+Conditions}!IO@{IO}}
+\subsubsection{\texorpdfstring{write\+Boundary\+Conditions()}{writeBoundaryConditions()}}
+{\footnotesize\ttfamily int I\+O\+::write\+Boundary\+Conditions (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{std\+::string}]{quantity\+Name,  }\item[{const \hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
 
 
 Writes boundary conditions for quantity. 
-\begin{DoxyParams}{Parameters}
-\item[{\em directory}]destination folder \item[{\em quantityName}]name of the quantity to output \item[{\em domain}]domain data\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-0 if writing succeeded, -\/1 otherwise 
-\end{DoxyReturn}
-\hypertarget{namespaceIO_a63332902621fd10f3117978585af8a27}{
-\index{IO@{IO}!writeDomain@{writeDomain}}
-\index{writeDomain@{writeDomain}!IO@{IO}}
-\subsubsection[{writeDomain}]{\setlength{\rightskip}{0pt plus 5cm}int IO::writeDomain (std::string {\em directory}, \/  const {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_a63332902621fd10f3117978585af8a27}
-
-
-Writes domain info to output directory. Data is written into file directory/domain.dat
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em directory}]destination folder \item[{\em domain}]domain data\end{DoxyParams}
+{\em directory} & destination folder \\
+\hline
+{\em quantity\+Name} & name of the quantity to output \\
+\hline
+{\em domain} & domain data\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 0 if writing succeeded, -\/1 otherwise 
 \end{DoxyReturn}
-\hypertarget{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}{
-\index{IO@{IO}!writeQuantity@{writeQuantity}}
-\index{writeQuantity@{writeQuantity}!IO@{IO}}
-\subsubsection[{writeQuantity}]{\setlength{\rightskip}{0pt plus 5cm}int IO::writeQuantity (std::string {\em directory}, \/  std::string {\em quantityName}, \/  const {\bf Domain} \& {\em domain})}}
-\label{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}
+\mbox{\Hypertarget{namespaceIO_a63332902621fd10f3117978585af8a27}\label{namespaceIO_a63332902621fd10f3117978585af8a27}} 
+\index{IO@{IO}!write\+Domain@{write\+Domain}}
+\index{write\+Domain@{write\+Domain}!IO@{IO}}
+\subsubsection{\texorpdfstring{write\+Domain()}{writeDomain()}}
+{\footnotesize\ttfamily int I\+O\+::write\+Domain (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{const \hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
+
+
+Writes domain info to output directory. 
+
+Data is written into file directory/domain.\+dat
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & destination folder \\
+\hline
+{\em domain} & domain data\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if writing succeeded, -\/1 otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespaceIO_a3d084b6a7dd69ca5da733e0602df5f8d}\label{namespaceIO_a3d084b6a7dd69ca5da733e0602df5f8d}} 
+\index{IO@{IO}!write\+Perf\+Results@{write\+Perf\+Results}}
+\index{write\+Perf\+Results@{write\+Perf\+Results}!IO@{IO}}
+\subsubsection{\texorpdfstring{write\+Perf\+Results()}{writePerfResults()}}
+{\footnotesize\ttfamily int I\+O\+::write\+Perf\+Results (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{const std\+::map$<$ std\+::string, double $>$}]{results }\end{DoxyParamCaption})}
+
+
+
+Writes boundary conditions for quantity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & destination folder \\
+\hline
+{\em quantity\+Name} & name of the quantity to output \\
+\hline
+{\em domain} & domain data\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if writing succeeded, -\/1 otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}\label{namespaceIO_a98f43edfc02e8c62ca9f005a9994ab69}} 
+\index{IO@{IO}!write\+Quantity@{write\+Quantity}}
+\index{write\+Quantity@{write\+Quantity}!IO@{IO}}
+\subsubsection{\texorpdfstring{write\+Quantity()}{writeQuantity()}}
+{\footnotesize\ttfamily int I\+O\+::write\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{directory,  }\item[{std\+::string}]{quantity\+Name,  }\item[{const \hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+
 
 
 Writes quantity data into output file. 
+
+
 \begin{DoxyParams}{Parameters}
-\item[{\em directory}]destination folder \item[{\em quantityName}]name of the quantity to output \item[{\em domain}]domain data\end{DoxyParams}
+{\em directory} & destination folder \\
+\hline
+{\em quantity\+Name} & name of the quantity to output \\
+\hline
+{\em domain} & domain data\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 0 if writing succeeded, -\/1 otherwise 
 \end{DoxyReturn}

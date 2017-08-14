@@ -94,10 +94,11 @@ int IsothermalHydrodynamics::start() {
        
         ++j;
 
-        if (_t / _T * 10.0 >= i) {
-            std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
-            i = int(_t / _T * 10.0) + 1;
-        }
+        if (_MPI_rank == 0)
+            if (_t / _T * 10.0 >= i) {
+                std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
+                i = int(_t / _T * 10.0) + 1;
+            }
 
 
         // Update speed parameters in order to compute dt
@@ -141,7 +142,8 @@ int IsothermalHydrodynamics::start() {
     // Done
     //_domain->printState("rho");
     writeState();
-    std::cout << "Niterations " << j << std::endl;
+    if (_MPI_rank == 0)
+        std::cout << "Niterations " << j << std::endl;
 
     return 0;
 }

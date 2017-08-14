@@ -1,0 +1,83 @@
+\hypertarget{classHydrodynamics}{}\section{Hydrodynamics Class Reference}
+\label{classHydrodynamics}\index{Hydrodynamics@{Hydrodynamics}}
+
+
+Donor-\/cell scheme for the Euler hydrodynamics equations.  
+
+
+
+
+{\ttfamily \#include $<$hydrodynamics.\+hpp$>$}
+
+Inheritance diagram for Hydrodynamics\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classHydrodynamics}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classHydrodynamics_a2587e06f872913791222ce0df5d713a4}\label{classHydrodynamics_a2587e06f872913791222ce0df5d713a4}} 
+\hyperlink{classHydrodynamics_a2587e06f872913791222ce0df5d713a4}{Hydrodynamics} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classHydrodynamics_a76c14a1067c3d945384047e282b1d486}\label{classHydrodynamics_a76c14a1067c3d945384047e282b1d486}} 
+\hyperlink{classHydrodynamics_a76c14a1067c3d945384047e282b1d486}{$\sim$\+Hydrodynamics} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{classHydrodynamics_a3c0d39e9aff57c14ae919f7cbc6a2881}{write\+State} (std\+::string directory)
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to a text file. \end{DoxyCompactList}\item 
+void \hyperlink{classHydrodynamics_ab281cb2f11cc03bfdc87f52876ca2f8b}{write\+State} ()
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to the output file. \end{DoxyCompactList}\item 
+void \hyperlink{classHydrodynamics_a7d465b65ae01b26029a173af8e7b8f73}{advection} (const \hyperlink{classSDShared}{S\+D\+Shared} \&sds, std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantity\+Map)
+\begin{DoxyCompactList}\small\item\em Solves mass/transport equation on given subdomain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classHydrodynamics_aaad870fe38d582eb0e2df65535414b7a}\label{classHydrodynamics_aaad870fe38d582eb0e2df65535414b7a}} 
+void {\bfseries source} (const \hyperlink{classSDShared}{S\+D\+Shared} \&sds, std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ quantity\+Map)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Donor-\/cell scheme for the Euler hydrodynamics equations. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classHydrodynamics_a7d465b65ae01b26029a173af8e7b8f73}\label{classHydrodynamics_a7d465b65ae01b26029a173af8e7b8f73}} 
+\index{Hydrodynamics@{Hydrodynamics}!advection@{advection}}
+\index{advection@{advection}!Hydrodynamics@{Hydrodynamics}}
+\subsubsection{\texorpdfstring{advection()}{advection()}}
+{\footnotesize\ttfamily void Hydrodynamics\+::advection (\begin{DoxyParamCaption}\item[{const \hyperlink{classSDShared}{S\+D\+Shared} \&}]{sds,  }\item[{std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$}]{quantity\+Map }\end{DoxyParamCaption})}
+
+
+
+Solves mass/transport equation on given subdomain. 
+
+This function computes one iteration in time of the transport equation on a given subdomain on shared memory. Solving on a \char`\"{}small\char`\"{} portion of the global domain such as a S\+DS leaves control to the user on how the computations are done (parallel threads, geometrical shape of the computed domain, etc.) \mbox{\Hypertarget{classHydrodynamics_a3c0d39e9aff57c14ae919f7cbc6a2881}\label{classHydrodynamics_a3c0d39e9aff57c14ae919f7cbc6a2881}} 
+\index{Hydrodynamics@{Hydrodynamics}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Hydrodynamics@{Hydrodynamics}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Hydrodynamics\+::write\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{directory }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to a text file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & folder path where output files will be written \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classHydrodynamics_ab281cb2f11cc03bfdc87f52876ca2f8b}\label{classHydrodynamics_ab281cb2f11cc03bfdc87f52876ca2f8b}} 
+\index{Hydrodynamics@{Hydrodynamics}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Hydrodynamics@{Hydrodynamics}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Hydrodynamics\+::write\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to the output file. 
+
+Call right after iteration of the scheme without parameter to write current state 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+source/project/hydrodynamics/\hyperlink{hydrodynamics_8hpp}{hydrodynamics.\+hpp}\item 
+source/project/hydrodynamics/hydrodynamics.\+cpp\end{DoxyCompactItemize}

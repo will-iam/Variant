@@ -15,8 +15,6 @@ SDDistributed::SDDistributed(unsigned int sizeX,
     _nSDD(nSDD),
     _geometry(0, 0, sizeX, sizeY) {
 
-    assert(sizeX > 2);
-    assert(sizeY > 2);
     assert(boundaryThickness >= 1);
 }
 
