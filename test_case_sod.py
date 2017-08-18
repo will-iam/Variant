@@ -79,6 +79,7 @@ for N in Ncells:#, 2048]:#, 4096]:#[16, 32]:#, 64, 128, 256, 512, 1024, 2048, 40
 
     # Gnuplotize solution
     result_path.append(os.path.join('results', 'sod', cn))
+    io.make_sure_path_exists(os.path.join('results', 'sod'))
 
     # Rho is already done
 

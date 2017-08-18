@@ -67,6 +67,7 @@ print(rho_final_mass - rho_init_mass)
 
 # Gnuplotize solution
 result_path = os.path.join('results', '2dsod', '2dsod')
+io.make_sure_path_exists(os.path.join('results', '2dsod'))
 subprocess.check_call(['python', 'script/gnuplotize.py',
                        '--quantity', 'rho', '-t', 'scalar',
                        final_path])
