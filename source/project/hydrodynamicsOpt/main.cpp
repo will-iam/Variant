@@ -1,7 +1,7 @@
-#include "hydrodynamics.hpp"
+#include "hydrodynamicsOpt.hpp"
 
 int main(int argc, char **argv)
 {
-    Hydrodynamics scheme;
+    HydrodynamicsOpt scheme;
     return scheme.main(argc, argv);
 }

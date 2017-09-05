@@ -86,6 +86,8 @@ template<typename T> class Quantity:public QuantityInterface {
      */
     void switchPrevNext();
 
+    int currentPrev() const;
+
   private:
 
     /*!
@@ -133,9 +135,14 @@ Quantity<T>::Quantity(unsigned int size,
     _next = &_dataRight;
 }
 
+template<typename T>
+int Quantity<T>::currentPrev() const {
+    return (_prev == &_dataLeft) ? 0 : 1;
+}
+
 template<typename T> void Quantity<T>::switchPrevNext()
 {
-    std::vector<T> *_tmp = _prev;
+    std::vector<T>* _tmp = _prev;
     _prev = _next;
     _next = _tmp;
 }
@@ -144,10 +151,14 @@ template<typename T>
 const T& Quantity<T>::get(unsigned int n, int coordX, int coordY) const
 {
     unsigned int i = _coordConverter.convert(coordX, coordY);
+    /*
     // Debugging
+#ifndef NDEBUG
     if (i >= _prev->size()) {
         std::cout << i << " ; " << _prev->size() << std::endl;
     }
+#endif
+    */
     return (n == 0) ? (*_prev).at(i) : (*_next).at(i);
 }
 

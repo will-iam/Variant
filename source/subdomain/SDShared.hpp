@@ -43,7 +43,8 @@ class SDShared: public std::vector< std::pair<int,int> > {
      */
     SDShared(unsigned int bottomLeft_X, unsigned int bottomLeft_Y,
              unsigned int sizeX, unsigned int sizeY,
-             const CoordConverter & coordConverter);
+             const CoordConverter & coordConverter,
+             unsigned int id);
 
     /*!
      * @brief Copy constructor based on vector of coords

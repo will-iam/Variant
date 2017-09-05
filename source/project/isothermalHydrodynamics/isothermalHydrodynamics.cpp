@@ -33,7 +33,6 @@ int IsothermalHydrodynamics::init() {
     _Ny = _domain->getSizeY();
     _dx = _domain->getdx();
     _dy = _domain->getdy();
-
     // Physical constants
     _gamma = 1.4;
 
@@ -66,14 +65,20 @@ int IsothermalHydrodynamics::init() {
     const Quantity<real>& rhou_x = *(sdd.getQuantity("rhou_x"));
     const Quantity<real>& rhou_y = *(sdd.getQuantity("rhou_y"));
 
+    unsigned int nSDS = _domain->getNumberSDS();
+    _SDS_uxmax.resize(nSDS);
+    _SDS_uymax.resize(nSDS);
+    std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
+    std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
+
     for (const auto& sds: sdd.getSDS()) {
         for (std::pair<int, int> coords: sds) {
 
             int i = coords.first;
             int j = coords.second;
 
-            _local_uxmax = std::max(_local_uxmax, std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
-            _local_uymax = std::max(_local_uymax, std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+            _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+            _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
         }
     }
 
@@ -102,13 +107,11 @@ int IsothermalHydrodynamics::start() {
 
 
         // Update speed parameters in order to compute dt
-        updateGlobalUxmax();
-        updateGlobalUymax();
-
-        // Reset umax for next iteration
-        _local_uxmax = 0;
-        _local_uymax = 0;
-
+        updateDomainUxmax();
+        updateDomainUymax();
+        std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
+        std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
+        
         // Compute next dt
         computeDT();
 
@@ -122,17 +125,21 @@ int IsothermalHydrodynamics::start() {
 
         // Start works and wait for ending
         _domain->execEquation("advection");
+        //std::cout << "Switching after advection" << std::endl;
         _domain->switchQuantityPrevNext("rho");
         _domain->switchQuantityPrevNext("rhou_x");
         _domain->switchQuantityPrevNext("rhou_y");
+        //std::cout << "Finished switching" << std::endl;
 
         // Resynchronize ghost cells for rho quantity before calling next step
         _domain->updateOverlapCells("rho");
         _domain->updateBoundaryCells("rho");
 
         _domain->execEquation("source");
+        //std::cout << "Switching after source" << std::endl;
         _domain->switchQuantityPrevNext("rhou_x");
         _domain->switchQuantityPrevNext("rhou_y");
+        //std::cout << "Finished switching" << std::endl;
 
         _t += _dt;
         //getchar();
@@ -151,7 +158,7 @@ int IsothermalHydrodynamics::start() {
 void IsothermalHydrodynamics::computeDT() {
 
     // Updating according to CFL and max velocity
-    _dt = _CFL / (_global_uxmax / _dx + _global_uymax / _dy);
+    _dt = _CFL / (_Domain_uxmax / _dx + _Domain_uymax / _dy);
     // So that the final T is reached
     _dt = std::min(_dt, _T - _t);
 }
@@ -162,6 +169,10 @@ void IsothermalHydrodynamics::advection(const SDShared& sds,
     Quantity<real>& rho = *quantityMap["rho"];
     Quantity<real>& rhou_x = *quantityMap["rhou_x"];
     Quantity<real>& rhou_y = *quantityMap["rhou_y"];
+
+    int rhoc = rho.currentPrev();
+    int rhou_xc = rhou_x.currentPrev();
+    int rhou_yc = rhou_y.currentPrev();
 
     for (auto coords: sds) {
 
@@ -198,6 +209,7 @@ void IsothermalHydrodynamics::advection(const SDShared& sds,
         real rho_fluxLeft = uLeft * ((uLeft > 0) ? rho.get(0, i - 1, j)
                 : rho.get(0, i, j));
         real rho_fluxRight = uRight * ((uRight < 0) ? rho.get(0, i + 1, j)
+
                 : rho.get(0, i, j));
         real rho_fluxBottom = uBottom * ((uBottom > 0) ? rho.get(0, i, j - 1) :
                 rho.get(0, i, j));
@@ -225,12 +237,15 @@ void IsothermalHydrodynamics::advection(const SDShared& sds,
         //std::cout << "Flux differences " << rho_fluxRight - rho_fluxLeft << " ; " << rho_fluxTop - rho_fluxBottom << std::endl;
         //std::cout << "Speeds on centers " << uxCellCenter << " " << uyCellCenter << std::endl;
 
+        assert(rho.currentPrev() == rhoc);
         rho.set(rho.get(0, i, j)
                 - _dt * ((rho_fluxRight - rho_fluxLeft) / _dx + (rho_fluxTop - rho_fluxBottom) / _dy),
                 1, i, j); 
+        assert(rhou_x.currentPrev() == rhou_xc);
         rhou_x.set(rhou_x.get(0, i, j)
                 - _dt * ((rhou_x_fluxRight - rhou_x_fluxLeft) / _dx + (rhou_x_fluxTop - rhou_x_fluxBottom) / _dy),
                 1, i, j);
+        assert(rhou_y.currentPrev() == rhou_yc);
         rhou_y.set(rhou_y.get(0, i, j)
                 - _dt * ((rhou_y_fluxRight - rhou_y_fluxLeft) / _dx + (rhou_y_fluxTop - rhou_y_fluxBottom) / _dy),
                 1, i, j);
@@ -250,6 +265,11 @@ void IsothermalHydrodynamics::source(const SDShared& sds,
     Quantity<real>& rhou_x = *quantityMap["rhou_x"];
     Quantity<real>& rhou_y = *quantityMap["rhou_y"];
 
+    int rhoc = rho.currentPrev();
+    int rhou_xc = rhou_x.currentPrev();
+
+    int rhou_yc = rhou_y.currentPrev();
+
     for (auto coords: sds) {
 
         int i = coords.first;
@@ -267,19 +287,22 @@ void IsothermalHydrodynamics::source(const SDShared& sds,
         assert(j != _Ny - 1 || PBottom == PCenter);
         */
 
+        assert(rhou_x.currentPrev() == rhou_xc);
+        //rhou_x.set(rhou_x.get(0, i, j), 1, i, j);
         rhou_x.set(rhou_x.get(0, i, j)
                 - _dt * (PRight - PLeft) / (2 * _dx),
                 1, i, j);
+        assert(rhou_y.currentPrev() == rhou_yc);
+        //rhou_y.set(rhou_y.get(0, i, j), 1, i, j);
         rhou_y.set(rhou_y.get(0, i, j)
                 - _dt * (PTop - PBottom) / (2 * _dy),
                 1, i, j);
 
         // Updating umax
         if (rho.get(0, i, j) != 0) {
-            _local_uxmax = std::max(_local_uxmax, std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
-            _local_uymax = std::max(_local_uymax, std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+            _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+            _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
         }
-        //std::cout << i << " " << j << " -> " << _local_umax << std::endl;
     }
 }
 

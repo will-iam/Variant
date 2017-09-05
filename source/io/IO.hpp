@@ -128,7 +128,7 @@ namespace IO {
      * 
      */
     int writePerfResults(std::string directory,
-            const std::map<std::string, double> results);
+            const std::map<std::string, int> results);
 
     /*!
      * 

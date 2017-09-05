@@ -25,7 +25,7 @@ def gen_ref_result(root_dir, tmp_dir, project_name, cn, comp, mode, precision):
     test['SDSgeom'] = 'line'
     test['nThreads'] = 1
     return launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision,
-    'c++11', True, test, False, False, "ref")
+    'c++11', True, test, 1, False, False, False, "ref")
 
 def check_test(test_path, ref_path):
     print("Checking test " + test_path)
@@ -39,13 +39,15 @@ def check_test(test_path, ref_path):
     return results
 
 def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
-        bool_compile, test, gdb = False, valgrind = False, ref_case = "tmp"):
+        bool_compile, test, ncores = 1, vtune = False, gdb = False, valgrind = False, ref_case = "tmp"):
     # Start time
     start = timer()
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
-    case_path, qty_name_list = build_case.build_case(root_dir, project_name, cn,
+    #case_path = os.path.join(root_dir, 'case', project_name, cn, 'init')
+    #if not os.path.isdir(case_path):
+    case_path, qty_name_list = build_case.build_case(root_dir, tmp_dir, project_name, cn,
             ref_case)
 
     # Manage number of SDD
@@ -57,19 +59,11 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
             nSDD_X, nSDD_Y,
             test['nSDS'], test['SDSgeom'], test['nThreads'])
 
+    input_path = os.path.join(root_dir, 'case', project_name, cn, 'init', str(nSDD_X) + 'x' + str(nSDD_Y))
     # Split case for SDDs into tmp directory
-    print(COLOR_BLUE + "Splitting case data" + COLOR_ENDC)
-    tmp_dir = config.tmp_dir
-    input_path = os.path.join(tmp_dir, "init", str(nSDD_X) + "x" +
-            str(nSDD_Y))
     if not os.path.isdir(input_path):
-        rmtree(input_path, ignore_errors=True)
-        io.make_sure_path_exists(input_path)
-        usc = sdd.split_domain(case_path, input_path, nSDD_X,
-                nSDD_Y)
-        usc_bc = sdd.split_bc(case_path, input_path)
-        for q_str in qty_name_list:
-            sdd.split_quantity(case_path, input_path, q_str, usc)
+	    print(COLOR_BLUE + "Splitting case data" + COLOR_ENDC)
+	    input_path = sdd.split_case(case_path, nSDD_X, nSDD_Y, qty_name_list)
 
     # Copying exec options in input path too
     io.write_exec_options(input_path, nSDD_X * nSDD_Y,
@@ -88,7 +82,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     engine = compiler.Engine(project_name, bool_compile, comp, mode, precision, std)
     nprocs = nSDD_X * nSDD_Y
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    engine.run(input_path, output_path, nprocs, gdb, valgrind)
+    engine.run(input_path, output_path, nprocs, ncores, gdb, valgrind, vtune)
 
     # Variant info
     variant_info = io.read_variant_info(output_path,
@@ -96,7 +90,6 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
     if ref_case == "ref":
         final_path = os.path.abspath(os.path.join(case_path, os.pardir, "final"))
-        print(final_path)
     else:
         final_path = os.path.join(tmp_dir, 'full_domain')
     io.make_sure_path_exists(final_path)

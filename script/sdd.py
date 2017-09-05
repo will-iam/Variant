@@ -309,6 +309,20 @@ def merge_quantity(split_dir, output_dir, quantity_name):
 
     qty_stream.close()
 
+
+def split_case(domain_dir, nSDD_X, nSDD_Y, qty_name_list):
+	output_dir = os.path.join(domain_dir, str(nSDD_X) + "x" + str(nSDD_Y))
+	if os.path.isdir(output_dir):
+	    print("Split already exists")
+	    return output_dir
+	io.make_sure_path_exists(output_dir)
+	usc = split_domain(domain_dir, output_dir, nSDD_X,
+		nSDD_Y)
+	usc_bc = split_bc(domain_dir, output_dir)
+	for q_str in qty_name_list:
+	    split_quantity(domain_dir, output_dir, q_str, usc)
+	return output_dir
+
 #def merge_qbc(split_dir, output_dir, quantity_name):
 #    domain_shortinfo = open(os.path.join(split_dir, "domain.dat"), 'r')
 #    line_domain = domain_shortinfo.readline()

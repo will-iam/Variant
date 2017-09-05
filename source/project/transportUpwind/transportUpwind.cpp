@@ -69,15 +69,24 @@ int TransportUpwind::init() {
     const Quantity<real>& ux = *(sdd.getQuantity("ux"));
     const Quantity<real>& uy = *(sdd.getQuantity("uy"));
 
+    unsigned int nSDS = _domain->getNumberSDS();
+    _SDS_uxmax.resize(nSDS);
+    _SDS_uymax.resize(nSDS);
+    std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
+    std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
+
     for (const auto& sds: sdd.getSDS()) {
         for (std::pair<int, int> coords: sds) {
-            _local_uxmax = std::max(_local_uxmax, std::abs(ux.get(0, coords.first, coords.second)));
-            _local_uymax = std::max(_local_uymax, std::abs(uy.get(0, coords.first, coords.second)));
+            int i = coords.first;
+            int j = coords.second;
+
+            _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(ux.get(0, i, j)));
+            _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(uy.get(0, i, j)));
         }
     }
 
-    updateGlobalUxmax();
-    updateGlobalUymax();
+    updateDomainUxmax();
+    updateDomainUymax();
 
     // Init tasks pool
     _domain->buildThreads();
@@ -116,7 +125,7 @@ int TransportUpwind::start() {
 void TransportUpwind::computeDT() {
 
     // Updating according to CFL and max velocity
-    _dt = _CFL / (_global_uxmax / _dx + _global_uymax / _dy);
+    _dt = _CFL / (_Domain_uxmax / _dx + _Domain_uymax / _dy);
     // So that the final T is reached
     _dt = std::min(_dt, _T - _t);
 }

@@ -2,9 +2,11 @@
 
 SDShared::SDShared(unsigned int bottomLeft_X, unsigned int bottomLeft_Y,
                    unsigned int sizeX, unsigned int sizeY,
-                   const CoordConverter& coordConverter):
+                   const CoordConverter& coordConverter,
+                   unsigned int id):
     std::vector< std::pair<int, int> >(),
-    _coordConverter(coordConverter)
+    _coordConverter(coordConverter),
+    _id(id)
 {
     reserve(sizeX * sizeY);
     // Building coordinates contained by SDS

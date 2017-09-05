@@ -23,6 +23,8 @@ parser.add_argument("project_name", type = str, help = "Name of scheme")
 parser.add_argument("-c", type = str, help = "Case to test")
 parser.add_argument("--gdb", action='store_true',
         default=False, help = "Debug mode")
+parser.add_argument("--vtune", action='store_true',
+        default=False, help = "Execute with vtune")
 parser.add_argument("--clean-compile", action='store_true',
         default=False, help = "Clean SCons compilation file")
 parser.add_argument("--plot", action='store_true',
@@ -39,7 +41,7 @@ mode = 'debug' if args.debug else 'release'
 precision = 'double'
 std = 'c++11'
 bool_compile = True
-gdb = args.gdb
+
 
 if args.clean_compile:
     engine = compiler.Engine(project_name, False, comp, mode, precision,
@@ -68,9 +70,7 @@ test_battery = [test for test in test_battery if test['nThreads'] <= test['nSDS'
 for cn in case_name:
     ref_test_path = os.path.join(case_dir, cn, "ref", "final")
     if not os.path.isdir(ref_test_path):
-        print("Reference case does not exist, create ?")
-        if raw_input() != 'y':
-            sys.exit(0)
+        print("Reference case does not exist, create it.")
         gen_ref_result(this_dir, tmp_dir, project_name, cn, comp, mode, precision)
     # Launch tests and compare results
     print("Launching tests for case " + cn)
@@ -78,7 +78,7 @@ for cn in case_name:
         current_test_path, exec_time, variant_info = launch_test(this_dir,
                 tmp_dir,
                 project_name, cn, comp, mode, precision, std, bool_compile,
-                test, gdb, args.valgrind)
+                test, 1, args.vtune, args.gdb, args.valgrind)
         if args.valgrind:
             raw_input()
         print("Results for test: " + str(test))

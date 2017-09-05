@@ -13,7 +13,7 @@ using namespace std;
 int Engine::main(int argc, char** argv) {
 
     // Init the rand system
-    srand(time(NULL));
+    srand(1337);
 
     // Init MPI
     MPI_Init(NULL, NULL);
@@ -33,7 +33,7 @@ int Engine::main(int argc, char** argv) {
         {NULL, 0, NULL, 0}
     };
 
-    std::map<std::string, double> perfResults;
+    std::map<std::string, int> perfResults;
 
     int option_index = 0;
     while ((flag = getopt_long(argc, argv, "i:o:h", long_options, &option_index)) != EOF) {
@@ -148,11 +148,29 @@ int Engine::main(int argc, char** argv) {
         cout << ": Engine stopped normally" << Console::_normal << endl;
 
         perfResults["computeTime"] = _timer.getSteadyDuration();
+        perfResults["nIterations"] = _nIterations;
 
         _timer.report();
 
-        IO::writePerfResults(_outputpath, perfResults);
+		cout << Console::_green;
+		TimeStamp::printLocalTime();
+		cout << ": Engine finalizes" << Console::_normal << endl;
+
+	_timer.start();
     }
+
+    finalize();
+
+	if (_MPI_rank == 0) {
+
+		_timer.end();
+
+		_timer.report();
+
+		perfResults["finalizeTime"] = _timer.getSteadyDuration();
+
+		IO::writePerfResults(_outputpath, perfResults);
+	    }
 
     MPI_Finalize();
 
@@ -182,15 +200,19 @@ void Engine::updateGlobalUxmax() {
 }
 */
 
-void Engine::updateGlobalUxmax() {
+void Engine::updateDomainUxmax() {
 
-    MPI_Allreduce(&_local_uxmax, &_global_uxmax, 1, MPI_REALTYPE,
+    _SDD_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
+
+    MPI_Allreduce(&_SDD_uxmax, &_Domain_uxmax, 1, MPI_REALTYPE,
             MPI_MAX, MPI_COMM_WORLD);
 }
 
-void Engine::updateGlobalUymax() {
+void Engine::updateDomainUymax() {
 
-    MPI_Allreduce(&_local_uymax, &_global_uymax, 1, MPI_REALTYPE,
+    _SDD_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
+
+    MPI_Allreduce(&_SDD_uymax, &_Domain_uymax, 1, MPI_REALTYPE,
             MPI_MAX, MPI_COMM_WORLD);
 }
 

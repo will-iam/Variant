@@ -205,7 +205,7 @@ int IO::loadBoundaryConditions(std::string directory,
     return 0;
 }
 
-int IO::writePerfResults(std::string directory, const std::map<std::string, double> results) {
+int IO::writePerfResults(std::string directory, const std::map<std::string, int> results) {
 
     std::ofstream ofs(directory + "/perfs.dat");
 

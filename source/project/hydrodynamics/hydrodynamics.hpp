@@ -78,6 +78,8 @@ class Hydrodynamics: public Engine {
      */
     int start() final;
 
+    int finalize() final;
+
     // Scheme implementation
     void computeDT();
 

@@ -1,9 +1,9 @@
-#ifndef CONSERVATIVEHYDRODYNAMICS_HPP
-#define CONSERVATIVEHYDRODYNAMICS_HPP
+#ifndef HYDRODYNAMICSOPT_HPP
+#define HYDRODYNAMICSOPT_HPP
 
 /*!
  * @file
- * @brief Defines class of the upwind scheme for the hydrodynamics equations
+ * @brief Defines class of the upwind scheme for the hydrodynamicsOpt equations
  */
 
 #include <memory>
@@ -17,19 +17,19 @@
 #include "Quantity.hpp"
 
 /*!
- * @brief Donor-cell scheme for the Euler hydrodynamics equations
+ * @brief Donor-cell scheme for the Euler hydrodynamicsOpt equations
  */
-class ConservativeHydrodynamics: public Engine {
+class HydrodynamicsOpt: public Engine {
   public:
 
     /*!
      * @brief Constructor
      */
-    ConservativeHydrodynamics();
+    HydrodynamicsOpt();
     /*!
      * @brief Destructor
      */
-    ~ConservativeHydrodynamics();
+    ~HydrodynamicsOpt();
 
     /*!
      * @brief Writes solution at given time to a text file

@@ -17,6 +17,8 @@ void Worker::work() {
                 //assert(_pool._busyWorkerNumber > 0 && _pool._busyWorkerNumber <= _pool._workerVectorSize + 1);
 
                 // get the task from the list
+                ++_pool._doneTasks[_pool._nextTaskCursor];
+                //std::cout << "Thread " << _id << " acquired task " << _pool._nextTaskCursor << std::endl;
                 task = _pool._currentTaskList->operator[](_pool._nextTaskCursor);
                 _pool._busyWorkerNumber++;
                 _pool._nextTaskCursor++;
@@ -30,6 +32,7 @@ void Worker::work() {
         // execute the task
         if (task) {
             task();
+            //std::cout << "Thread " << _id << " done." << std::endl;
             task = std::function<void()>();
             _pool._busyWorkerNumber--;
         }
@@ -37,8 +40,10 @@ void Worker::work() {
         // If main thread, return when done
         if (_id == 0)
             if (_pool._busyWorkerNumber.load() == 0
-                && _pool._nextTaskCursor.load() == SYNC) 
+                && _pool._nextTaskCursor.load() == SYNC) {
+                _pool.wait();
                 return;
+            }
 
         // If all tasks were done (ie. end of simulation), kill thread
         if (_pool._finished)
@@ -88,7 +93,10 @@ void ThreadPool::start(std::string taskList_name) {
     //
 
     // Go !
+    //std::nout << "Commencing task " << taskList_name << std::endl;
     _currentTaskList = &(_taskList_map[taskList_name]);
+    _doneTasks.clear();
+    _doneTasks.resize(_currentTaskList->size());
     _nextTaskCursor = 0;
 #if PROFILE >= 1
     _timer.start();
@@ -100,10 +108,7 @@ void ThreadPool::start(std::string taskList_name) {
     wait();
 
     // Check if all tasks were done
-    /*
     for (const auto& it: _doneTasks)
         assert(it == 1);
-    getchar();
-    */
 }
 

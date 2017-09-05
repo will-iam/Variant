@@ -57,27 +57,30 @@ class Engine:
                 'Variant', 'source'))
         p.wait()
 
-    def run(self, input_path, output_path, mpi_nprocs = 0, gdb = False, valgrind
-            = False):
+    def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1, gdb = False, valgrind
+            = False, vtune = False):
         if mpi_nprocs > 0:
             if gdb:
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs),
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
                     'xterm', '-e', 'gdb', '--args',
                     self.binary_path, '-i', input_path, '-o', output_path])
             elif valgrind:
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs),
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
                     'valgrind', '--leak-check=yes',
                     '--log-file=valgrind-out.txt',
                     self.binary_path, '-i', input_path, '-o', output_path])
+	    elif vtune:
+		print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
             else:
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs),
-                    self.binary_path, '-i', input_path, '-o', output_path])
+		print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
         else:
             if gdb:
                 subprocess.check_call(['gdb', '--args', self.binary_path, '-i', input_path, '-o', output_path])
             elif valgrind:
                 subprocess.check_call(['valgrind', '--leak-check=yes',
-                    self.binary_path, '-i', input_path, '-o', output_path])
+                    self.binary_path, '-c', str(nthreads), '-i', input_path, '-o', output_path])
             else:
                 subprocess.check_call([self.binary_path, '-i', input_path, '-o', output_path])
 

@@ -32,6 +32,7 @@ class Worker {
     private:
         ThreadPool& _pool;
         int _id;
+
 };
 
 // Thread pool with single task method.
@@ -42,7 +43,7 @@ class ThreadPool {
 
         void wait() const {
 
-            while (_nextTaskCursor != SYNC && _busyWorkerNumber.load() > 0) {}
+            while (_nextTaskCursor.load() != SYNC && _busyWorkerNumber.load() > 0) {}
         }
 
         void addTask(std::string taskList_name, std::function<void()> f);
@@ -62,7 +63,7 @@ class ThreadPool {
         std::atomic<size_t> _busyWorkerNumber;
 
         std::map<std::string, std::vector< std::function<void()> > > _taskList_map;
-        //std::map<std::string, std::vector<int> > _doneTasks_map;
+        std::vector<int> _doneTasks;
         std::vector< std::function<void()> >* _currentTaskList;
         std::atomic<int> _nextTaskCursor;
         bool _finished;

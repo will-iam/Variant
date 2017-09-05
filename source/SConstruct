@@ -51,7 +51,7 @@ print '**** Compiling with '+ compiler +' in ' + mymode + ' mode for ' + project
 env = Environment()
 
 env['ENV']['PATH'] = os.environ['PATH']
-#env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
+env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
 
 #print 'First', env.Dump()
 
@@ -113,7 +113,8 @@ if mymode == 'release':
 	mycflags = ['-W','-Wall','-Wfatal-errors','-O2', '-DNDEBUG']
 
 if mymode == 'debug':
-   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
+   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g',
+    '-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
 
 # Set the library path
 if lib == 'linux':

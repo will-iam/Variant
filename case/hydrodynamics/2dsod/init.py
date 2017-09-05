@@ -9,27 +9,16 @@ import os
 
 sys.path.insert(1, os.path.join(sys.path[0], '../../../'))
 import script.io as io
+from chars import *
 
 # ------------------------------------------------------------------------------
 # Domain properties
 # ------------------------------------------------------------------------------
-lx = 1.0
-ly = 1.0
-
-Nx = 64
-Ny = 64
-
 dx = lx / Nx
 dy = ly / Ny
 
 coords_to_uid = io.gen_coords_to_uid(Nx, Ny)
 coords_to_uid_bc = io.gen_coords_to_uid_bc(Nx, Ny)
-
-# ------------------------------------------------------------------------------
-# Scheme execution options
-# ------------------------------------------------------------------------------
-T = 0.2
-CFL = 0.5
 
 # Init quantities
 quantityDict = dict()
@@ -37,7 +26,6 @@ quantityDict = dict()
 # ------------------------------------------------------------------------------
 # rho initial state
 # ------------------------------------------------------------------------------
-gamma = 1.4
 rho_uid_to_val = dict()
 rhoe_uid_to_val = dict()
 for i in range(Nx):
@@ -54,7 +42,6 @@ for i in range(Nx):
 # ------------------------------------------------------------------------------
 # Boundary conditions
 # ------------------------------------------------------------------------------
-BCtype = 'N'
 coords_to_bc = dict()
 # Start new uid after last domain cell
 # Left border

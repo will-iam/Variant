@@ -1,6 +1,7 @@
 #include "SDDistributed.hpp"
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 SDDistributed::SDDistributed(unsigned int sizeX,
                              unsigned int sizeY,
@@ -64,6 +65,8 @@ void SDDistributed::buildAllSDS(unsigned int nSDS, std::string geomType) {
         _SDSList.push_back(SDShared(*it, _coordConverter, i));
         i++;
     }
+    /// Shuffling SDS List
+    std::random_shuffle(_SDSList.begin(), _SDSList.end());
 }
 
 void SDDistributed::addEquation(std::string eqName, eqType eqFunc) {

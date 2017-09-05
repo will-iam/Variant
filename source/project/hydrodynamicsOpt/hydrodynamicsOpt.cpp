@@ -1,4 +1,4 @@
-#include "conservativeHydrodynamics.hpp"
+#include "hydrodynamicsOpt.hpp"
 #include "IO.hpp"
 
 #include <ios>
@@ -7,17 +7,17 @@
 #include <fstream>
 #include <string>
 
-ConservativeHydrodynamics::ConservativeHydrodynamics():
+HydrodynamicsOpt::HydrodynamicsOpt():
     Engine() {
 
 }
 
-ConservativeHydrodynamics::~ConservativeHydrodynamics() {
+HydrodynamicsOpt::~HydrodynamicsOpt() {
 
     delete _domain;
 }
 
-int ConservativeHydrodynamics::init() {
+int HydrodynamicsOpt::init() {
 
     // Init domain
     std::vector<std::string> quantityNames;
@@ -81,22 +81,22 @@ int ConservativeHydrodynamics::init() {
 
     // Init tasks pool
     _domain->buildThreads();
-    _domain->addEquation("advection", std::bind(&ConservativeHydrodynamics::advection, this,
+    _domain->addEquation("advection", std::bind(&HydrodynamicsOpt::advection, this,
                                    std::placeholders::_1, std::placeholders::_2));
-    _domain->addEquation("source", std::bind(&ConservativeHydrodynamics::source, this,
+    _domain->addEquation("source", std::bind(&HydrodynamicsOpt::source, this,
                                    std::placeholders::_1, std::placeholders::_2));
 
     return 0;
 }
 
-int ConservativeHydrodynamics::start() {
+int HydrodynamicsOpt::start() {
 
     int i = 0, j = 0;
     while (_t < _T) {
        
         ++j;
 
-        if (_t / _T * 10.0 >= i) {
+        if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
             std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
             i = int(_t / _T * 10.0) + 1;
         }
@@ -152,7 +152,7 @@ int ConservativeHydrodynamics::start() {
     return 0;
 }
 
-void ConservativeHydrodynamics::computeDT() {
+void HydrodynamicsOpt::computeDT() {
 
     // Updating according to CFL and max velocity
     _dt = _CFL / (_global_uxmax / _dx + _global_uymax / _dy);
@@ -160,7 +160,7 @@ void ConservativeHydrodynamics::computeDT() {
     _dt = std::min(_dt, _T - _t);
 }
 
-void ConservativeHydrodynamics::advection(const SDShared& sds,
+void HydrodynamicsOpt::advection(const SDShared& sds,
         std::map< std::string, Quantity<real>* > quantityMap) {
 
     Quantity<real>& rho = *quantityMap["rho"];
@@ -174,67 +174,54 @@ void ConservativeHydrodynamics::advection(const SDShared& sds,
         int j = coords.second;
 
         // Computing velocity on nodes
-        real uxCellLeft = (rho.get(0, i - 1, j) == 0) ? 0 :
-            rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
-        real uxCellCenter = (rho.get(0, i, j) == 0) ? 0 :
-            rhou_x.get(0, i, j) / rho.get(0, i, j);
-        real uxCellRight = (rho.get(0, i + 1, j) == 0) ? 0 :
-            rhou_x.get(0, i + 1, j) / rho.get(0, i + 1, j);
+        real uxCellLeft = rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
+        real uxCellCenter = rhou_x.get(0, i, j) / rho.get(0, i, j);
+        real uxCellRight = rhou_x.get(0, i + 1, j) / rho.get(0, i + 1, j);
         real uLeft = 0.5 * (uxCellLeft + uxCellCenter);
         real uRight = 0.5 * (uxCellRight + uxCellCenter);
 
-        real uyCellBottom = (rho.get(0, i, j - 1) == 0) ? 0 :
-            rhou_y.get(0, i , j - 1) / rho.get(0, i, j - 1);
-        real uyCellCenter = (rho.get(0, i, j) == 0) ? 0 :
-            rhou_y.get(0, i, j) / rho.get(0, i, j);
-        real uyCellTop = (rho.get(0, i, j + 1) == 0) ? 0 :
-            rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
+        real uyCellBottom = rhou_y.get(0, i , j - 1) / rho.get(0, i, j - 1);
+        real uyCellCenter = rhou_y.get(0, i, j) / rho.get(0, i, j);
+        real uyCellTop = rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
         real uBottom = 0.5 * (uyCellBottom + uyCellCenter);
         real uTop = 0.5 * (uyCellTop + uyCellCenter);
 
-        /*
-        assert(i != 0 || uLeft == 0);
-        assert(j != 0 || uBottom == 0);
-        assert(i != _Nx - 1 || uRight == 0);
-        assert(j != _Ny - 1 || uTop == 0);
-        */
-
         // Computing fluxes for all three quantities
-        real rho_fluxLeft = uLeft * ((uLeft > 0) ? rho.get(0, i - 1, j)
-                : rho.get(0, i, j));
-        real rho_fluxRight = uRight * ((uRight < 0) ? rho.get(0, i + 1, j)
-                : rho.get(0, i, j));
-        real rho_fluxBottom = uBottom * ((uBottom > 0) ? rho.get(0, i, j - 1) :
-                rho.get(0, i, j));
-        real rho_fluxTop = uTop * ((uTop < 0) ? rho.get(0, i, j + 1) :
-                rho.get(0, i, j));
+        real rho_fluxLeft = 0.5 * (uLeft + std::abs(uLeft)) * rho.get(0, i - 1, j)
+                + 0.5 * (uLeft - std::abs(uLeft)) * rho.get(0, i, j);
+        real rho_fluxRight = 0.5 * (uRight - std::abs(uRight)) * rho.get(0, i + 1, j)
+                + 0.5 * (uRight + std::abs(uRight)) * rho.get(0, i, j);
+        real rho_fluxBottom = 0.5 * (uBottom + std::abs(uBottom)) * rho.get(0, i, j - 1)
+                + 0.5 * (uBottom - std::abs(uBottom)) * rho.get(0, i, j);
+        real rho_fluxTop = 0.5 * (uTop - std::abs(uTop)) * rho.get(0, i, j + 1)
+                + 0.5 * (uTop + std::abs(uTop)) * rho.get(0, i, j);
 
-        real rhou_x_fluxLeft = uLeft * ((uLeft > 0) ? rhou_x.get(0, i - 1, j)
-                : rhou_x.get(0, i, j));
-        real rhou_x_fluxRight = uRight * ((uRight < 0) ? rhou_x.get(0, i + 1, j)
-                : rhou_x.get(0, i, j));
-        real rhou_x_fluxBottom = uBottom * ((uBottom > 0) ? rhou_x.get(0, i, j - 1) :
-                rhou_x.get(0, i, j));
-        real rhou_x_fluxTop = uTop * ((uTop < 0) ? rhou_x.get(0, i, j + 1) :
-                rhou_x.get(0, i, j));
+        real rhou_x_fluxLeft = 0.5 * (uLeft + std::abs(uLeft)) * rhou_x.get(0, i - 1, j)
+                + 0.5 * (uLeft - std::abs(uLeft)) * rhou_x.get(0, i, j);
+        real rhou_x_fluxRight = 0.5 * (uRight - std::abs(uRight)) * rhou_x.get(0, i + 1, j)
+                + 0.5 * (uRight + std::abs(uRight)) * rhou_x.get(0, i, j);
+        real rhou_x_fluxBottom = 0.5 * (uBottom + std::abs(uBottom)) * rhou_x.get(0, i, j - 1)
+                + 0.5 * (uBottom - std::abs(uBottom)) * rhou_x.get(0, i, j);
+        real rhou_x_fluxTop = 0.5 * (uTop - std::abs(uTop)) * rhou_x.get(0, i, j + 1)
+                + 0.5 * (uTop + std::abs(uTop)) * rhou_x.get(0, i, j);
 
-        real rhou_y_fluxLeft = uLeft * ((uLeft > 0) ? rhou_y.get(0, i - 1, j)
-                : rhou_y.get(0, i, j));
-        real rhou_y_fluxRight = uRight * ((uRight < 0) ? rhou_y.get(0, i + 1, j)
-                : rhou_y.get(0, i, j));
-        real rhou_y_fluxBottom = uBottom * ((uBottom > 0) ? rhou_y.get(0, i, j - 1) :
-                rhou_y.get(0, i, j));
-        real rhou_y_fluxTop = uTop * ((uTop < 0) ? rhou_y.get(0, i, j + 1) :
-                rhou_y.get(0, i, j));
+        real rhou_y_fluxLeft = 0.5 * (uLeft + std::abs(uLeft)) * rhou_y.get(0, i - 1, j)
+                + 0.5 * (uLeft - std::abs(uLeft)) * rhou_y.get(0, i, j);
+        real rhou_y_fluxRight = 0.5 * (uRight - std::abs(uRight)) * rhou_y.get(0, i + 1, j)
+                + 0.5 * (uRight + std::abs(uRight)) * rhou_y.get(0, i, j);
+        real rhou_y_fluxBottom = 0.5 * (uBottom + std::abs(uBottom)) * rhou_y.get(0, i, j - 1)
+                + 0.5 * (uBottom - std::abs(uBottom)) * rhou_y.get(0, i, j);
+        real rhou_y_fluxTop = 0.5 * (uTop - std::abs(uTop)) * rhou_y.get(0, i, j + 1)
+                + 0.5 * (uTop + std::abs(uTop)) * rhou_y.get(0, i, j);
 
-        real rhoe_fluxLeft = uLeft * ((uLeft > 0) ? rhoe.get(0, i - 1, j)
-                : rhoe.get(0, i, j));
-        real rhoe_fluxRight = uRight * ((uRight < 0) ? rhoe.get(0, i + 1, j)
-                : rhoe.get(0, i, j));
-        real rhoe_fluxBottom = uBottom * ((uBottom > 0) ? rhoe.get(0, i, j - 1) :
-                rhoe.get(0, i, j));
-        real rhoe_fluxTop = uTop * ((uTop < 0) ? rhoe.get(0, i, j + 1) :
-                rhoe.get(0, i, j));
+        real rhoe_fluxLeft = 0.5 * (uLeft + std::abs(uLeft)) * rhoe.get(0, i - 1, j)
+                + 0.5 * (uLeft - std::abs(uLeft)) * rhoe.get(0, i, j);
+        real rhoe_fluxRight = 0.5 * (uRight - std::abs(uRight)) * rhoe.get(0, i + 1, j)
+                + 0.5 * (uRight + std::abs(uRight)) * rhoe.get(0, i, j);
+        real rhoe_fluxBottom = 0.5 * (uBottom + std::abs(uBottom)) * rhoe.get(0, i, j - 1)
+                + 0.5 * (uBottom - std::abs(uBottom)) * rhoe.get(0, i, j);
+        real rhoe_fluxTop = 0.5 * (uTop - std::abs(uTop)) * rhoe.get(0, i, j + 1)
+                + 0.5 * (uTop + std::abs(uTop)) * rhoe.get(0, i, j);
 
         //std::cout << "Flux differences " << rho_fluxRight - rho_fluxLeft << " ; " << rho_fluxTop - rho_fluxBottom << std::endl;
         //std::cout << "Speeds on centers " << uxCellCenter << " " << uyCellCenter << std::endl;
@@ -260,7 +247,7 @@ void ConservativeHydrodynamics::advection(const SDShared& sds,
     }
 }
 
-void ConservativeHydrodynamics::source(const SDShared& sds,
+void HydrodynamicsOpt::source(const SDShared& sds,
         std::map< std::string, Quantity<real>* > quantityMap) {
 
     Quantity<real>& rho = *quantityMap["rho"];
@@ -288,63 +275,38 @@ void ConservativeHydrodynamics::source(const SDShared& sds,
 
         // Energy source term
         real PCenter = (_gamma - 1) * rhoe.get(0, i, j);
-
+        /*
         assert(i != 0 || PLeft == PCenter);
         assert(j != 0 || PBottom == PCenter);
         assert(i != _Nx - 1 || PRight == PCenter);
         assert(j != _Ny - 1 || PTop == PCenter);
+        */
 
-        real uxCellLeft = (rho.get(0, i - 1, j) == 0) ? 0 :
-            rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
-        real uxCellRight = (rho.get(0, i + 1, j) == 0) ? 0 :
-            rhou_x.get(0, i + 1, j) / rho.get(0, i + 1, j);
-        real uxCellCenter = (rho.get(0, i, j) == 0) ? 0 :
-            rhou_x.get(0, i, j) / rho.get(0, i, j);
-        real uLeft = 0.5 * (uxCellLeft + uxCellCenter);
-        real uRight = 0.5 * (uxCellRight + uxCellCenter);
+        real uxCellLeft = rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
+        real uxCellRight = rhou_x.get(0, i + 1, j) / rho.get(0, i + 1, j);
 
-        real uyCellBottom = (rho.get(0, i, j - 1) == 0) ? 0 :
-            rhou_y.get(0, i , j - 1) / rho.get(0, i, j - 1);
-        real uyCellTop = (rho.get(0, i, j + 1) == 0) ? 0 :
-            rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
-        real uyCellCenter = (rho.get(0, i, j) == 0) ? 0 :
-            rhou_y.get(0, i, j) / rho.get(0, i, j);
-        real uBottom = 0.5 * (uyCellBottom + uyCellCenter);
-        real uTop = 0.5 * (uyCellTop + uyCellCenter);
-
-        real P_fluxLeft = uLeft * ((uLeft > 0) ? PLeft
-                : PCenter);
-        real P_fluxRight = uRight * ((uRight < 0) ? PRight
-                : PCenter);
-        real P_fluxBottom = uBottom * ((uBottom > 0) ? PBottom :
-                PCenter);
-        real P_fluxTop = uTop * ((uTop < 0) ? PTop :
-                PCenter);
-
-        real flux_rhou = (P_fluxRight - P_fluxLeft) / _dx + (P_fluxTop - P_fluxBottom) / _dy;
-        real gradPu = (PRight - PLeft) * uxCellCenter / (2 * _dx)
-                    + (PTop - PBottom) * uyCellCenter / (2 * _dy);
+        real uyCellBottom = rhou_y.get(0, i , j - 1) / rho.get(0, i, j - 1);
+        real uyCellTop = rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
 
         rhoe.set(rhoe.get(0, i, j)
-                - _dt * (flux_rhou - gradPu),
+                - _dt * PCenter * ((uxCellRight - uxCellLeft) / (2 * _dx)
+                                 + (uyCellTop - uyCellBottom) / (2 * _dy)),
                 1, i, j);
         
         // Updating umax
-        if (rho.get(0, i, j) != 0) {
-            _local_uxmax = std::max(_local_uxmax, std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
-            _local_uymax = std::max(_local_uymax, std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
-        }
+        _local_uxmax = std::max(_local_uxmax, std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+        _local_uymax = std::max(_local_uymax, std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
         //std::cout << i << " " << j << " -> " << _local_umax << std::endl;
     }
 }
 
 
-void ConservativeHydrodynamics::writeState() {
+void HydrodynamicsOpt::writeState() {
 
     writeState(_outputpath);
 }
 
-void ConservativeHydrodynamics::writeState(std::string directory) {
+void HydrodynamicsOpt::writeState(std::string directory) {
 
     IO::writeQuantity(directory, "rho", *_domain);
     IO::writeQuantity(directory, "rhou_x", *_domain);
@@ -353,7 +315,7 @@ void ConservativeHydrodynamics::writeState(std::string directory) {
     IO::writeVariantInfo(directory, *_domain);
 }
 
-void ConservativeHydrodynamics::boundaryConditionsOnSpeed() {
+void HydrodynamicsOpt::boundaryConditionsOnSpeed() {
 
     _domain->updateOverlapCells("rhou_x");
     _domain->updateOverlapCells("rhou_y");
@@ -363,3 +325,4 @@ void ConservativeHydrodynamics::boundaryConditionsOnSpeed() {
     _domain->updateBoundaryCells("rhou_x", true);
     _domain->updateBoundaryCells("rhou_y", true);
 }
+

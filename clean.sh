@@ -11,7 +11,6 @@ find report/ -iname "*.nav" -type f -delete 2> /dev/null
 find -iname "*~" -type f -delete 2> /dev/null
 find -iname "transportUpwind-*" -type f -delete 2> /dev/null
 find -iname "isothermalHydrodynamics-*" -type f -delete 2> /dev/null
-find -iname "hydrodynamics-*" -type f -delete 2> /dev/null
 find -iname "conservativeHydrodynamics-*" -type f -delete 2> /dev/null
 rm -r tmp/ 2> /dev/null
 find case/ -iname "tmp" -type d -exec rm -r {} + 2> /dev/null
@@ -19,3 +18,6 @@ find case/ -iname "tmp" -type d -exec rm -r {} + 2> /dev/null
 #python regression.py isothermalHydrodynamics --clean-compile
 #python regression.py hydrodynamics --clean-compile
 #python regression.py conservativeHydrodynamics --clean-compile
+
+#find -iname "hydrodynamics-*" -type f -delete 2> /dev/null
+rm hydrodynamics-*

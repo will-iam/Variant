@@ -34,7 +34,6 @@ Geometry::buildGeometry(unsigned int nShapes,
 
     if(geomType == RANDOM) {
 
-            std::srand(1337);
             // Building whole rectangle and shuffling it
             // to get random coords
             unsigned int shapeSize = (_sizeX * _sizeY) / nShapes;

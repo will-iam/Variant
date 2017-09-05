@@ -67,6 +67,13 @@ int Hydrodynamics::init() {
     const Quantity<real>& rho = *(sdd.getQuantity("rho"));
     const Quantity<real>& rhou_x = *(sdd.getQuantity("rhou_x"));
     const Quantity<real>& rhou_y = *(sdd.getQuantity("rhou_y"));
+    const Quantity<real>& rhoe = *(sdd.getQuantity("rhoe"));
+
+    unsigned int nSDS = _domain->getNumberSDS();
+    _SDS_uxmax.resize(nSDS);
+    _SDS_uymax.resize(nSDS);
+    std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
+    std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
 
     for (const auto& sds: sdd.getSDS()) {
         for (std::pair<int, int> coords: sds) {
@@ -74,8 +81,10 @@ int Hydrodynamics::init() {
             int i = coords.first;
             int j = coords.second;
 
-            _local_uxmax = std::max(_local_uxmax, std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
-            _local_uymax = std::max(_local_uymax, std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+            if (rho.get(0, i, j) != 0) {
+                _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
+                _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
+            }
         }
     }
 
@@ -91,10 +100,11 @@ int Hydrodynamics::init() {
 
 int Hydrodynamics::start() {
 
-    int i = 0, j = 0;
+    int i = 0;
+    _nIterations = 0;
     while (_t < _T) {
        
-        ++j;
+        ++_nIterations;
 
         if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
             std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
@@ -103,12 +113,10 @@ int Hydrodynamics::start() {
 
 
         // Update speed parameters in order to compute dt
-        updateGlobalUxmax();
-        updateGlobalUymax();
-
-        // Reset umax for next iteration
-        _local_uxmax = 0;
-        _local_uymax = 0;
+        updateDomainUxmax();
+        updateDomainUymax();
+        std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
+        std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
 
         // Compute next dt
         computeDT();
@@ -146,17 +154,20 @@ int Hydrodynamics::start() {
 
     // Done
     //_domain->printState("rho");
-    writeState();
-    if (_MPI_rank == 0)
-        std::cout << "Niterations " << j << std::endl;
 
+    return 0;
+}
+
+int Hydrodynamics::finalize() {
+
+    writeState();
     return 0;
 }
 
 void Hydrodynamics::computeDT() {
 
     // Updating according to CFL and max velocity
-    _dt = _CFL / (_global_uxmax / _dx + _global_uymax / _dy);
+    _dt = _CFL / (_Domain_uxmax / _dx + _Domain_uymax / _dy);
     // So that the final T is reached
     _dt = std::min(_dt, _T - _t);
 }
@@ -313,10 +324,9 @@ void Hydrodynamics::source(const SDShared& sds,
         
         // Updating umax
         if (rho.get(0, i, j) != 0) {
-            _local_uxmax = std::max(_local_uxmax, std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
-            _local_uymax = std::max(_local_uymax, std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + sqrt(_gamma * std::pow(rho.get(0, i, j), _gamma - 1)));
+            _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
+            _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
         }
-        //std::cout << i << " " << j << " -> " << _local_umax << std::endl;
     }
 }
 
