@@ -7,7 +7,7 @@ from collections import *
 import parser
 from pprint import *
 from scipy import stats
-from pandas import Series 
+#from pandas import Series
 import numpy as np
 from numpy.linalg import inv, pinv
 import matplotlib.pyplot as plt
@@ -22,14 +22,14 @@ def computeNeighborNumber(x, y, withCorner = False):
     if x == 1: # then y > 1
         total += (y - 2) * 2 # border without corners
         total += 2 # corners
-        return total 
+        return total
 
     if y == 1: # then x > 1
         total += (x-2) * 2 # border without corners
         total += 2 # corners
         return total
 
-	# Now we know that x > 1 and y > 1
+    # Now we know that x > 1 and y > 1
     if withCorner == True:
         a = 8
         b = 5
@@ -39,13 +39,13 @@ def computeNeighborNumber(x, y, withCorner = False):
         b = 3
         c = 2
 
-	total += (x-2) * (y-2) * a # internal sub-domains
-	total += 2 * (x-2) * b # x borders without corners
-	total += 2 * (y-2) * b # y borders without corners
-	total += 4 * c # corners
+    total += (x-2) * (y-2) * a # internal sub-domains
+    total += 2 * (x-2) * b # x borders without corners
+    total += 2 * (y-2) * b # y borders without corners
+    total += 4 * c # corners
 
-	# return total
-	return total
+    # return total
+    return total
 
 
 
@@ -98,7 +98,7 @@ def synchronizeEstimate(data, caseKey):
     for point, synchronizeTimeList in rawTsData.items():
         meanTs, stdTs = stats.norm.fit(synchronizeTimeList)
         pointExpectDict[(point[0], point[1], point[2], len(synchronizeTimeList))] = np.exp(meanTs)
-        
+
         '''
         fig = plt.figure(0, figsize=(9, 6))
         ax = fig.add_subplot(111)
@@ -110,9 +110,9 @@ def synchronizeEstimate(data, caseKey):
         plt.legend()
         plt.show()
         '''
-        
+
     return pointExpectDict
- 
+
 def chargeEstimate(data, caseKey):
     '''
     Dans cette première étape on récupère les données produites avec un seul thread et 64 SDD pour estimer le
@@ -178,7 +178,7 @@ def chargeEstimate(data, caseKey):
             print('\n\tkstest output for the Normal distribution')
             print('\tD = ' + str(ktOut[0]))
             print('\tP-value = ' + str(ktOut[1]))
-            print machine, point, meanTc, stdTc, len(timeList)
+            print(machine, point, meanTc, stdTc, len(timeList))
 
             ## wald : moins bon que lognormal
             ## normal : non
@@ -216,8 +216,8 @@ def chargeEstimate(data, caseKey):
             print('\n\tkstest output for the Normal distribution')
             print('\tD = ' + str(ktOut[0]))
             print('\tP-value = ' + str(ktOut[1]))
-            
-            
+
+
             # Trace l'histogramme
             fig = plt.figure(0, figsize=(9, 6))
             ax = fig.add_subplot(111)
@@ -229,7 +229,7 @@ def chargeEstimate(data, caseKey):
             plt.legend()
             plt.show()
             '''
-            
+
         '''
         # Trace l'histogramme
         fig = plt.figure(0, figsize=(9, 6))
@@ -243,19 +243,19 @@ def chargeEstimate(data, caseKey):
         plt.legend()
         plt.show()
         '''
-     
-    print "\nExpectation by point:"
-    allExpectTime = []    
+
+    print("\nExpectation by point:")
+    allExpectTime = []
     for point, machineExpectDict in expectTimeDict.items():
-        print "Expectation(s) on point", point
+        print("Expectation(s) on point", point)
         for machine, normal in machineExpectDict.items():
             t = np.exp(normal[0])
             allExpectTime.append(t)
-            print "\t%s %s" % (machine, t)
-        print "\tmean of expectation(s) = %s" % (np.mean([np.exp(v[0]) for v in machineExpectDict.values()]))
-    
+            print("\t%s %s" % (machine, t))
+        print("\tmean of expectation(s) = %s" % (np.mean([np.exp(v[0]) for v in machineExpectDict.values()])))
+
     mean = np.mean(allExpectTime)
-    print "Mean of all expectation values: ", mean
+    print("Mean of all expectation values: ", mean)
 
     '''
     # Normal of all points.
@@ -280,39 +280,37 @@ def greeksEstimate(data):
     delta = débit de la communication.
     lambda = latence pour ouvrir une communication.
     '''
-    rawTsData = []
-    for k, v in data.items():
-        if k.endswith(':64:1:4'):
-            for d in v:
-                rawTsData.append(d)
 
-    if not len(rawTsData):
-        print("Aucune données sur le cas")
-        sys.exit(1)
-    #pprint(rawTsData)
 
     TsData = []
-    for p in rawTsData:
-        coord = p['point']
-        if coord[0] * coord[1] * coord[2] != 64:
-            print("Erreur dans la récupération des données")
-            sys.exit(1)
-
-        if coord[0] == 1 and coord[1] == 1:
+    for k, v in data.items():
+        if not k.endswith(':64:1:4'):
             continue
 
-        #if coord[0] != coord[1]:
-        #  continue
+        for p in v:
 
-        #caseSize = int(np.sqrt(p['nPhysicalCells'] * coord[0] * coord[1]))
-        #if caseSize > 700:
-        #    continue
+            coord = p['point']
+            if coord[0] * coord[1] * coord[2] != 64:
+                print("Erreur dans la récupération des données")
+                sys.exit(1)
 
-        TsData.append(p)        
+            if coord[0] == 1 and coord[1] == 1:
+                continue
+
+            #if coord[0] != coord[1]:
+            #  continue
+
+            #caseSize = int(np.sqrt(p['nPhysicalCells'] * coord[0] * coord[1]))
+            #if caseSize > 700:
+            #    continue
+            extractedKey = parser.extractKey(k)
+            p['Nx'] = extractedKey['Nx']
+            p['Ny'] = extractedKey['Ny']
+
+            TsData.append(p)
 
 
-    
-    # Estimation des paramètres du modèle 
+    # Estimation des paramètres du modèle
     TsList = []
     coupleList = []
     interfaceSizeDict = {}
@@ -324,10 +322,11 @@ def greeksEstimate(data):
         coord = p['point']
         nx = float(coord[0])
         ny = float(coord[1])
-        caseSize = int(np.sqrt(p['nPhysicalCells'] * nx * ny))
+        Nx = p['Nx']
+        Ny = p['Ny']
 
-        h =  fn(nx) * ny + fn(ny) * nx
-        i =  h * caseSize
+        h =  parser.fn(nx) * ny + parser.fn(ny) * nx
+        i =  h * (Nx + Ny)
 
         coupleList.append([1.0, np.log(h), np.log(i)])
         TsList.append(ts)
@@ -348,10 +347,10 @@ def greeksEstimate(data):
     F = np.array(coupleList)
     B = np.dot(pinv(F), Ts)
 
-    print len(Ts), " simulations. Valeur de B:", B
+    print(len(Ts), " simulations. Valeur de B:", B)
     TsEstimate = np.dot(F, B)
     err = np.sqrt(np.sum(np.dot((Ts - TsEstimate), (Ts - TsEstimate)))) / len(Ts)
-    print "Erreur entre le modèle bruité non calibré et le modèle calibré: ", err
+    print("Erreur entre le modèle bruité non calibré et le modèle calibré: ", err)
 
 
     # i =  h * caseSize, j =  h * np.log(caseSize) : err = 0.00505024734782
@@ -385,17 +384,17 @@ def greeksEstimate(data):
     for i in sorted(neighbourhoodDict):
         for h,v in sorted(neighbourhoodDict[i].items()):
             for y in neighbourhoodDict[i][h]:
-                x = h*(lambdaValue + deltaValue*i)          
+                x = h*(lambdaValue + deltaValue*i)
                 Y.append(y)
                 X.append(x)
                 err.append(np.abs(x-y))
-    
+
     sigma = np.std(err)
     print "err var:", np.var(err),", err std:", sigma
     Pf = Pf * sigma * sigma
     '''
 
-    
+
     ### fig ###
     fig = plt.figure(0, figsize=(9, 6))
 
@@ -425,14 +424,14 @@ def greeksEstimate(data):
                 boxDist[k].append(v)
 
         ax.plot(sorted(interfaceSizeDict[h].keys()), [np.mean(t) for k, t in sorted(interfaceSizeDict[h].items())], "o--", label="total neighbour: " + str(h))
-        
+
         #for i, tsList in interfaceSizeDict[h].items():
         #    ii = [i for p in tsList]
         #    ax.plot(ii, tsList, "+")
-        
+
         # Estimate
-        #y = [B[0] +  B[1] * np.log(h) + B[2] * np.log(i) for i in x]
-        #ax.plot(x, y, "-", label="total neighbour: " + str(h))
+        y = [B[0] +  B[1] * np.log(h) + B[2] * np.log(i) for i in x]
+        ax.plot(x, y, "-", label="total neighbour: " + str(h))
 
         #Best = [-2.11062418,  1.41218773, -1.39434254]
         #y = [np.exp(Best[0]) * np.power(h, Best[1] + Best[2]) * np.power(i / h, Best[2]) for i in x]
@@ -444,7 +443,7 @@ def greeksEstimate(data):
     plt.legend()
     plt.title('synchronized time model')
     plt.ylabel('Time')
-    
+
     '''
 (1, 1, 64, 123) - (0)
 
@@ -477,7 +476,7 @@ def greeksEstimate(data):
         # Estimate
         #y = [lambdaValue + deltaValue * np.log(h) + thetaValue * np.log(i) for h in x]
 #        bx.plot(x, y, "--")
-        
+
 
     plt.xlabel('total neighbour number')
     #plt.legend(loc='upper left')
@@ -501,7 +500,7 @@ def greeksEstimate(data):
         bx.plot(errbarm.keys(), errbarm.values(), "x")
 
 
-    
+
     positionList = []
     valueList = []
     for s in sorted(neighbourhoodDict):
@@ -536,21 +535,21 @@ if not len(data):
 
 # Estimation de Tc sur un seul point de fonctionnement.
 expectTc = chargeEstimate(data, caseKey)
-print "E[Tc] = %s milliseconds per (iteration x cell number)" % (expectTc)
+print("E[Tc] = %s milliseconds per (iteration x cell number)" % (expectTc))
 
 # Estimation des paramètres du modèle de Ts en fonction de plusieurs cas
 greeks = greeksEstimate(data)
-print "Greeks: ", greeks
+print("Greeks: ", greeks)
 
 # Estimation de Ts par point de fonctionnement.
 TsKey = caseKey + ':64'
 expectTsDict = synchronizeEstimate(data, TsKey)
 for point, expectTs in expectTsDict.items():
-    print "E[Ts] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTs, point, computeNeighborNumber(point[0],point[1]))
+    print("E[Ts] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTs, point, computeNeighborNumber(point[0],point[1])))
 minTuple = sorted(expectTsDict.items(), key=operator.itemgetter(1))[1]
-print "min(E[Ts]) value = %s on point: %s" % (minTuple[1], minTuple[0])
+print("min(E[Ts]) value = %s on point: %s" % (minTuple[1], minTuple[0]))
 maxTuple = sorted(expectTsDict.items(), key=operator.itemgetter(1))[-1]
-print "max(E[Ts]) value = %s on point: %s" % (maxTuple[1], maxTuple[0])
+print("max(E[Ts]) value = %s on point: %s" % (maxTuple[1], maxTuple[0]))
 
 # Estimation de T par point de fonctionnement.
 TtotKey = caseKey + ':64:1:4'
@@ -561,8 +560,8 @@ for point, expectTot in expectTtotDict.items():
     if expectTot < minValue:
         minValue = expectTot
         minPoint = point
-    print "E[T] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTot, point, computeNeighborNumber(point[0],point[1]))
-print "min(E[T]) value = %s on point: %s" % (minValue, minPoint)
+    print("E[T] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTot, point, computeNeighborNumber(point[0],point[1])))
+print("min(E[T]) value = %s on point: %s" % (minValue, minPoint))
 
 # Estimation de Tt par point de fonctionnement.
 expectTtDict = {}
@@ -570,13 +569,13 @@ for point, expectTot in expectTtotDict.items():
     expectTt = expectTot - expectTc / (point[0] * point[1] * point[2]) - expectTsDict[point]
     # print "E[Tt] = %s - %s / %s - %s = %s" % (expectTot, expectTc, (point[0] * point[1] * point[2]), expectTsDict[point], expectTt)
     expectTtDict[point] = expectTt
-    print "E[Tt] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTt, point, computeNeighborNumber(point[0],point[1]))
+    print("E[Tt] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTt, point, computeNeighborNumber(point[0],point[1])))
 
 minTuple = sorted(expectTtDict.items(), key=operator.itemgetter(1))[0]
-print "min(E[Tt]) value = %s on point: %s" % (minTuple[1], minTuple[0])
+print("min(E[Tt]) value = %s on point: %s" % (minTuple[1], minTuple[0]))
 
 maxTuple = sorted(expectTtDict.items(), key=operator.itemgetter(1))[-1]
-print "max(E[Tt]) value = %s on point: %s" % (maxTuple[1], maxTuple[0])
+print("max(E[Tt]) value = %s on point: %s" % (maxTuple[1], maxTuple[0]))
 
 # Estimation de Tmod par point de fonctionnement.
 expectTmodDict = {}
@@ -586,19 +585,19 @@ for point, expectTt in expectTtDict.items():
     nx = point[0]
     ny = point[1]
     h = computeNeighborNumber(nx, ny)
-    interface_size = caseSize
-    new_interface_size = interface_size * 2
-    estimate = np.exp(greeks[0]) * np.power(h, greeks[1] + greeks[2]) * np.power(interface_size, greeks[2])
-    estimateMod = np.exp(greeks[0]) * np.power(h, greeks[1] + greeks[2]) * np.power(new_interface_size, greeks[2])
+    interface_size = caseSize + caseSize
 
-    expectTsmod = expectTsDict[point] * np.sqrt(2)
-    print point, "expectTsmod:", expectTsmod, "expectTs:", expectTsDict[point], "estimateTs:", estimate, "estimateTsmod:", estimateMod
-    expectTsmodDict[point] = estimate
+    estimate = np.exp(greeks[0]) * np.power(h, greeks[1] + greeks[2]) * np.power(interface_size, greeks[2])
+    estimateMod = estimate * np.power(2, 2 + greeks[2])
+    expectTsmod = estimateMod
+
+    #print(point, "expectTsmod:", expectTsmod, "expectTs:", expectTsDict[point], "estimateTs:", estimate, "estimateTsmod:", estimateMod)
+    expectTsmodDict[point] = expectTsmod
     expectTmodDict[point] = expectTt + expectTsmod + expectTc / (point[0] * point[1] * point[2])
 
-    print "E[Tm] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTmodDict[point], point, computeNeighborNumber(point[0], point[1]))
+    print("E[Tm] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTmodDict[point], point, computeNeighborNumber(point[0], point[1])))
 minTuple = sorted(expectTmodDict.items(), key=operator.itemgetter(1))[0]
-print "min(E[Tm]) value = %s on point: %s" % (minTuple[1], minTuple[0])
+print("min(E[Tm]) value = %s on point: %s" % (minTuple[1], minTuple[0]))
 
 # Final Plot
 fig = plt.figure(0, figsize=(9, 6))
@@ -649,7 +648,7 @@ On modélise T_c comme un processus gaussien stationnaire. On estime avec 30 tir
 Test Khi2 ou visuel avec l'histogramme.
 
 # Trace l'histogramme
-from pandas import Series 
+from pandas import Series
 values = Series(sample)
 values.hist(bins=20, alpha=0.3, color='k', normed= True)
 values.plot(kind='kde', style='k--')

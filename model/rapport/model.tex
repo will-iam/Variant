@@ -1,0 +1,169 @@
+% Comments start with a %, and are ignored by LaTeX.
+
+% In LaTeX, every document starts with a documentclass.  I strongly
+% recommend "memoir" over any of the more standard ones.
+\documentclass[12pt]{memoir}
+
+% This part of the document is called the preamble.
+
+% Example numbering
+%\usepackage{gb4e-mod}
+
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+
+% put some headers and things
+\copypagestyle{kbasic}{empty}
+\makeoddfoot{kbasic}{
+    \small p. {\thepage} of \pageref{kyle:lastpage}}
+{}{
+    \small Variant project - report}
+
+\makeevenfoot{kbasic}{\small Variant project - report}{}{\small 
+    p. {\thepage} of
+    \pageref{kyle:lastpage}}
+  
+% A little trick to get the last page's number.  Note that this
+% isn't always reliable, for reasons I don't understand.
+\AtEndDocument{\label{kyle:lastpage}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+%\usepackage{mathrsfs} % Times new roman
+\usepackage{lmodern} % Computer modern
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage[left=3cm,right=3cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+\usepackage{xcolor}
+\usepackage[ntheorem]{empheq}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\div}[1]{\nabla \cdot #1}
+\newcommand{\grad}{\nabla}
+\newcommand{\Real}{\mathbf{R}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\diff}{\mathop{}\mathopen{}\mathrm{d}}
+\newcommand\defeq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+\newcommand{\bvec}[1]{\boldsymbol{#1}}
+\newcommand{\partialf}[2]{\frac{\partial #1}{\partial #2}}
+\newtheorem{remark}{Remark}
+
+\setsecnumdepth{subsection}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document content
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+% use the page style defined above.
+\pagestyle{kbasic}
+\bibliographystyle{linquiry2}
+
+\title{Variant project - Development report}
+\author{William \textsc{Vazquez}}
+
+\maketitle
+\tableofcontents
+
+\chapter{Metrics and performance measures}
+
+
+\section{\'etalonnage de l'instrument de mesure (calculateur)}
+
+\section{Modèle de performance}
+
+\subsection*{paramètres du code}
+\begin{itemize}
+\item $N_x$ : nombre de mailles en abscisses
+\item $N_y$ : nombre de mailles en ordonnées
+\item $n_x n_y n_c = C_{ste}$ : nombre de ressources
+\item $n_t$ : nombre de \textit{threads} par c\oe ur
+\item $n_s$ : nombre de SDS par \textit{thread}
+\end{itemize}
+
+\subsection*{entrées du code (variable du plan d'expérience)}
+\begin{itemize}
+\item $n_x$ : nombre de sous-domaines en abscisses
+\item $n_y$ : nombre de sous-domaines en ordonnées
+\item $n_c$ : nombre de c\oe urs par sous-domaine
+\end{itemize}
+
+\subsection*{composantes du modèle}
+
+\begin{itemize}
+\item $T_c$ : Temps de calcul en fonction de la taille du cas, \textit{a priori} linéaire de pente 2.
+\item $T_s(n_x, n_y)$ : Temps de synchronisation, mesuré, bruité, nul si $n_xn_y = 1$, \textit{a priori} affine au-delà : $T_s = \lambda + \theta \max(\frac{N_x}{n_x},\frac{N_y}{n_y})$
+\item $T_t(n_x, n_y, n_c)$ : Temps supplémentaire de la parallélisation en \textit{multithreading}, dépend de la taille du SDD (a priori pas du nombre mais à tester), de la taille des SDS, du nombre de c\oe urs, non-mesuré, bruité, peut-\^etre nul si $n_c n_t = 1$, \textit{a priori} affine au-delà avec $s$ fixé. Augmente avec la taille du cas, mais comment ?
+\end{itemize}
+
+\subsection{modèle}
+
+$$T = \frac{T_c}{n_x n_y n_c} + T_s(n_x, n_y) + T_t(n_x, n_y, n_c)$$
+
+\subsection*{output}
+\begin{itemize}
+\item On mesure $T$, bruité
+\item On mesure $T_s$, bruité
+\end{itemize}
+
+\subsection*{Questions}
+\begin{itemize}
+\item Modéliser en découpage carré pour plus de simplicité ($n_x = n_y$ et $N_x = N_y$)?
+\item On veut un modèle pour $T_s$ et $T_t$ pour conna\^itre à problème donné et à ressources fixées, la meilleure configuration. (\textit{i.e.} $n_x n_y n_c = C$, $\min T_s  + T_t$) 
+\end{itemize}
+
+\subsection*{Prédictions}
+
+
+\begin{itemize}
+\item Avec un modèle pour $T_s$ et $T_t$, on peut déterminer quelle est la meilleure configuration si on double le nombre de mailles à communiquer ?
+\end{itemize}
+
+\subsection{étape}
+
+Première étape:
+- On modélise $T_c$ comme un processus gaussien stationnaire. On estime avec 30 tirages sa moyenne et sa variance.
+(comme c'est stationnaire, quelque soit le point de fonctionnement, la moyenne et la variance sont les m\^emes)
+Test $Khi^2$ ou visuel avec l'histogramme.
+
+Deuxième étape:
+- estimation du bruit sur $T_s$ avec moindre carrés. (Moyenne, Variance).
+- calibration \"traditionnelle\" (par minimisation des moindres carrés) du modèle pour $T_s$ ($lambda$ et $theta$ dans le cas différent de 0)
+- Leave one out pour valider
+
+Troisième étape:
+- On modélise $T_tot$ comme un processus gaussien non stationnaire. Il y a une moyenne et une variance pour le triplet $n_x, n_y, n_c$
+- Regarder l'histogramme pour chaque point (pour voir si c'est bien gaussien).
+
+Quatrième étape:
+$T_t$ est un processus aléatoire non stationnaire (pas nécessairement gaussien parce qu'on ne sait si $T_s$ est gaussien) 
+
+$T_t = T - T_s -\frac{T_c}{(n_x n_y n_c)}$
+
+Loi $T_t$:
+Espérance: $\mu_tot - \mu_s - \frac{\mu_c}{(nx ny nc)}$
+Variance: $\sigma_tot^2 + \sigma_s^2 + \frac{\sigma_tc^2}{(nx ny nc)^2}$
+
+
+Cinquième étape:
+(prédiction)
+
+
+
+\end{document}
+
+

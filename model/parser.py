@@ -36,7 +36,7 @@ def extractKey(key):
 
     return {"Nx":Nx, "Ny":Ny, "Ni":Ni, "R":R, "Nt":Nt, "Ns":Ns}
 
-def makeKey(attrnames, data_line):
+def makeKey(attrnames, data_line, from_case_name_ny):
     '''
     Nx : nombre de mailles en abscisses
     Ny : nombre de mailles en ordonnées
@@ -51,31 +51,38 @@ def makeKey(attrnames, data_line):
     # Cas particulier: si le nombre de threads alloué est inférieur, il remplace le nombre de coeurs par SDD.
     if nThreads < nCoresPerSDD:
         print("ERROR: nThreads < nCoresPerSDD = %s < %s" % (nThreads, nCoresPerSDD))
-        sys.exit(1)
-
-
-    # No = nx * fn(nx)
+        raise ValueError
 
     nIterationsList = data_line[attrnames.index('nIterations')]
     if len(nIterationsList) == 0:
         print("Erreur dans le fichier de données")
-        sys.exit(1)
+        raise ValueError
 
     for n in nIterationsList:
         if n != nIterationsList[0]:
             print("Erreur dans le fichier de données")
-            sys.exit(1)
-    
+            raise ValueError
+
+    nPhysicalCells = int(data_line[attrnames.index('nPhysicalCells')])
     nSDD = int(data_line[attrnames.index('nSDD')])
-    nx = int(data_line[attrnames.index('nx')])
-    ny = int(data_line[attrnames.index('ny')])
-    N = int(data_line[attrnames.index('nPhysicalCells')]) * nSDD
+    nx = int(data_line[attrnames.index('nSDD_X')])
+    ny = int(data_line[attrnames.index('nSDD_Y')])
     No = data_line[attrnames.index('nOverlapCells')][0] * nSDD
 
-    caseSize = int(np.sqrt(int(nPhysicalCells) * nSDD))
+    Nx = int(nPhysicalCells * nSDD / from_case_name_ny)
+    Ny = int(from_case_name_ny)
 
-    Nx = caseSize
-    Ny = caseSize
+    if Nx * Ny != nPhysicalCells * nSDD:
+        print('nPhysicalCells * nSDD', nPhysicalCells * nSDD)
+        print('nPhysicalCells * nSDD / from_case_name_ny', nPhysicalCells * nSDD / from_case_name_ny)
+        print('from_case_name_ny', from_case_name_ny)
+        print('No', No)
+        print('fn(ny)', fn(ny))
+        print('fn(nx)', fn(nx))
+        print(nx, ny, Nx, Ny, nPhysicalCells * nSDD, Nx * Ny)
+        print("Problem in case size conversion")
+        raise ValueError
+
     Ni = int(nIterationsList[0])
     R = nCoresPerSDD * nSDD
     Nt = nThreads / nCoresPerSDD
@@ -83,12 +90,12 @@ def makeKey(attrnames, data_line):
 
     # Make unique key
     key = "%sx%sx%s:%s:%s:%s" % (Nx, Ny, Ni, R, Nt, Ns)
-    # print "[DATA] - %s: %s run(s) ressources = %s" % (key, len(nIterationsList), R), " case: %sx%s" % (caseSize, caseSize)
+    print "[DATA] - %s: %s run(s) ressources = %s" % (key, len(nIterationsList), R), " case: %sx%s" % (Nx, Ny)
 
     return key,  nPhysicalCells * nSDD * Ni
 
 
-def parseData(filepath, data, filterKey):    
+def parseData(filepath, data, filterKey, Ny):
     attrnames = []
     with open(filepath, 'r') as f:
         runAdded = 0
@@ -97,7 +104,7 @@ def parseData(filepath, data, filterKey):
         for line in f.readlines():
             line = previous_line + line
             if line == [] or line == '\0':
-                print "empty line"
+                print("empty line")
                 break
             data_line = []
             for el in line.split(';'):
@@ -110,13 +117,15 @@ def parseData(filepath, data, filterKey):
                     except ValueError:
                         data_line.append(el)
             try:
-                key, normalizer = makeKey(attrnames, data_line)
-            except:
+                key, normalizer = makeKey(attrnames, data_line, Ny)
+            except IndexError:
                 #print "failed to parse: ", line
                 #print "result data_line: ", data_line
                 previous_line = line
                 continue
-
+            except ValueError:
+                print("Can't parse file.")
+                sys.exit(1)
             # reset multiline parsing
             previous_line = ''
 
@@ -124,10 +133,10 @@ def parseData(filepath, data, filterKey):
             if not key.startswith(filterKey):
                 # print "filtered:", key, filterKey
                 continue
-    
+
             if key not in data.keys():
                 data[key] = []
-            
+
             # Paramètres d'entrées, point de fonctionnement.
             # nSDD_X, nSDD_Y, nCoresPerSDD
             nSDD_X = int(data_line[attrnames.index('nSDD_X')])
@@ -159,20 +168,23 @@ def parseData(filepath, data, filterKey):
                 #print i, nSDD_X, nSDD_Y, nCoresPerSDD, data[key][-1]
 
         print "\t - leave file:", filepath, "run added:", runAdded
-        f.close()            
+        f.close()
 
 def readData(caseName, data, filterKey):
     dirpath = os.path.join('data', str(caseName))
+    Ny = int(caseName.split('x')[1])
     for filename in os.listdir(dirpath):
         if not filename.endswith(".csv"):
             continue
         print "\t - parsing data from %s/%s:" % (caseName, filename)
         filepath = os.path.join(dirpath, filename)
-        parseData(filepath, data, filterKey)
+        parseData(filepath, data, filterKey, Ny)
 
 def getData(filterKey = ''):
     data = {}
-    for caseName in os.listdir("data"):    
+    for caseName in os.listdir("data"):
+        if 'x' not in caseName:
+            continue
         print "Start reading file list from %s directory:" % caseName
         readData(caseName, data, filterKey)
     return data
