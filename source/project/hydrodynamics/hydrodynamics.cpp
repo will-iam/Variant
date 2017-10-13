@@ -103,14 +103,13 @@ int Hydrodynamics::start() {
     int i = 0;
     _nIterations = 0;
     while (_t < _T) {
-       
-        ++_nIterations;
-
-        if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
+       if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
             std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
             i = int(_t / _T * 10.0) + 1;
         }
 
+   	    _timerComputation.begin();
+        ++_nIterations;
 
         // Update speed parameters in order to compute dt
         updateDomainUxmax();
@@ -122,7 +121,13 @@ int Hydrodynamics::start() {
         computeDT();
 
         // Synchronize overlap cells: requires communication
+   	    _timerComputation.end();
+	    _timerSynchronization.begin();
         _domain->updateOverlapCells();
+	    _timerSynchronization.end();
+   	    _timerComputation.begin();
+
+        // update BoundaryCells
         _domain->updateBoundaryCells("rho");
         _domain->updateBoundaryCells("rhou_x", true);
         _domain->updateBoundaryCells("rhou_y", true);
@@ -135,8 +140,14 @@ int Hydrodynamics::start() {
         _domain->switchQuantityPrevNext("rhou_y");
         _domain->switchQuantityPrevNext("rhoe");
 
-        // Resynchronize ghost cells for rho quantity before calling next step
+        // Resynchronize overlap cells for rho quantity before calling next step
+   	    _timerComputation.end();
+	    _timerSynchronization.begin();
         _domain->updateOverlapCells();
+	    _timerSynchronization.end();
+   	    _timerComputation.begin();
+
+        // update BoundaryCells
         _domain->updateBoundaryCells("rho");
         _domain->updateBoundaryCells("rhou_x", true);
         _domain->updateBoundaryCells("rhou_y", true);
@@ -149,7 +160,7 @@ int Hydrodynamics::start() {
 
         _t += _dt;
         //getchar();
-
+   	    _timerComputation.end();
     }
 
     // Done
@@ -343,6 +354,13 @@ void Hydrodynamics::writeState(std::string directory) {
     IO::writeQuantity(directory, "rhou_y", *_domain);
     IO::writeQuantity(directory, "rhoe", *_domain);
     IO::writeVariantInfo(directory, *_domain);
+
+    std::map<std::string, int> resultMap;
+    resultMap["computeTime"] = _timerComputation.getTotalSteadyDuration();
+    resultMap["synchronizeTime"] = _timerSynchronization.getTotalSteadyDuration();
+    IO::writeSDDPerfResults(directory, *_domain, resultMap);
+    IO::writeSDDTime(directory, *_domain, "compute", _timerComputation.getSteadyTimeList());
+    IO::writeSDDTime(directory, *_domain, "synchronize", _timerSynchronization.getSteadyTimeList());
 }
 
 void Hydrodynamics::boundaryConditionsOnSpeed() {

@@ -128,13 +128,18 @@ namespace IO {
      * 
      */
     int writePerfResults(std::string directory,
-            const std::map<std::string, int> results);
+            const std::map<std::string, int>& results);
 
+    int writeSDDPerfResults(std::string directory,
+            const Domain& domain, const std::map<std::string, int>& results);
+
+    int writeSDDTime(std::string directory,
+            const Domain& domain, const std::string& timerName, const std::list<unsigned long int>& timeList);
     /*!
      * 
      */
     int writeVariantInfo(std::string directory,
-                     const Domain& domain);
+            const Domain& domain);
 }
 
 #endif

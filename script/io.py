@@ -68,6 +68,7 @@ def read_exec_options(input_dir):
     exec_options['nSDS'] = int(line_list[3])
     exec_options['SDSgeom'] = line_list[4]
     exec_options['nThreads'] = int(line_list[5])
+    exec_options['nCoresPerSDD'] = int(line_list[6])
 
     return exec_options
 
@@ -89,11 +90,17 @@ def read_domain(input_dir):
     return domain
 
 def read_perfs(input_dir):
+    print("read_perfs: ", input_dir + "/" + "perfs.dat")
     f = open(os.path.join(input_dir, 'perfs.dat'), 'r')
     perfs = dict()
     for line in f.readlines():
         line_list = line.split()
         perfs[line_list[0]] = int(line_list[1])
+        print "line", line
+        print line_list[0], line_list[1]
+    f.close()
+
+    print perfs
     return perfs
 
 def write_quantity_from_array(output_dir, data, domain_dir, quantity_name):
@@ -185,14 +192,15 @@ def write_scheme_info(output_dir, T, CFL):
     f.write(str(CFL) + "\n")
     f.close()
 
-def write_exec_options(output_dir, nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads):
+def write_exec_options(output_dir, nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads, nCoresPerSDD):
     f = open(os.path.join(output_dir, 'exec_options.dat'), 'w+')
     f.write(str(nSDD) + " ")
     f.write(str(nSDD_X) + " ")
     f.write(str(nSDD_Y) + " ")
     f.write(str(nSDS)+ " ")
     f.write(SDSgeom + " ")
-    f.write(str(nThreads) + "\n")
+    f.write(str(nThreads) + " ")
+    f.write(str(nCoresPerSDD) + "\n")
     f.close()
 
 def write_bc(output_dir, coords_to_uid_and_bc):
@@ -226,6 +234,18 @@ def read_variant_info(data_dir, nSDD):
         whole_data.append(tuple(data))
 
     return whole_data
+
+def read_perf_info(data_dir, nSDD):
+    perfs = {}
+    for i in range(nSDD):
+        f = open(os.path.join(data_dir, 'sdd' + str(i), 'perfs.dat'), 'r')
+        for line in f.readlines():
+            line_list = line.split()
+            if line_list[0] not in perfs:
+                perfs[line_list[0]] = []
+            perfs[line_list[0]].append(int(line_list[1]))
+        f.close()
+    return perfs
 
 def write_quantity_names(output_dir, qty_names):
     f = open(os.path.join(output_dir, 'quantities.dat'), 'w')

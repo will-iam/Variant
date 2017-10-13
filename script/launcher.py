@@ -39,7 +39,7 @@ def check_test(test_path, ref_path):
     return results
 
 def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
-        bool_compile, test, ncores = 1, vtune = False, gdb = False, valgrind = False, ref_case = "tmp"):
+        bool_compile, test, nCoresPerSDD = 1, vtune = False, gdb = False, valgrind = False, ref_case = "tmp"):
     # Start time
     start = timer()
 
@@ -47,30 +47,24 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
     #case_path = os.path.join(root_dir, 'case', project_name, cn, 'init')
     #if not os.path.isdir(case_path):
-    case_path, qty_name_list = build_case.build_case(root_dir, tmp_dir, project_name, cn,
-            ref_case)
+    case_path, qty_name_list = build_case.build_case(root_dir, tmp_dir, project_name, cn, ref_case)
 
     # Manage number of SDD
     nSDD_X = test['nSDD'][0]
     nSDD_Y = test['nSDD'][1]
 
     # Add exec options
-    io.write_exec_options(case_path, nSDD_X * nSDD_Y,
-            nSDD_X, nSDD_Y,
-            test['nSDS'], test['SDSgeom'], test['nThreads'])
+    io.write_exec_options(case_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], nCoresPerSDD)
 
     input_path = os.path.join(root_dir, 'case', project_name, cn, 'init', str(nSDD_X) + 'x' + str(nSDD_Y))
     # Split case for SDDs into tmp directory
     if not os.path.isdir(input_path):
-	    print(COLOR_BLUE + "Splitting case data" + COLOR_ENDC)
-	    input_path = sdd.split_case(case_path, nSDD_X, nSDD_Y, qty_name_list)
+        print(COLOR_BLUE + "Splitting case data" + COLOR_ENDC)
+        input_path = sdd.split_case(case_path, nSDD_X, nSDD_Y, qty_name_list)
 
-    # Copying exec options in input path too
-    io.write_exec_options(input_path, nSDD_X * nSDD_Y,
-            nSDD_X, nSDD_Y,
-            test['nSDS'], test['SDSgeom'], test['nThreads'])
-    copyfile(os.path.join(case_path, 'scheme_info.dat'),
-             os.path.join(input_path, 'scheme_info.dat'))
+    # Copying exec_options and scheme_info in input path too
+    copyfile(os.path.join(case_path, 'exec_options.dat'), os.path.join(input_path, 'exec_options.dat'))
+    copyfile(os.path.join(case_path, 'scheme_info.dat'), os.path.join(input_path, 'scheme_info.dat'))
 
     # Building output paths (the engine cannot create them itself)
     output_path = os.path.join(tmp_dir, "final")
@@ -82,11 +76,13 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     engine = compiler.Engine(project_name, bool_compile, comp, mode, precision, std)
     nprocs = nSDD_X * nSDD_Y
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    engine.run(input_path, output_path, nprocs, ncores, gdb, valgrind, vtune)
+    engine.run(input_path, output_path, nprocs, nCoresPerSDD, gdb, valgrind, vtune)
 
     # Variant info
-    variant_info = io.read_variant_info(output_path,
-            nSDD_X * nSDD_Y)
+    variant_info = io.read_variant_info(output_path, nSDD_X * nSDD_Y)
+    
+    # Perfs info    
+    perf_info = io.read_perf_info(output_path, nSDD_X * nSDD_Y)
 
     if ref_case == "ref":
         final_path = os.path.abspath(os.path.join(case_path, os.pardir, "final"))
@@ -109,5 +105,5 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
              os.path.join(final_path, 'quantities.dat'))
 
 
-    return final_path, int((end - start) * 1000), variant_info
+    return final_path, int((end - start) * 1000), variant_info, perf_info
 

@@ -101,7 +101,7 @@ int Engine::main(int argc, char** argv) {
         TimeStamp::printLocalTime();
         cout << ": Initialize Engine" << Console::_normal << endl;
 
-        _timer.start();
+        _timerTotal.begin();
     }
 
     // Check return of initialize, if ok nothing to do
@@ -116,17 +116,17 @@ int Engine::main(int argc, char** argv) {
 
     if (_MPI_rank == 0) {
 
-        _timer.end();
+        _timerTotal.end();
 
-        _timer.report();
+        _timerTotal.reportLast();
 
-        perfResults["initTime"] = _timer.getSteadyDuration();
+        perfResults["initTime"] = _timerTotal.getLastSteadyDuration();
 
         cout << Console::_green;
         TimeStamp::printLocalTime();
         cout << ": Engine starts" << Console::_normal << endl;
 
-        _timer.start();
+        _timerTotal.begin();
     }
 
     // Check return of start, if ok nothing to do
@@ -141,36 +141,36 @@ int Engine::main(int argc, char** argv) {
 
     if (_MPI_rank == 0) {
 
-        _timer.end();
+        _timerTotal.end();
 
         cout << Console::_green;
         TimeStamp::printLocalTime();
-        cout << ": Engine stopped normally" << Console::_normal << endl;
+        cout << ": Engine stopped normally." << endl;
+	    cout << Console::_normal << "Total loop time: ";
+        _timerTotal.reportLast();
+        cout << "[0] - Computation time: ";
+	    _timerComputation.reportTotal();
+        cout << "[0] - Synchronization time: ";
+	    _timerSynchronization.reportTotal();
 
-        perfResults["computeTime"] = _timer.getSteadyDuration();
+        perfResults["loopTime"] = _timerTotal.getLastSteadyDuration();
         perfResults["nIterations"] = _nIterations;
 
-        _timer.report();
 
-		cout << Console::_green;
-		TimeStamp::printLocalTime();
-		cout << ": Engine finalizes" << Console::_normal << endl;
-
-	_timer.start();
+	    cout << Console::_green;
+	    TimeStamp::printLocalTime();
+	    cout << ": Engine finalizes" << Console::_normal << endl;
+	    _timerTotal.begin();
     }
 
     finalize();
 
-	if (_MPI_rank == 0) {
-
-		_timer.end();
-
-		_timer.report();
-
-		perfResults["finalizeTime"] = _timer.getSteadyDuration();
-
-		IO::writePerfResults(_outputpath, perfResults);
-	    }
+    if (_MPI_rank == 0) {
+	    _timerTotal.end();
+	    _timerTotal.reportLast();
+	    perfResults["finalizeTime"] = _timerTotal.getLastSteadyDuration();
+	    IO::writePerfResults(_outputpath, perfResults);
+    }
 
     MPI_Finalize();
 

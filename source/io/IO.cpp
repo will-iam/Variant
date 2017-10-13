@@ -205,12 +205,40 @@ int IO::loadBoundaryConditions(std::string directory,
     return 0;
 }
 
-int IO::writePerfResults(std::string directory, const std::map<std::string, int> results) {
+int IO::writePerfResults(std::string directory, const std::map<std::string, int>& results) {
 
     std::ofstream ofs(directory + "/perfs.dat");
 
     for (auto const& r: results)
         ofs << r.first << " " << r.second << std::endl;
+    
+    ofs.close();
+    return 0;
+}
+
+int IO::writeSDDPerfResults(std::string directory, const Domain& domain, const std::map<std::string, int>& results) {
+
+    const SDDistributed& sdd = domain.getSDDconst();
+    std::ostringstream oss;
+    oss << sdd.getId();
+    std::ofstream ofs(directory + "/sdd" + oss.str() + "/perfs.dat", std::ios::out);
+
+    for (auto const& r: results)
+        ofs << r.first << " " << r.second << std::endl;
+    
+    ofs.close();
+    return 0;
+}
+
+int IO::writeSDDTime(std::string directory, const Domain& domain, const std::string& timerName, const std::list<unsigned long int>& timeList) {
+
+    const SDDistributed& sdd = domain.getSDDconst();
+    std::ostringstream oss;
+    oss << sdd.getId();
+    std::ofstream ofs(directory + "/sdd" + oss.str() + "/timer-" + timerName + ".dat", std::ios::out);
+
+    for (auto const& r: timeList)
+        ofs << r << std::endl;
     
     ofs.close();
     return 0;
@@ -223,19 +251,10 @@ int IO::writeVariantInfo(std::string directory, const Domain& domain) {
     oss << sdd.getId();
     std::ofstream ofs(directory + "/sdd" + oss.str() + "/" + "variant_info.dat", std::ios::out);
 
-    ofs << domain.getNumberSDD() << " ";
-    ofs << domain.getNumberSDD_X() << " ";
-    ofs << domain.getNumberSDD_Y() << std::endl;
-    ofs << domain.getNumberNeighbourSDDs() << " ";
-    ofs << domain.getNumberPhysicalCells() << " ";
-    ofs << domain.getNumberOverlapCells() << " ";
-    ofs << domain.getNumberBoundaryCells() << std::endl;
-    ofs << domain.getNumberSDS() << " ";
-    ofs << domain.getSDSGeometry() << " ";
-    ofs << domain.getNumberThreads() << std::endl;
-    ofs << "free_stack" << " ";
-    ofs << "SoA" << std::endl;;
-
+    ofs << domain.getNumberSDD() << " " << domain.getNumberSDD_X() << " " << domain.getNumberSDD_Y() << std::endl;
+    ofs << domain.getNumberNeighbourSDDs() << " " << domain.getNumberPhysicalCells() << " " << domain.getNumberOverlapCells() << " " << domain.getNumberBoundaryCells() << std::endl;
+    ofs << domain.getNumberSDS() << " " << domain.getSDSGeometry() << " " << domain.getNumberThreads() << std::endl;
+    ofs << "free_stack" << " " << "SoA" << std::endl;
     ofs.close();
     return 0;
 }

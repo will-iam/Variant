@@ -35,7 +35,6 @@ def build_case(root_dir, tmp_dir, project_name, case_name, subdir = "tmp",
     case = reload(case)
     del sys.path[-1]
 
-    print('Start building case')	
     rmtree(output_dir, ignore_errors=True)
 
     io.make_sure_path_exists(output_dir)

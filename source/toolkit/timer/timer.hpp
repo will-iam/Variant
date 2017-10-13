@@ -2,6 +2,7 @@
 #define TIMER_H
 
 #include <chrono>
+#include <list>
 
 #if __cplusplus >= 201103L
 typedef std::chrono::steady_clock steady_clock;
@@ -13,18 +14,25 @@ class Timer {
     public:
         Timer();
 
-        void start();
+        void begin();
         void end();
-        void report();
-        void mean();
-        unsigned long int getSystemDuration() const;
-        unsigned long int getSteadyDuration() const;
-        unsigned long int getClockDuration() const;
+        void reportLast();
+        void reportMean();
+        void reportTotal();
 
-        double getSystemMeanDuration() const;
-        double getSteadyMeanDuration() const;
-        double getClockMeanDuration() const;
+        unsigned long int getLastSystemDuration() const;
+        unsigned long int getLastSteadyDuration() const;
+        unsigned long int getLastClockDuration() const;
 
+        double getMeanSystemDuration() const;
+        double getMeanSteadyDuration() const;
+        double getMeanClockDuration() const;
+
+        double getTotalSystemDuration() const;
+        double getTotalSteadyDuration() const;
+        double getTotalClockDuration() const;
+
+        const std::list<unsigned long int>& getSteadyTimeList() const {return _steadyList;}
     private:
         std::chrono::time_point<std::chrono::system_clock> _startSystem, _endSystem;
         std::chrono::time_point<steady_clock> _startSteady, _endSteady;
@@ -34,6 +42,8 @@ class Timer {
         double _totalSteady;
         double _totalClock;
         double _call;
+
+        std::list<unsigned long int> _steadyList;
 };
 
 #endif // TIMER_H

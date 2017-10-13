@@ -21,12 +21,22 @@ case_name = args.c
 #nSDD_X = args.x
 #nSDD_Y = args.y
 #nSDD = [(1,1),(2, 2),(4, 4),(8, 8),(16, 16),(32, 32)]
-nSDD = [(1,1)]
+#nSDD = [(1,1),(2, 2),(4, 4),(8, 8),(16, 16)]
+#nSDD = [(1,1),(2, 2),(4, 4),(8, 8)]
+#nSDD = [(1,1),(2, 2),(4, 4)]
+#nSDD = [(1,1),(2, 2)]
+
+SDD_powersOfTwo = [0, 1, 2, 3, 4, 5, 6]
+nSDD = []
+for p in SDD_powersOfTwo:
+    # Different SDD splits
+    for i in range(p+1):
+		nSDD.append((2**i, 2**(p-i)))
 
 this_path = os.path.split(os.path.abspath(__file__))[0]
 
 # Get case names from all directories in case/project_name/
-project_path = os.path.join("case", project_name)
+project_path = os.path.join("/ccc/cont002/temp/m7/weens4x/VariantCase/case", project_name)
 case_path = os.path.join(project_path, case_name)
 full_domain_path, qty_name_list = build_case.build_case(this_path, project_path, project_name, case_name)
 

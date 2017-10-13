@@ -8,7 +8,7 @@ _call(0.) {
 
 }
 
-void Timer::start(){
+void Timer::begin(){
     _startSystem = std::chrono::system_clock::now();
     _startSteady = steady_clock::now();
     _startClock = std::clock();
@@ -19,40 +19,62 @@ void Timer::end(){
     _endSteady = steady_clock::now();
     _endClock = std::clock();
 
-    _totalSystem += getSystemDuration();
-    _totalSteady += getSteadyDuration();
-    _totalClock += getClockDuration();
+    _totalSystem += getLastSystemDuration();;
+
+    unsigned long int steady = getLastSteadyDuration();
+    _steadyList.push_back(steady);
+    _totalSteady += steady;
+
+    _totalClock += getLastClockDuration();
+
     _call += 1.;
 }
 
-unsigned long int Timer::getSystemDuration() const {
+unsigned long int Timer::getLastSystemDuration() const {
     return std::chrono::duration_cast<std::chrono::milliseconds>(_endSystem - _startSystem).count();
 }
 
-unsigned long int Timer::getSteadyDuration() const {
+unsigned long int Timer::getLastSteadyDuration() const {
     return std::chrono::duration_cast<std::chrono::milliseconds>(_endSteady - _startSteady).count();
 }
 
-unsigned long int Timer::getClockDuration() const {
+unsigned long int Timer::getLastClockDuration() const {
     return 1000.0 * (_endClock - _startClock) / CLOCKS_PER_SEC;
 }
 
-double Timer::getSystemMeanDuration() const {
+double Timer::getMeanSystemDuration() const {
     return _totalSystem / _call;
 }
 
-double Timer::getSteadyMeanDuration() const {
+double Timer::getMeanSteadyDuration() const {
     return _totalSteady / _call;
 }
 
-double Timer::getClockMeanDuration() const {
+double Timer::getMeanClockDuration() const {
     return _totalClock / _call;
 }
 
-void Timer::report() {
-    std::cout << Console::_bold << Console::_green << "[Timer Report System/Steady/Clock: "<< getSystemDuration() << ","<< getSteadyDuration() << "," << getClockDuration() << " ms]" << Console::_normal << std::endl;
+double Timer::getTotalSystemDuration() const {
+    return _totalSystem;
 }
 
-void Timer::mean() {
-    std::cout << Console::_bold << Console::_pink << "[Timer Report System/Steady/Clock: "<< getSystemMeanDuration() << "," << getSteadyMeanDuration() << "," << getClockMeanDuration() << " ms]" << Console::_normal << std::endl;
+double Timer::getTotalSteadyDuration() const {
+    return _totalSteady;
 }
+
+double Timer::getTotalClockDuration() const {
+    return _totalClock;
+}
+
+void Timer::reportLast() {
+    std::cout << Console::_bold << Console::_green << "[Timer Report System/Steady/Clock: "<< getLastSystemDuration() << ", "<< getLastSteadyDuration() << ", " << getLastClockDuration() << " ms]" << Console::_normal << std::endl;
+}
+
+void Timer::reportMean() {
+    std::cout << Console::_bold << Console::_yellow << "[Timer Report System/Steady/Clock: "<< getMeanSystemDuration() << ", " << getMeanSteadyDuration() << ", " << getMeanClockDuration() << " ms]" << Console::_normal << std::endl;
+}
+
+void Timer::reportTotal() {
+    std::cout << Console::_bold << Console::_pink << "[Timer Report System/Steady/Clock: "<< getTotalSystemDuration() << ", " << getTotalSteadyDuration() << ", " << getTotalClockDuration() << " ms]" << Console::_normal << std::endl;
+}
+

@@ -65,7 +65,9 @@ class Engine {
     real _T;
     real _CFL;
 
-    Timer _timer;
+    Timer _timerTotal;
+    Timer _timerComputation;
+    Timer _timerSynchronization;
 
     int _MPI_rank;
 
