@@ -110,3 +110,5 @@ tmp/
 
 # MacOs Stuff
 .DS_Store
+model/data
+model/rapport
