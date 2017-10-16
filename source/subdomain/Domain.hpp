@@ -64,7 +64,7 @@ class Domain {
      */
     void setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
             unsigned int nSDS, std::string SDSgeom,
-            unsigned int nThreads);
+            unsigned int nThreads, unsigned int boundaryThickness);
 
     /*!
      * @brief Returns the non-modifiable width of the domain.
@@ -189,8 +189,7 @@ class Domain {
      * @param value boundary condition value
      *
      */
-    void addBoundaryCoords(unsigned int uid,
-            std::pair<int, int> coords, char BCtype, real value);
+    void addBoundaryCoords(std::pair<int, int> coords, char BCtype, real value);
 
     /*!
      * @brief Adds new quantity to be managed by the scheme.
@@ -269,7 +268,7 @@ class Domain {
      *
      * @return id of SDD and coordinates on SDD of desired cell
      */
-    std::pair<int, std::pair<int, int> > 
+    std::pair<int, std::pair<int, int> >
         getSDDandCoords(std::pair<int, int> coordsOnDomain) const;
     /*! @brief Returns non-modifiable id of SDD and coordinates on SDD of cell
      * given by its coordinates on the domain.
@@ -281,9 +280,8 @@ class Domain {
      *
      * @return id of SDD and coordinates on SDD of desired cell
      */
-    std::pair<int, std::pair<int, int> > 
-        getSDDandCoords(unsigned int SDDid,
-                std::pair<int, int> coords) const;
+    std::pair<int, std::pair<int, int> >
+        getShiftSDDandCoords(std::pair<int, int> coords) const;
 
     /*!
      * @brief Prints quantity values for all cells.
@@ -338,14 +336,14 @@ class Domain {
     real _dx;
     real _dy;
 
-    unsigned int _nSDD;
-    unsigned int _nSDD_X; 
-    unsigned int _nSDD_Y; 
-    unsigned int _nSDS;
+    unsigned int _nSDD = 0;
+    unsigned int _nSDD_X = 0;
+    unsigned int _nSDD_Y = 0;
+    unsigned int _nSDS = 0;
     std::string _SDSgeom;
-    unsigned int _nThreads;
+    unsigned int _nThreads = 0;
 
-    unsigned int _boundaryThickness;
+    unsigned int _boundaryThickness = 0;
 
     // MPI Variables
     int _MPI_rank;

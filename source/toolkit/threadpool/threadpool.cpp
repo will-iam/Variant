@@ -7,7 +7,7 @@ void Worker::work() {
 
     std::function<void()> task;
     while (true) {
-        
+
         {   // acquire lock
             std::lock_guard<std::mutex> lock(_pool._taskMutex);
 
@@ -22,8 +22,7 @@ void Worker::work() {
                 task = _pool._currentTaskList->operator[](_pool._nextTaskCursor);
                 _pool._busyWorkerNumber++;
                 _pool._nextTaskCursor++;
-                //std::cout << _pool._nextTaskCursor << " ";
-                if (_pool._nextTaskCursor.load() >= _pool._currentTaskList->size())
+                if (_pool._nextTaskCursor.load() >= _pool._currentTaskListSize)
                     _pool._nextTaskCursor = SYNC;
 
             }
@@ -53,9 +52,9 @@ void Worker::work() {
 
 // the constructor just launches some amount of workers
 ThreadPool::ThreadPool(size_t nThreads):
+    _ownWorker(*this, 0),
     _workerVectorSize(nThreads - 1),
     _nextTaskCursor(-1),
-    _ownWorker(*this, 0),
     _finished(false) {
 
     _busyWorkerNumber = 0;
@@ -67,7 +66,7 @@ ThreadPool::ThreadPool(size_t nThreads):
 
 // the destructor joins all threads
 ThreadPool::~ThreadPool() {
-    
+
 #if PROFILE >= 1
     _timer.report();
 #endif
@@ -86,7 +85,7 @@ void ThreadPool::addTask(std::string taskList_name, std::function<void()> f) {
 }
 
 void ThreadPool::start(std::string taskList_name) {
-    
+
     // This launches tasks for all threads
     //_doneTasks.resize(_taskVector.size());
     //std::fill(_doneTasks.begin(), _doneTasks.end(), 0);
@@ -95,8 +94,9 @@ void ThreadPool::start(std::string taskList_name) {
     // Go !
     //std::nout << "Commencing task " << taskList_name << std::endl;
     _currentTaskList = &(_taskList_map[taskList_name]);
+    _currentTaskListSize = _currentTaskList->size();
     _doneTasks.clear();
-    _doneTasks.resize(_currentTaskList->size());
+    _doneTasks.resize(_currentTaskListSize);
     _nextTaskCursor = 0;
 #if PROFILE >= 1
     _timer.start();
@@ -107,8 +107,9 @@ void ThreadPool::start(std::string taskList_name) {
 #endif
     wait();
 
+#ifndef NDEBUG
     // Check if all tasks were done
     for (const auto& it: _doneTasks)
         assert(it == 1);
+#endif
 }
-

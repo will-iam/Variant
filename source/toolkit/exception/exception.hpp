@@ -214,7 +214,7 @@ void _warning(const char* fil, int lin, const char* message, const T& value, Arg
 }
 
 template<typename T>
-void _debug(bool log, const char* fil, int lin, T const& msg) {
+void _debug(const char* fil, int lin, T const& msg) {
 
     // Show the warning.
     std::cerr << Console::_bold << Console::_yellow << "Debug -> ";

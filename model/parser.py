@@ -69,8 +69,8 @@ def makeKey(attrnames, data_line, from_case_name_ny):
     ny = int(data_line[attrnames.index('nSDD_Y')])
     No = data_line[attrnames.index('nOverlapCells')][0] * nSDD
 
-    Nx = int(nPhysicalCells * nSDD / from_case_name_ny)
-    Ny = int(from_case_name_ny)
+    Nx = int(data_line[attrnames.index('nSizeX')])
+    Ny = int(data_line[attrnames.index('nSizeY')])
 
     if Nx * Ny != nPhysicalCells * nSDD:
         print('nPhysicalCells * nSDD', nPhysicalCells * nSDD)
@@ -95,7 +95,7 @@ def makeKey(attrnames, data_line, from_case_name_ny):
     return key,  nPhysicalCells * nSDD * Ni
 
 
-def parseData(filepath, data, filterKey, Ny):
+def parseData(filepath, data, filterKey):
     attrnames = []
     with open(filepath, 'r') as f:
         runAdded = 0
@@ -117,7 +117,7 @@ def parseData(filepath, data, filterKey, Ny):
                     except ValueError:
                         data_line.append(el)
             try:
-                key, normalizer = makeKey(attrnames, data_line, Ny)
+                key, normalizer = makeKey(attrnames, data_line)
             except IndexError:
                 #print "failed to parse: ", line
                 #print "result data_line: ", data_line
@@ -172,13 +172,12 @@ def parseData(filepath, data, filterKey, Ny):
 
 def readData(caseName, data, filterKey):
     dirpath = os.path.join('data', str(caseName))
-    Ny = int(caseName.split('x')[1])
     for filename in os.listdir(dirpath):
         if not filename.endswith(".csv"):
             continue
         print "\t - parsing data from %s/%s:" % (caseName, filename)
         filepath = os.path.join(dirpath, filename)
-        parseData(filepath, data, filterKey, Ny)
+        parseData(filepath, data, filterKey)
 
 def getData(filterKey = ''):
     data = {}

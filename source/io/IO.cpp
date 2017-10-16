@@ -17,8 +17,7 @@ void stor(std::string tmpStr, long double& target) {
     target = std::stold(tmpStr);
 }
 
-int IO::loadSDDInfo(std::string directory,
-        Domain& domain) {
+int IO::loadSDDInfo(std::string directory, Domain& domain) {
 
     int SDDid;
     MPI_Comm_rank(MPI_COMM_WORLD, &SDDid);
@@ -104,10 +103,10 @@ int IO::loadExecOptions(std::string directory,
     std::string SDSgeom = tmpStr;
     std::getline(ifs, tmpStr);
     unsigned int nThreads = std::stoi(tmpStr);
-
+    unsigned int boundaryThickness = 1;
     ifs.close();
 
-    domain.setOptions(nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads);
+    domain.setOptions(nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads, boundaryThickness);
 
     return 0;
 }
@@ -125,8 +124,8 @@ int IO::loadQuantity(std::string directory,
                       std::ios::in);
     std::string tmpStr;
 
-    for (int i = 0; i < sdd.getSizeX(); i++) {
-        for (int j = 0; j < sdd.getSizeY(); j++) {
+    for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
+        for (unsigned int j = 0; j < sdd.getSizeY(); ++j) {
             std::getline(ifs, tmpStr, ' ');
             int coordX = std::stoi(tmpStr);
             std::getline(ifs, tmpStr, ' ');
@@ -154,8 +153,8 @@ int IO::writeQuantity(std::string directory,
     if (!ofs)
         std::cerr << "Failed to open file: " << std::endl;
 
-    for (int i = 0; i < sdd.getSizeX(); i++) {
-        for (int j = 0; j < sdd.getSizeY(); j++) {
+    for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
+        for (unsigned int j = 0; j < sdd.getSizeY(); ++j) {
             ofs << i << " " << j << " ";
 #if defined(PRECISION_FLOAT)
             ofs << std::setprecision(std::numeric_limits<float>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
@@ -180,7 +179,7 @@ int IO::loadBoundaryConditions(std::string directory,
     std::ostringstream oss;
     oss << sdd.getId();
     std::ifstream ifs(directory + "/sdd" + oss.str() + "/bc.dat");
-    if (!ifs) 
+    if (!ifs)
         std::cerr << "Failed to open boundary conditions file" << std::endl;
     std::string tmpStr;
 
@@ -194,9 +193,7 @@ int IO::loadBoundaryConditions(std::string directory,
         char BCtype;        iss >> BCtype;
         real value;         iss >> value;
 
-        domain.addBoundaryCoords(uid,
-                std::pair<int, int>(iCoord, jCoord),
-                BCtype, value);
+        domain.addBoundaryCoords(std::pair<int, int>(iCoord, jCoord), BCtype, value);
     }
     ifs.close();
 
@@ -211,7 +208,7 @@ int IO::writePerfResults(std::string directory, const std::map<std::string, int>
 
     for (auto const& r: results)
         ofs << r.first << " " << r.second << std::endl;
-    
+
     ofs.close();
     return 0;
 }
@@ -225,7 +222,7 @@ int IO::writeSDDPerfResults(std::string directory, const Domain& domain, const s
 
     for (auto const& r: results)
         ofs << r.first << " " << r.second << std::endl;
-    
+
     ofs.close();
     return 0;
 }
@@ -239,7 +236,7 @@ int IO::writeSDDTime(std::string directory, const Domain& domain, const std::str
 
     for (auto const& r: timeList)
         ofs << r << std::endl;
-    
+
     ofs.close();
     return 0;
 }
@@ -250,7 +247,7 @@ int IO::writeVariantInfo(std::string directory, const Domain& domain) {
     std::ostringstream oss;
     oss << sdd.getId();
     std::ofstream ofs(directory + "/sdd" + oss.str() + "/" + "variant_info.dat", std::ios::out);
-
+    ofs << domain.getSizeX() << " " << domain.getSizeY() << std::endl;
     ofs << domain.getNumberSDD() << " " << domain.getNumberSDD_X() << " " << domain.getNumberSDD_Y() << std::endl;
     ofs << domain.getNumberNeighbourSDDs() << " " << domain.getNumberPhysicalCells() << " " << domain.getNumberOverlapCells() << " " << domain.getNumberBoundaryCells() << std::endl;
     ofs << domain.getNumberSDS() << " " << domain.getSDSGeometry() << " " << domain.getNumberThreads() << std::endl;

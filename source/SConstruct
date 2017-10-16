@@ -51,7 +51,8 @@ print '**** Compiling with '+ compiler +' in ' + mymode + ' mode for ' + project
 env = Environment()
 
 env['ENV']['PATH'] = os.environ['PATH']
-env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
+if 'LD_LIBRARY_PATH' in os.environ:
+	env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
 
 #print 'First', env.Dump()
 
@@ -101,18 +102,16 @@ if mymode == 'maxidebug':
 	if platform.system() == 'Linux':
 		env['CXX'] = 'scan-build ' + env['CXX']
 
-if mymode == 'debug':
-   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
-
 if mymode == 'profile':
 	mycflags = ['-W','-Wall','-Wfatal-errors','-Wextra','-pg','-DNDEBUG',
     '-DPROFILE=1']
 	#mylinkflags.append('-pg')
 
 if mymode == 'release':
-	mycflags = ['-W','-Wall','-Wfatal-errors','-O2', '-DNDEBUG']
+	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native']
 
 if mymode == 'debug':
+   	#mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
    	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g',
     '-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
 

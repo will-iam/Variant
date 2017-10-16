@@ -32,8 +32,7 @@ class Engine:
             'mode=' + mode,
             'precision=' + precision,
             'std=' + std],
-            cwd = os.path.join(config.workspace,
-                'Variant', 'source'))
+            cwd = os.path.join(config.workspace, 'Variant', 'source'))
         p.wait()
         if p.returncode != 0:
             print("Compilation failed")
@@ -69,11 +68,11 @@ class Engine:
                     'valgrind', '--leak-check=yes',
                     '--log-file=valgrind-out.txt',
                     self.binary_path, '-i', input_path, '-o', output_path])
-	    elif vtune:
-		print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
+            elif vtune:
+                print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
             else:
-		print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
+                print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
         else:
             if gdb:
@@ -83,5 +82,3 @@ class Engine:
                     self.binary_path, '-c', str(nthreads), '-i', input_path, '-o', output_path])
             else:
                 subprocess.check_call([self.binary_path, '-i', input_path, '-o', output_path])
-
-

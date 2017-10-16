@@ -15,7 +15,7 @@ COLOR_ENDC = '\x1b[0m'
 perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('computeTime', int), ('synchronizeTime', int)]
 
 perf_attrnames = [t[0] for t in perf_dtypes]
-vi_dtypes = [('nSDD', 'int'), ('nSDD_X', 'int'), ('nSDD_Y', 'int'),
+vi_dtypes = [('nSizeX', 'int'), ('nSizeY', 'int'), ('nSDD', 'int'), ('nSDD_X', 'int'), ('nSDD_Y', 'int'),
               ('nNeighbourSDD', 'int'), ('nPhysicalCells', 'int'),
               ('nOverlapCells', 'int'), ('nBoundaryCells', 'int'),
               ('nSDS', 'int'), ('SDSgeom', 'S10'), ('nThreads', 'int'),
@@ -117,4 +117,3 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
     print(COLOR_BLUE + "Writing to results file" + COLOR_ENDC)
     f.write(';'.join([str(v) for v in final_data.values()]) + '\n')
     f.close()
-

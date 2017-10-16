@@ -29,7 +29,7 @@ void Domain::initRect(real lx, real ly,
 
 void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
         unsigned int nSDS, std::string SDSgeom,
-        unsigned int nThreads) {
+        unsigned int nThreads, unsigned int boundaryThickness) {
 
     _nSDD = nSDD;
     _nSDD_X = nSDD_X;
@@ -37,7 +37,7 @@ void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSD
     _nSDS = nSDS;
     _SDSgeom = SDSgeom;
     _nThreads = nThreads;
-    _boundaryThickness = 1;
+    _boundaryThickness = boundaryThickness;
 }
 
 real Domain::getlx() const {
@@ -137,13 +137,12 @@ std::pair<int, int> Domain::getCoordsOnDomain(unsigned int uid) const {
 
 void Domain::addCoord(unsigned int uid, std::pair<int, int> coords) {
 
-    std::map<unsigned int, std::pair<int, int> >::iterator it = _uidToCoords.find(uid);
-    assert(it == _uidToCoords.end());
+    assert(_uidToCoords.find(uid) == _uidToCoords.end());
     _uidToCoords[uid] = coords;
     _coordsToUid[coords] = uid;
 }
 
-void Domain::addBoundaryCoords(unsigned int uid, std::pair<int, int> coordsOnSDD, char BCtype, real value) {
+void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, real value) {
 
     _SDD_coordsToBC[coordsOnSDD] = std::pair<char, real>(BCtype, value);
 }
@@ -160,33 +159,6 @@ void Domain::addEquation(std::string eqName, eqType eqFunc) {
     _sdd->addEquation(eqName, eqFunc);
 }
 
-/*
-void Domain::buildSubDomains() {
-
-    //std::cout << _nSDD_X << " " << _nSDD_Y <<  "..." << _nSDD << std::endl;
-    assert((_nSDD_X * _nSDD_Y) == _nSDD);
-    assert(_Nx % _nSDD_X == 0);
-    assert(_Ny % _nSDD_Y == 0);
-
-    int SDD_lx = _Nx / _nSDD_X;
-    int SDD_ly = _Ny / _nSDD_Y;
-    int SDDindex = 0;
-    for (int x = 0; x < _Nx; x += SDD_lx) {
-        for (int y = 0; y < _Ny; y += SDD_ly) {
-            _BLandSDDList.push_back(std::pair< std::pair<int, int>, SDDistributed* >
-                                    (std::pair<int, int>(x, y), 
-                                     new SDDistributed(SDD_lx , SDD_ly, _boundaryThickness, SDDindex)));
-            SDDindex++;
-        }
-    }
-
-    // Build SDSs
-    for (auto BLandSDD: _BLandSDDList) {
-        (BLandSDD.second)->buildAllSDS(_nSDS, _SDSgeom);
-    }
-}
-*/
-
 void Domain::buildSubDomainsMPI() {
 
     MPI_Comm_size(MPI_COMM_WORLD, &_MPI_size);
@@ -196,9 +168,7 @@ void Domain::buildSubDomainsMPI() {
     assert(_Nx % _nSDD_X == 0);
     assert(_Ny % _nSDD_Y == 0);
 
-    _sdd = new SDDistributed(_SDD_Nx, _SDD_Ny,
-            _SDD_BL_X, _SDD_BL_Y, 1, _MPI_rank, _nSDD);
-    //std::cout << _MPI_rank << "..." << x << ";" << y << " -> ";
+    _sdd = new SDDistributed(_SDD_Nx, _SDD_Ny, _SDD_BL_X, _SDD_BL_Y, 1, _MPI_rank, _nSDD);
 
     _sdd->buildAllSDS(_nSDS, _SDSgeom);
 
@@ -210,20 +180,19 @@ void Domain::buildSubDomainsMPI() {
     BLandSize[2] = _SDD_Nx;
     BLandSize[3] = _SDD_Ny;
     _SDD_BLandSize_List[_MPI_rank] = BLandSize;
-    for (int id = 0; id < _nSDD; id++) {
+    for (unsigned int id = 0; id < _nSDD; ++id)
         MPI_Bcast(&_SDD_BLandSize_List[id], 4, MPI_INT, id, MPI_COMM_WORLD);
-    }
 }
 
 void Domain::buildBoundaryMap() {
 
     _sdd->buildRecvMap(*this);
     MPI_Barrier(MPI_COMM_WORLD);
-    _sdd->buildSendMap(*this);
+    _sdd->buildSendMap();
 }
 
 void Domain::execEquation(std::string eqName) {
-    
+
     _sdd->execEquation(eqName);
 }
 
@@ -241,7 +210,7 @@ int Domain::getBoundarySide(std::pair<int, int> coords) const {
         return INSIDE;
 }
 
-std::pair<int, std::pair<int, int> > 
+std::pair<int, std::pair<int, int> >
 Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
 
     int boundarySide = getBoundarySide(coordsOnDomain);
@@ -250,9 +219,9 @@ Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
 
         case INSIDE:
             // In case it is an overlap cell
-            // Getting SDDid and coords of "real" cell 
+            // Getting SDDid and coords of "real" cell
             // corresponding to the coords on domain
-   
+
             // Finding the correct SDD
             for (unsigned int i = 0; i < _nSDD; i++) {
 
@@ -281,26 +250,24 @@ Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
             break;
     }
 
-    // If we are here then we could not find the "real" cell, 
+    // If we are here then we could not find the "real" cell,
     // ie. something went wrong
     std::cerr << coordsOnDomain.first << "..." << coordsOnDomain.second << std::endl;
     assert(false);
     return std::pair< int, std::pair<int, int> >();
 }
 
-std::pair<int, std::pair<int, int> > 
-Domain::getSDDandCoords(unsigned int SDDid,
-                std::pair<int, int> coords) const {
+std::pair<int, std::pair<int, int> >
+Domain::getShiftSDDandCoords(std::pair<int, int> coords) const {
 
     // Coords on domain
     // The SDD is supposed to be a rectangle so the
     // conversion only needs the bottom left coords of
     // the SDD
-    std::pair<int, int> coordsOnDomain(coords.first + _SDD_BL_X,
-                                       coords.second + _SDD_BL_Y);
+    std::pair<int, int> coordsOnDomain(coords.first + _SDD_BL_X, coords.second + _SDD_BL_Y);
 
     return getSDDandCoords(coordsOnDomain);
-    
+
 }
 
 std::pair<int, int> Domain::getBLOfSDD(unsigned int SDDid) const {
@@ -320,9 +287,29 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
 
     // Init boundary cells of SDD
     std::vector< std::pair<int, int> > boundaryCellList;
-    for (unsigned int k = 1; k <= _boundaryThickness; k++) {
-        // --------------------------------------------------------
-        // WITHOUT CORNERS VERSION
+    for (unsigned int k = 1; k <= _boundaryThickness; ++k) {
+        /* --------------------------------------------------------
+        // WITH CORNERS VERSION
+        // upper left
+        for (unsigned int j = _sizeY; j < _sizeY + _boundaryThickness; ++j) {
+            boundaryCellList.push_back(std::pair<int, int>(-k, j));
+        }
+
+        // upper right
+        for (unsigned int j = _sizeY; j < _sizeY + _boundaryThickness; ++j) {
+            boundaryCellList.push_back(std::pair<int, int>(_sizeX - 1 + k, j));
+        }
+
+        // bottom right
+        for (int j = 0 - _boundaryThickness; j < 0; ++j) {
+            boundaryCellList.push_back(std::pair<int, int>(_sizeX - 1 + k, j));
+        }
+
+        // bottom left
+        for (int j = 0 - _boundaryThickness; j < 0; ++j) {
+            boundaryCellList.push_back(std::pair<int, int>(-k, j));
+        } */
+
         // --------------------------------------------------------
         // Left
         for (unsigned int j = 0; j < _sizeY; j++) {
@@ -347,11 +334,11 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
     for (std::vector< std::pair<int, int> >::iterator it = boundaryCellList.begin();
             it != boundaryCellList.end(); ++it) {
 
-        // For each boundary cell we check its type : either a 
+        // For each boundary cell we check its type : either a
         // boundary cell of the domain, or an overlap cell
-        
+
         std::pair< int, std::pair<int, int> > SDDandCoords
-            = domain.getSDDandCoords(_id, *it);
+            = domain.getShiftSDDandCoords(*it);
 
         // If it is an overlap cell, we simply add it to the list of
         // overlap cells
@@ -447,7 +434,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
                 }
 
                 // Determine SDD and coords on SDD of target cell
-                std::pair< int, std::pair<int, int> > 
+                std::pair< int, std::pair<int, int> >
                 SDDandCoordsOfTargetCell = domain.getSDDandCoords(targetCell);
                 // Finally add target cell as overlap cell
                 // If target cell still is on the boudary, then we ignore it
@@ -466,7 +453,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
     }
 }
 
-void SDDistributed::buildSendMap(const Domain& domain) {
+void SDDistributed::buildSendMap() {
 
     unsigned int nSDD = _nSDD;
     std::vector<int> numberOfCellsToRecv(nSDD, 0); // data sent to other SDDs
@@ -474,12 +461,12 @@ void SDDistributed::buildSendMap(const Domain& domain) {
     std::vector<MPI_Status> statuses(nSDD);
 
     // Counting number of cells to receive based on recv map
-    for (auto const &it : _MPIRecv_map) 
+    for (auto const &it : _MPIRecv_map)
         numberOfCellsToRecv[it.second.first]++;
 
     // Sending and receiving the number of cells needed
-    for (int SDDto = 0; SDDto < nSDD; SDDto++) {
-    
+    for (unsigned int SDDto = 0; SDDto < nSDD; ++SDDto) {
+
         // Not sending messages to oneself...
         if (SDDto == _id)
             continue;
@@ -494,13 +481,13 @@ void SDDistributed::buildSendMap(const Domain& domain) {
     // receive and send
 
     // data recved from other SDDs, used to build the Send map
-    std::vector< std::vector< std::array<int, 4> > > cellsToRecv(nSDD); 
+    std::vector< std::vector< std::array<int, 4> > > cellsToRecv(nSDD);
     // data sent to other SDDs, based on the Recv map
-    std::vector< std::vector< std::array<int, 4> > > cellsToSend(nSDD); 
+    std::vector< std::vector< std::array<int, 4> > > cellsToSend(nSDD);
 
     // Initializing cells to receive based on Recv map, and arrays for Send
     // map
-    for (int SDDto = 0; SDDto < nSDD; SDDto++) {
+    for (unsigned int SDDto = 0; SDDto < nSDD; ++SDDto) {
 
         // Not sending messages to oneself...
         if (SDDto == _id)
@@ -515,7 +502,7 @@ void SDDistributed::buildSendMap(const Domain& domain) {
 
     for (auto const &it : _MPIRecv_map) {
 
-        // Init correspondence here 
+        // Init correspondence here
         std::array<int, 4> coordsCorresp;
         coordsCorresp[0] = it.first.first;
         coordsCorresp[1] = it.first.second;
@@ -525,7 +512,7 @@ void SDDistributed::buildSendMap(const Domain& domain) {
     }
 
     // Send messages
-    for (int SDDto = 0; SDDto < nSDD; SDDto++) {
+    for (unsigned int SDDto = 0; SDDto < nSDD; ++SDDto) {
 
         // Not sending messages to oneself...
         if (SDDto == _id)
@@ -539,10 +526,10 @@ void SDDistributed::buildSendMap(const Domain& domain) {
                 MPI_COMM_WORLD, &statuses[SDDto]);
 
         // Parse the received message
-        for (int i = 0; i < numberOfCellsToSend[SDDto]; i++) {
+        for (int i = 0; i < numberOfCellsToSend[SDDto]; ++i) {
 
             std::array<int, 4> coordsCorresp = cellsToSend[SDDto][i];
-            std::pair<int, std::pair<int, int> > 
+            std::pair<int, std::pair<int, int> >
                 thereCoordsAndSDD(SDDto,
                         std::pair<int, int>(coordsCorresp[0], coordsCorresp[1]));
             std::pair<int, int> hereCoords(coordsCorresp[2], coordsCorresp[3]);
@@ -566,7 +553,7 @@ void Domain::updateBoundaryCells(std::string quantityName,
 
     _sdd->updateDirichletCells(quantityName);
     _sdd->updateNeumannCells(quantityName, changeNeumannToOpposite);
-} 
+}
 
 void Domain::updateOverlapCells(std::string qtyName) {
 
@@ -599,7 +586,7 @@ void Domain::updateOverlapCells() {
             SDDistributed* thereSDD = _BLandSDDList[(overlapCell->second).first].second;
 
             Quantity<real>* thereQuantity = thereSDD->getQuantity(quantityName);
-            
+
             //std::cout << hereSDD->getId() << " ; " << coordsHere.first << "..." << coordsHere.second << std::endl;
             //std::cout << " ---> " << thereSDD->getId() << " ; " << coordsThere.first << "..." << coordsThere.second << "\n";
             //std::cout << quantity->get(0, coordsHere.first, coordsHere.second) << "...";
@@ -631,26 +618,6 @@ void Domain::printState(std::string quantityName) {
         }
     }
     std::cout << "\n" << std::endl;
-
-    /*
-
-    std::cout << "Status of overlap cells" << std::endl;
-    for (auto BLandSDD: _BLandSDDList) {
-        std::cout << "SDD " << (BLandSDD.second)->getId() << std::endl;
-        std::map< std::pair<int, int>,
-            std::pair< int, std::pair<int, int> > >
-                overlapCellMap = (BLandSDD.second)->getOverlapCellMap();
-        Quantity<real>* quantity = (BLandSDD.second)->getQuantity(quantityName);
-        for(auto overlapCell: overlapCellMap) {
-            std::cout << overlapCell.first.first << "..." << overlapCell.first.second << " -> ";
-            std::cout << quantity->get(0, overlapCell.first.first, overlapCell.first.second) << std::endl;
-            std::cout << "Reference cell " << overlapCell.second.first << " ; ";
-            std::cout << overlapCell.second.second.first << "..." << overlapCell.second.second.second << std::endl;
-        }
-    }
-    std::cout << "\n\n" << std::endl;
-    //getchar();
-    */
 }
 
 void Domain::buildThreads() {
@@ -695,4 +662,3 @@ int isPowerOf(unsigned int N, unsigned int reason) {
         return power;
     return -1;
 }
-

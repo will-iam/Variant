@@ -44,8 +44,7 @@ def build_case(root_dir, tmp_dir, project_name, case_name, subdir = "tmp",
     io.write_scheme_info(output_dir, case.T, case.CFL)
 
     # Write domain
-    io.write_domain(output_dir, case.lx, case.ly, case.Nx, case.Ny,
-            case.coords_to_uid)
+    io.write_domain(output_dir, case.lx, case.ly, case.Nx, case.Ny, case.coords_to_uid)
 
     # Write boundary conditions
     io.write_bc(output_dir, case.coords_to_uid_and_bc)
@@ -73,4 +72,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     build_case(args.d, args.p, args.c)
-

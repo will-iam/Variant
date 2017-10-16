@@ -60,7 +60,7 @@ int Hydrodynamics::init() {
     // Loading boundary conditions on \rho
     IO::loadBoundaryConditions(_initpath, *_domain);
 
-    // The first dt has to be computed 
+    // The first dt has to be computed
     // and the first umax searched manually
     SDDistributed& sdd = _domain->getSDD();
 
@@ -159,26 +159,21 @@ int Hydrodynamics::start() {
         _domain->switchQuantityPrevNext("rhoe");
 
         _t += _dt;
-        //getchar();
    	    _timerComputation.end();
     }
-
-    // Done
-    //_domain->printState("rho");
 
     return 0;
 }
 
 int Hydrodynamics::finalize() {
-
     writeState();
     return 0;
 }
 
 void Hydrodynamics::computeDT() {
-
     // Updating according to CFL and max velocity
     _dt = _CFL / (_Domain_uxmax / _dx + _Domain_uymax / _dy);
+
     // So that the final T is reached
     _dt = std::min(_dt, _T - _t);
 }
@@ -214,13 +209,6 @@ void Hydrodynamics::advection(const SDShared& sds,
             rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
         real uBottom = 0.5 * (uyCellBottom + uyCellCenter);
         real uTop = 0.5 * (uyCellTop + uyCellCenter);
-
-        /*
-        assert(i != 0 || uLeft == 0);
-        assert(j != 0 || uBottom == 0);
-        assert(i != _Nx - 1 || uRight == 0);
-        assert(j != _Ny - 1 || uTop == 0);
-        */
 
         // Computing fluxes for all three quantities
         real rho_fluxLeft = uLeft * ((uLeft > 0) ? rho.get(0, i - 1, j)
@@ -264,7 +252,7 @@ void Hydrodynamics::advection(const SDShared& sds,
 
         rho.set(rho.get(0, i, j)
                 - _dt * ((rho_fluxRight - rho_fluxLeft) / _dx + (rho_fluxTop - rho_fluxBottom) / _dy),
-                1, i, j); 
+                1, i, j);
         rhou_x.set(rhou_x.get(0, i, j)
                 - _dt * ((rhou_x_fluxRight - rhou_x_fluxLeft) / _dx + (rhou_x_fluxTop - rhou_x_fluxBottom) / _dy),
                 1, i, j);
@@ -301,7 +289,7 @@ void Hydrodynamics::source(const SDShared& sds,
         real PRight = (_gamma - 1) * rhoe.get(0, i + 1, j);
         real PBottom = (_gamma - 1) * rhoe.get(0, i, j - 1);
         real PTop = (_gamma - 1) * rhoe.get(0, i, j + 1);
-        
+
         rhou_x.set(rhou_x.get(0, i, j)
                 - _dt * (PRight - PLeft) / (2 * _dx),
                 1, i, j);
@@ -311,12 +299,6 @@ void Hydrodynamics::source(const SDShared& sds,
 
         // Energy source term
         real PCenter = (_gamma - 1) * rhoe.get(0, i, j);
-        /*
-        assert(i != 0 || PLeft == PCenter);
-        assert(j != 0 || PBottom == PCenter);
-        assert(i != _Nx - 1 || PRight == PCenter);
-        assert(j != _Ny - 1 || PTop == PCenter);
-        */
 
         real uxCellLeft = (rho.get(0, i - 1, j) == 0) ? 0 :
             rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
@@ -332,7 +314,7 @@ void Hydrodynamics::source(const SDShared& sds,
                 - _dt * PCenter * ((uxCellRight - uxCellLeft) / (2 * _dx)
                                  + (uyCellTop - uyCellBottom) / (2 * _dy)),
                 1, i, j);
-        
+
         // Updating umax
         if (rho.get(0, i, j) != 0) {
             _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
@@ -373,4 +355,3 @@ void Hydrodynamics::boundaryConditionsOnSpeed() {
     _domain->updateBoundaryCells("rhou_x", true);
     _domain->updateBoundaryCells("rhou_y", true);
 }
-

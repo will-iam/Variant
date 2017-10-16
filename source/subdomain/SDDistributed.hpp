@@ -184,7 +184,7 @@ class SDDistributed {
      *
      * @param domain parent domain of the SDD
      */
-    void buildSendMap(const Domain& domain);
+    void buildSendMap();
     /*!
      * @brief Builds map between coords on SDD and "real cell" on neighbour SDD /
      * boundary side
@@ -343,11 +343,11 @@ class SDDistributed {
     /*!
      * mapping between receiving coord on this SDD to sending coords on other SDDs
      */
-    std::map< std::pair<int, int>, std::pair<int, std::pair<int, int> >, compare_coords > _MPIRecv_map;
+    std::map< std::pair<int, int>, std::pair<unsigned int, std::pair<int, int> >, compare_coords > _MPIRecv_map;
     /*!
      * mapping between receiving coords on other SDDs to sending coords on this SDD
      */
-    std::map< std::pair<int, std::pair<int, int> >, std::pair<int, int>, compare_sddandcoords > _MPISend_map;
+    std::map< std::pair<unsigned int, std::pair<int, int> >, std::pair<int, int>, compare_sddandcoords > _MPISend_map;
 
     /*!
      * number of total SDDs

@@ -211,14 +211,6 @@ def write_bc(output_dir, coords_to_uid_and_bc):
         f.write(str(bc[0]) + " " + str(bc[1]) + "\n")   # boundary condition
     f.close()
 
-#def write_qbc(output_dir, quant_name, uid_to_qbc):
-#    f = open(os.path.join(output_dir, quant_name + '_bc.dat'), 'w+')
-#    for uid, qbc in uid_to_qbc.iteritems():
-#        f.write(str(uid) + " ")
-#        f.write(str(qbc[0]) + " ")   # BC type
-#        f.write(str(qbc[1]) + "\n")  # BC value
-#    f.close()
-
 def read_variant_info(data_dir, nSDD):
     whole_data = []
     for i in range(nSDD):
@@ -257,4 +249,3 @@ def read_quantity_names(input_dir):
     qty_names = f.readline().split()
     f.close()
     return qty_names
-

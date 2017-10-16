@@ -54,7 +54,7 @@ tmp_dir = os.path.join(config.tmp_dir, 'seek_optimal')
 for caseSizeXY in caseSizeList:
 	# Defining tmp directory
     cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-	
+
 	# Cleaning tmp directory for new case
     rmtree(tmp_dir, ignore_errors=True)
 
@@ -86,12 +86,12 @@ for caseSizeXY in caseSizeList:
                 test['nSDD'] = (2**i, 2**(p-i))
                 nsdd = test['nSDD'][0]*test['nSDD'][1]
                 for SDSratio in SDSratioList:
-                    
+
                     # Exploration strong SDS, ncpmpi = nTotalCores / nsdd
                     coreNumberList = [nTotalCores / nsdd]
-#                    coreNumberList = [1]
-#                    coreNumberList = [1,2,4,8,16,32,64]
-#                    coreNumberList = range(1, nTotalCores / nsdd + 1)
+                    # coreNumberList = [1]
+                    # coreNumberList = [1,2,4,8,16,32,64]
+                    # coreNumberList = range(1, nTotalCores / nsdd + 1)
                     for ncpmpi in coreNumberList:
                         # élimine cas impossible
                         if ncpmpi > nTotalCores / nsdd:
@@ -104,17 +104,17 @@ for caseSizeXY in caseSizeList:
                         #test['nThreads'] = 1
 
                         # Pour un calcul à charge/ressource constante
-                        test['nThreads'] = ncpmpi * ratio                    
+                        test['nThreads'] = ncpmpi * ratio
 
-                        # Définition du nombre de SDS    
-#                        test['nSDS'] = compute_sds_number(case_path, nsdd, SDSsize)
+                        # Définition du nombre de SDS
+                        # test['nSDS'] = compute_sds_number(case_path, nsdd, SDSsize)
                         test['nSDS'] = test['nThreads'] * SDSratio
-                    
+
                         # the maximum number is the number of cells.
                         if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
-                            continue 
+                            continue
 
-					    # Launching runs for the test
+                        # Launching runs for the test
                         perf_for_allruns = []
                         for n in range(nruns):
                             current_test_path, exec_time, variant_info, perf_info = launch_test(this_dir,
@@ -124,12 +124,12 @@ for caseSizeXY in caseSizeList:
 
                             # Check results and compare to reference.
                             if not args.nocheck:
-	                            result, qty, error_data = check_test(current_test_path, ref_test_path)
-	                            if result:
-		                            print("Compared with reference: OK.")
-	                            else :
-		                            print("Compared with reference: ERROR, different result for quantity " + qty)
-		                            sys.exit(1)
+                                result, qty, error_data = check_test(current_test_path, ref_test_path)
+                                if result:
+                                    print("Compared with reference: OK.")
+                                else :
+                                    print("Compared with reference: ERROR, different result for quantity " + qty)
+                                    sys.exit(1)
                             print("Total ExecTime:", exec_time)
                             print("Results for test: " + str(test) + " on run " + str(n) + " on " + str(nTotalCores) + " core(s).")
                             perf_for_allruns.append(make_perf_data(current_test_path, exec_time, perf_info))
@@ -138,4 +138,3 @@ for caseSizeXY in caseSizeList:
                         join_result_data(results_path, variant_info, perf_for_allruns, ncpmpi, machine)
 
 print("\nTest successfully passed\n")
-

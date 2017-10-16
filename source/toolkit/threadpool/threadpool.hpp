@@ -8,11 +8,7 @@
 #include <vector>
 #include <map>
 #include <cassert>
-/*#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#include <cstdatomic>
-#elif __cplusplus >= 201103L*/
 #include <atomic>
-//#endif
 
 #if PROFILE >= 1
 #include "timer/timer.hpp"
@@ -65,9 +61,10 @@ class ThreadPool {
         std::map<std::string, std::vector< std::function<void()> > > _taskList_map;
         std::vector<int> _doneTasks;
         std::vector< std::function<void()> >* _currentTaskList;
+        int _currentTaskListSize = 0;
         std::atomic<int> _nextTaskCursor;
         bool _finished;
-        
+
 
         // synchronization
         std::mutex _taskMutex;
@@ -75,7 +72,7 @@ class ThreadPool {
 #if PROFILE >= 1
         Timer _timer;
 #endif
-        
+
 };
 
 #endif // THREADPOOL_H

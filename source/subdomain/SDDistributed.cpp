@@ -10,11 +10,12 @@ SDDistributed::SDDistributed(unsigned int sizeX,
                              unsigned int id,
                              unsigned int nSDD):
     _coordConverter(sizeX, sizeY, boundaryThickness),
-    _sizeX(sizeX), _sizeY(sizeY), 
-    _BL(BL_X, BL_Y),
+    _sizeX(sizeX), _sizeY(sizeY),
     _boundaryThickness(boundaryThickness), _id(id),
-    _nSDD(nSDD),
-    _geometry(0, 0, sizeX, sizeY) {
+    _geometry(0, 0, sizeX, sizeY),
+    _BL(BL_X, BL_Y),
+    _nSDD(nSDD)
+    {
 
     assert(boundaryThickness >= 1);
 }
@@ -48,7 +49,7 @@ unsigned int SDDistributed::getNumberNeighbourSDDs() const {
 
 unsigned int SDDistributed::getNumberOverlapCells() const {
 
-    return _MPIRecv_map.size();    
+    return _MPIRecv_map.size();
 }
 
 unsigned int SDDistributed::getNumberBoundaryCells() const {
@@ -57,7 +58,7 @@ unsigned int SDDistributed::getNumberBoundaryCells() const {
 }
 
 void SDDistributed::buildAllSDS(unsigned int nSDS, std::string geomType) {
-    
+
     std::vector< std::vector< std::pair<int, int> > >
         geom = _geometry.buildGeometry(nSDS, geomType);
     int i = 0;
@@ -93,23 +94,17 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
     // Building buffers based on recv and send maps
     std::map<int, std::pair< std::vector<real>, std::vector<real> > > recvSendBuffer;
     std::map<int, MPI_Status> statuses;
-    
-    unsigned int nQty = _quantityMap.size();
 
     for (auto const& it: _MPISend_map) {
-
-        int SDDid = it.first.first;
+        unsigned int SDDid = it.first.first;
         for (const auto& qtyName: qtiesToUpdate) {
-
             const Quantity<real>& qty = *_quantityMap[qtyName];
-
             std::pair<int, int> coordsHere = it.second;
             recvSendBuffer[SDDid].second.push_back(qty.get(0, coordsHere.first, coordsHere.second));
         }
     }
-    
-    for (auto& toSDD: recvSendBuffer) {
 
+    for (auto& toSDD: recvSendBuffer) {
         // Init recv buffer size
         toSDD.second.first.resize(toSDD.second.second.size());
         MPI_Sendrecv(&toSDD.second.second[0], toSDD.second.second.size(),
@@ -121,11 +116,10 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
 
     // Parsing recved message: updating cells
     std::map<int, int> bufIndices;
-    //std::cout << _MPIRecv_map.size() << " ; " << _MPISend_map.size() << std::endl;
     for (auto const& it: _MPIRecv_map) {
 
         std::pair<int, int> coordsHere = it.first;
-        int SDDid = it.second.first;
+        unsigned int SDDid = it.second.first;
 
         if (_id == SDDid) {
 
@@ -139,7 +133,7 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
                 //std::cout << qtyName << "..." << coordsHere << ";" << coordsThere << " --> " << qty.get(0, coordsHere.first, coordsHere.second);
                 qty.set(qty.get(0, coordsThere.first, coordsThere.second),
                         0, coordsHere.first, coordsHere.second);
-                        
+
                 //std::cout << " --> " << qty.get(0, coordsThere.first, coordsThere.second) << std::endl;
             }
         }
@@ -152,14 +146,14 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
 
                 qty.set(recvSendBuffer[SDDid].first[bufIndices[SDDid]],
                         0, coordsHere.first, coordsHere.second);
-                        
+
                 bufIndices[SDDid]++;
             }
         }
     }
 
     /*
-    for (auto const& it: bufIndices) 
+    for (auto const& it: bufIndices)
         std::cout << "SDD " << it.first << " -> index " << it.second << std::endl;
     */
     MPI_Barrier(MPI_COMM_WORLD);
@@ -180,7 +174,7 @@ void SDDistributed::updateNeumannCells(std::string quantityName,
         std::pair<int, int> targetCoords = it->second;
         //std::cout << "(" << coords.first << ";" << coords.second << ") --> ";
         //std::cout << "(" << targetCoords.first << ";" << targetCoords.second << ")" << std::endl;
-        
+
         if (changeToOpposite) {
             quantity->set(-quantity->get(0, targetCoords.first, targetCoords.second),
                     0, coords.first, coords.second);
@@ -216,8 +210,8 @@ void SDDistributed::execEquation(std::string eqName) {
 }
 
 void SDDistributed::initThreadPool(unsigned int nThreads) {
-    
-    assert(nThreads > 0); 
+
+    assert(nThreads > 0);
     _threadPool = std::unique_ptr<ThreadPool>(new ThreadPool(std::forward<unsigned int>(nThreads)));
     //_threadPool = std::unique_ptr<ctpl::thread_pool>(new ctpl::thread_pool(std::forward<unsigned int>(nThreads)));
 }
@@ -233,4 +227,3 @@ real SDDistributed::getValue(std::string quantityName,
 
     return _quantityMap.at(quantityName)->get(0, coordX, coordY);
 }
-
