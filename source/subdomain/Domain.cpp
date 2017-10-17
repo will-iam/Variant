@@ -29,7 +29,7 @@ void Domain::initRect(real lx, real ly,
 
 void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
         unsigned int nSDS, std::string SDSgeom,
-        unsigned int nThreads, unsigned int boundaryThickness) {
+        unsigned int nThreads) {
 
     _nSDD = nSDD;
     _nSDD_X = nSDD_X;
@@ -37,7 +37,6 @@ void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSD
     _nSDS = nSDS;
     _SDSgeom = SDSgeom;
     _nThreads = nThreads;
-    _boundaryThickness = boundaryThickness;
 }
 
 real Domain::getlx() const {
@@ -536,6 +535,11 @@ void SDDistributed::buildSendMap() {
             _MPISend_map[thereCoordsAndSDD] = hereCoords;
             //std::cout << thereCoordsAndSDD << " -> " <<  _MPISend_map[thereCoordsAndSDD] << std::endl;
         }
+
+        // To reserve the size of the buffer
+        // init for 4 quantities.
+        _recvSendBuffer[SDDto].first.reserve(4 * numberOfCellsToSend[SDDto]);
+        _recvSendBuffer[SDDto].second.reserve(4 * numberOfCellsToSend[SDDto]);
     }
 
     // Sync processes
@@ -556,51 +560,12 @@ void Domain::updateBoundaryCells(std::string quantityName,
 }
 
 void Domain::updateOverlapCells(std::string qtyName) {
-
     _sdd->updateOverlapCells(std::vector<std::string>(1, qtyName));
 }
 
 void Domain::updateOverlapCells() {
-
     // For each SDD...
     _sdd->updateOverlapCells(_nonCstQties);
-
-    /*
-    for (auto BLandSDD: _BLandSDDList) {
-
-        SDDistributed* hereSDD = BLandSDD.second;
-        Quantity<real>* quantity = hereSDD->getQuantity(quantityName);
-
-        const std::map< std::pair<int, int>,
-            std::pair<int, std::pair<int, int> > >&
-                overlapCellMap = hereSDD->getOverlapCellMap();
-
-        // For now we do this coord by coord but this shall be
-        // optimized in the near future
-        for (auto overlapCell = overlapCellMap.begin();
-                overlapCell != overlapCellMap.end();
-                ++overlapCell) {
-
-            std::pair<int, int> coordsHere = overlapCell->first;
-            std::pair<int, int> coordsThere = (overlapCell->second).second;
-            SDDistributed* thereSDD = _BLandSDDList[(overlapCell->second).first].second;
-
-            Quantity<real>* thereQuantity = thereSDD->getQuantity(quantityName);
-
-            //std::cout << hereSDD->getId() << " ; " << coordsHere.first << "..." << coordsHere.second << std::endl;
-            //std::cout << " ---> " << thereSDD->getId() << " ; " << coordsThere.first << "..." << coordsThere.second << "\n";
-            //std::cout << quantity->get(0, coordsHere.first, coordsHere.second) << "...";
-            //std::cout << thereQuantity->get(0, coordsThere.first, coordsThere.second) << std::endl;
-
-            //quantity->set(5 * hereSDD->getId() + 10 + coordsHere.second,
-            //        0, coordsHere.first, coordsHere.second);
-            quantity->set(thereQuantity->get(0, coordsThere.first, coordsThere.second),
-                    0, coordsHere.first, coordsHere.second);
-
-            //getchar();
-        }
-    }
-    */
 }
 
 unsigned int Domain::getBoundaryThickness() {

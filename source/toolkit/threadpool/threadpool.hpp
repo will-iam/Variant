@@ -58,16 +58,20 @@ class ThreadPool {
         const size_t _workerVectorSize;
         std::atomic<size_t> _busyWorkerNumber;
 
-        std::map<std::string, std::vector< std::function<void()> > > _taskList_map;
-        std::vector<int> _doneTasks;
-        std::vector< std::function<void()> >* _currentTaskList;
-        int _currentTaskListSize = 0;
+        std::map<std::string, std::vector< std::function<void()> > > _taskListMap;
+
+        std::vector< std::function<void()> >* _currentTaskVector;
+        int _currentTaskVectorSize = 0;
         std::atomic<int> _nextTaskCursor;
         bool _finished;
 
 
         // synchronization
         std::mutex _taskMutex;
+
+#ifndef NDEBUG
+        std::vector<int> _doneTasks;
+#endif
 
 #if PROFILE >= 1
         Timer _timer;

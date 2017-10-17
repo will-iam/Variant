@@ -83,17 +83,19 @@ if compiler == 'clang':
 if compiler == 'intel':
 	env['CC'] = config.intel_CC
 	env['CXX'] = config.intel_CXX
+	mylinkflags.append('-pthread')
 
 	# And... needed with intel too!
 	print 'We compile with Intel compiler'
-	mylinkflags.append('-pthread')
 
 if compiler == 'mpi':
-    env['CC'] = config.mpi_CC
-    env['CXX'] = config.mpi_CXX
+	env['CC'] = config.mpi_CC
+	env['CXX'] = config.mpi_CXX
 
-    mylinkflags.append('-pthread')
-    print 'We compile with MPI compiler'
+	# And... needed with intel too!
+	if config.mpi_build == 'linux':
+		mylinkflags.append('-pthread')
+	print 'We compile with MPI compiler'
 
 #extra compile flags
 if mymode == 'maxidebug':
@@ -108,7 +110,7 @@ if mymode == 'profile':
 	#mylinkflags.append('-pg')
 
 if mymode == 'release':
-	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native']
+	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-g', '-march=native']
 
 if mymode == 'debug':
    	#mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
@@ -145,6 +147,6 @@ env.SConsignFile()
 
 #specify the sconscript for the project
 prog = SConscript('SConscript', exports = 'env')
-execpath = workspace + project + '-' + mymode + '-' + compiler
+execpath = os.path.join(workspace, '.build', project + '-' + mymode + '-' + compiler)
 inst = env.Install(execpath, prog)
 Default(inst)

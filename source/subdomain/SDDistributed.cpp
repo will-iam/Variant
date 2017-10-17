@@ -91,20 +91,27 @@ Quantity<real>* SDDistributed::getQuantity(std::string name) {
 
 void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUpdate) {
 
-    // Building buffers based on recv and send maps
-    std::map<int, std::pair< std::vector<real>, std::vector<real> > > recvSendBuffer;
+    // Status map
     std::map<int, MPI_Status> statuses;
 
+    // Clear and reserve here
+    for (auto& toSDD: _recvSendBuffer) {
+	    toSDD.second.first.clear();
+        toSDD.second.second.clear();
+    }
+
+    // Copy data to send in the buffer.
     for (auto const& it: _MPISend_map) {
         unsigned int SDDid = it.first.first;
         for (const auto& qtyName: qtiesToUpdate) {
             const Quantity<real>& qty = *_quantityMap[qtyName];
             std::pair<int, int> coordsHere = it.second;
-            recvSendBuffer[SDDid].second.push_back(qty.get(0, coordsHere.first, coordsHere.second));
+            _recvSendBuffer[SDDid].second.push_back(qty.get(0, coordsHere.first, coordsHere.second));
         }
     }
 
-    for (auto& toSDD: recvSendBuffer) {
+    // Send and Receive the data.
+    for (auto& toSDD: _recvSendBuffer) {
         // Init recv buffer size
         toSDD.second.first.resize(toSDD.second.second.size());
         MPI_Sendrecv(&toSDD.second.second[0], toSDD.second.second.size(),
@@ -117,45 +124,23 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
     // Parsing recved message: updating cells
     std::map<int, int> bufIndices;
     for (auto const& it: _MPIRecv_map) {
-
         std::pair<int, int> coordsHere = it.first;
         unsigned int SDDid = it.second.first;
-
         if (_id == SDDid) {
-
             for (auto const& qtyName: qtiesToUpdate) {
-
-                //std::cout << coordsHere << " --> " << it.second.second << std::endl;
-
                 Quantity<real>& qty = *_quantityMap[qtyName];
-
                 std::pair<int, int> coordsThere(it.second.second);
-                //std::cout << qtyName << "..." << coordsHere << ";" << coordsThere << " --> " << qty.get(0, coordsHere.first, coordsHere.second);
-                qty.set(qty.get(0, coordsThere.first, coordsThere.second),
-                        0, coordsHere.first, coordsHere.second);
-
-                //std::cout << " --> " << qty.get(0, coordsThere.first, coordsThere.second) << std::endl;
+                qty.set(qty.get(0, coordsThere.first, coordsThere.second), 0, coordsHere.first, coordsHere.second);
             }
         }
-
         else {
-
             for (auto const& qtyName: qtiesToUpdate) {
-
                 Quantity<real>& qty = *_quantityMap[qtyName];
-
-                qty.set(recvSendBuffer[SDDid].first[bufIndices[SDDid]],
-                        0, coordsHere.first, coordsHere.second);
-
-                bufIndices[SDDid]++;
+                qty.set(_recvSendBuffer[SDDid].first[bufIndices[SDDid]], 0, coordsHere.first, coordsHere.second);
+                ++bufIndices[SDDid];
             }
         }
     }
-
-    /*
-    for (auto const& it: bufIndices)
-        std::cout << "SDD " << it.first << " -> index " << it.second << std::endl;
-    */
     MPI_Barrier(MPI_COMM_WORLD);
 }
 

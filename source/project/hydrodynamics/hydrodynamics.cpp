@@ -20,12 +20,6 @@ Hydrodynamics::~Hydrodynamics() {
 int Hydrodynamics::init() {
 
     // Init domain
-    std::vector<std::string> quantityNames;
-    quantityNames.push_back("rho");
-    quantityNames.push_back("rhou_x");
-    quantityNames.push_back("rhou_y");
-    quantityNames.push_back("rhoe");
-
     _domain = new Domain();
 
     IO::loadDomainInfo(_initpath, *_domain);
@@ -46,6 +40,7 @@ int Hydrodynamics::init() {
 
     // Now that the subdomains info were loaded they can
     // be built
+    _domain->setBoundaryThickness(2);
     _domain->buildSubDomainsMPI();
 
     // Initial time
@@ -121,11 +116,11 @@ int Hydrodynamics::start() {
         computeDT();
 
         // Synchronize overlap cells: requires communication
-   	    _timerComputation.end();
-	    _timerSynchronization.begin();
+   	_timerComputation.end();
+	_timerSynchronization.begin();
         _domain->updateOverlapCells();
-	    _timerSynchronization.end();
-   	    _timerComputation.begin();
+	_timerSynchronization.end();
+   	_timerComputation.begin();
 
         // update BoundaryCells
         _domain->updateBoundaryCells("rho");
@@ -141,11 +136,11 @@ int Hydrodynamics::start() {
         _domain->switchQuantityPrevNext("rhoe");
 
         // Resynchronize overlap cells for rho quantity before calling next step
-   	    _timerComputation.end();
-	    _timerSynchronization.begin();
+   	_timerComputation.end();
+	_timerSynchronization.begin();
         _domain->updateOverlapCells();
-	    _timerSynchronization.end();
-   	    _timerComputation.begin();
+	_timerSynchronization.end();
+   	_timerComputation.begin();
 
         // update BoundaryCells
         _domain->updateBoundaryCells("rho");
@@ -159,7 +154,7 @@ int Hydrodynamics::start() {
         _domain->switchQuantityPrevNext("rhoe");
 
         _t += _dt;
-   	    _timerComputation.end();
+   	_timerComputation.end();
     }
 
     return 0;
@@ -178,13 +173,12 @@ void Hydrodynamics::computeDT() {
     _dt = std::min(_dt, _T - _t);
 }
 
-void Hydrodynamics::advection(const SDShared& sds,
-        std::map< std::string, Quantity<real>* > quantityMap) {
+void Hydrodynamics::advection(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap) {
 
-    Quantity<real>& rho = *quantityMap["rho"];
-    Quantity<real>& rhou_x = *quantityMap["rhou_x"];
-    Quantity<real>& rhou_y = *quantityMap["rhou_y"];
-    Quantity<real>& rhoe = *quantityMap["rhoe"];
+    Quantity<real>& rho = *quantityMap.at("rho");
+    Quantity<real>& rhou_x = *quantityMap.at("rhou_x");
+    Quantity<real>& rhou_y = *quantityMap.at("rhou_y");
+    Quantity<real>& rhoe = *quantityMap.at("rhoe");
 
     for (auto coords: sds) {
 
@@ -271,13 +265,12 @@ void Hydrodynamics::advection(const SDShared& sds,
     }
 }
 
-void Hydrodynamics::source(const SDShared& sds,
-        std::map< std::string, Quantity<real>* > quantityMap) {
+void Hydrodynamics::source(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
 
-    Quantity<real>& rho = *quantityMap["rho"];
-    Quantity<real>& rhou_x = *quantityMap["rhou_x"];
-    Quantity<real>& rhou_y = *quantityMap["rhou_y"];
-    Quantity<real>& rhoe = *quantityMap["rhoe"];
+    Quantity<real>& rho = *quantityMap.at("rho");
+    Quantity<real>& rhou_x = *quantityMap.at("rhou_x");
+    Quantity<real>& rhou_y = *quantityMap.at("rhou_y");
+    Quantity<real>& rhoe = *quantityMap.at("rhoe");
 
     for (auto coords: sds) {
 

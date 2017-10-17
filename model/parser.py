@@ -15,13 +15,16 @@ def fn(x):
     return (x-2)*2 + 2
 
 # Retrouve la clef du cas test
-def makeCaseKey(caseSize):
-    if caseSize == 128:
+def makeCaseKey(caseSizeX, caseSizeY):
+    if caseSizeX == 128 and caseSizeY == 128:
         return '128x128x556'
-    elif caseSize == 256:
+    if caseSizeX == 256 and caseSizeY == 256:
         return '256x256x1121'
-    else:
+    elif caseSizeX == 256 and caseSizeY = 512:
+        return '256x512x1138'
+    elif caseSizeX == 512 and caseSizeY = 512:
         return '512x512x2252'
+    return ''
 
 def extractKey(key):
     firstSplit = key.split('x')
@@ -36,7 +39,7 @@ def extractKey(key):
 
     return {"Nx":Nx, "Ny":Ny, "Ni":Ni, "R":R, "Nt":Nt, "Ns":Ns}
 
-def makeKey(attrnames, data_line, from_case_name_ny):
+def makeKey(attrnames, data_line):
     '''
     Nx : nombre de mailles en abscisses
     Ny : nombre de mailles en ordonnées

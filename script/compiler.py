@@ -21,8 +21,7 @@ class Engine:
             program_file = project_name + '-' \
                     + mode + '-' \
                     + compiler
-            self.binary_path = os.path.join(config.workspace, 'Variant',
-                    program_file)
+            self.binary_path = os.path.join(config.workspace, program_file)
 
     def _build(self, project_name, compiler, mode, precision, std):
         p = subprocess.Popen(['scons',
@@ -32,7 +31,7 @@ class Engine:
             'mode=' + mode,
             'precision=' + precision,
             'std=' + std],
-            cwd = os.path.join(config.workspace, 'Variant', 'source'))
+            cwd = os.path.join(config.workspace, 'source'))
         p.wait()
         if p.returncode != 0:
             print("Compilation failed")
@@ -40,8 +39,7 @@ class Engine:
         program_file = project_name + '-' \
                 + mode + '-' \
                 + compiler
-        return os.path.join(config.workspace, 'Variant',
-                program_file)
+        return os.path.join(config.workspace, program_file)
 
     def _clean(self, project_name, compiler, mode, precision, std):
         p = subprocess.Popen(['scons',
@@ -52,8 +50,7 @@ class Engine:
             'precision=' + precision,
             'std=' + std,
             '-c'],
-            cwd = os.path.join(config.workspace,
-                'Variant', 'source'))
+            cwd = os.path.join(config.workspace, 'source'))
         p.wait()
 
     def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1, gdb = False, valgrind
@@ -73,7 +70,8 @@ class Engine:
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
             else:
                 print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
+#                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
+                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), self.binary_path, '-i', input_path, '-o', output_path])
         else:
             if gdb:
                 subprocess.check_call(['gdb', '--args', self.binary_path, '-i', input_path, '-o', output_path])

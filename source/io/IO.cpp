@@ -103,10 +103,9 @@ int IO::loadExecOptions(std::string directory,
     std::string SDSgeom = tmpStr;
     std::getline(ifs, tmpStr);
     unsigned int nThreads = std::stoi(tmpStr);
-    unsigned int boundaryThickness = 1;
     ifs.close();
 
-    domain.setOptions(nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads, boundaryThickness);
+    domain.setOptions(nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads);
 
     return 0;
 }
@@ -172,8 +171,7 @@ int IO::writeQuantity(std::string directory,
     return 0;
 }
 
-int IO::loadBoundaryConditions(std::string directory,
-        Domain& domain) {
+int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
 
     SDDistributed& sdd = domain.getSDD();
     std::ostringstream oss;

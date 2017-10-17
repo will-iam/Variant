@@ -58,10 +58,8 @@ class Hydrodynamics: public Engine {
      * etc.)
      */
 
-    void advection(const SDShared& sds,
-            std::map< std::string, Quantity<real>* > quantityMap);
-    void source(const SDShared& sds,
-            std::map< std::string, Quantity<real>* > quantityMap);
+    void advection(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap);
+    void source(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap);
 
   private:
 

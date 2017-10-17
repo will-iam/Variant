@@ -5,7 +5,8 @@
 // To be called by the thread.
 void Worker::work() {
 
-    std::function<void()> task;
+   
+    int taskIndex(-1);
     while (true) {
 
         {   // acquire lock
@@ -13,26 +14,26 @@ void Worker::work() {
 
             if (_pool._nextTaskCursor >= 0) {
 
-                // Flag the pool to signal that one worker is computing.
-                //assert(_pool._busyWorkerNumber > 0 && _pool._busyWorkerNumber <= _pool._workerVectorSize + 1);
+		#ifndef NDEBUG
+                ++_pool._doneTasks[_pool._nextTaskCursor];
+		#endif
 
                 // get the task from the list
-                ++_pool._doneTasks[_pool._nextTaskCursor];
-                //std::cout << "Thread " << _id << " acquired task " << _pool._nextTaskCursor << std::endl;
-                task = _pool._currentTaskList->operator[](_pool._nextTaskCursor);
+                taskIndex = _pool._nextTaskCursor;
+
+                // Flag the pool to signal that one worker is computing.
                 _pool._busyWorkerNumber++;
                 _pool._nextTaskCursor++;
-                if (_pool._nextTaskCursor.load() >= _pool._currentTaskListSize)
+                if (_pool._nextTaskCursor.load() >= _pool._currentTaskVectorSize)
                     _pool._nextTaskCursor = SYNC;
 
             }
         }   // release lock
 
         // execute the task
-        if (task) {
-            task();
-            //std::cout << "Thread " << _id << " done." << std::endl;
-            task = std::function<void()>();
+        if (taskIndex >= 0) {
+            (*_pool._currentTaskVector)[taskIndex]();
+            taskIndex = -1;
             _pool._busyWorkerNumber--;
         }
 
@@ -79,29 +80,30 @@ ThreadPool::~ThreadPool() {
 }
 
 // add new work item to the pool
-void ThreadPool::addTask(std::string taskList_name, std::function<void()> f) {
+void ThreadPool::addTask(std::string taskListName, std::function<void()> f) {
 
-    _taskList_map[taskList_name].push_back(f);
+    _taskListMap[taskListName].push_back(f);
 }
 
-void ThreadPool::start(std::string taskList_name) {
+void ThreadPool::start(std::string taskListName) {
 
     // This launches tasks for all threads
-    //_doneTasks.resize(_taskVector.size());
-    //std::fill(_doneTasks.begin(), _doneTasks.end(), 0);
-    //
+    _currentTaskVector = &(_taskListMap[taskListName]);
+    _currentTaskVectorSize = _currentTaskVector->size();
 
-    // Go !
-    //std::nout << "Commencing task " << taskList_name << std::endl;
-    _currentTaskList = &(_taskList_map[taskList_name]);
-    _currentTaskListSize = _currentTaskList->size();
+#ifndef NDEBUG
     _doneTasks.clear();
-    _doneTasks.resize(_currentTaskListSize);
+    _doneTasks.resize(_currentTaskVectorSize);
+#endif
+
     _nextTaskCursor = 0;
+
 #if PROFILE >= 1
     _timer.start();
 #endif
+
     _ownWorker.work();
+
 #if PROFILE >= 1
     _timer.end();
 #endif

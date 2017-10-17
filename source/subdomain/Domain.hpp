@@ -64,7 +64,14 @@ class Domain {
      */
     void setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
             unsigned int nSDS, std::string SDSgeom,
-            unsigned int nThreads, unsigned int boundaryThickness);
+            unsigned int nThreads);
+
+    /*!
+    * @brief Set the thickness of the boundary layer
+    *
+    * @param boundaryThickness number of cell of the layer
+    */
+    void setBoundaryThickness(unsigned int boundaryThickness) {_boundaryThickness = boundaryThickness;}
 
     /*!
      * @brief Returns the non-modifiable width of the domain.

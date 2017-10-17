@@ -18,7 +18,7 @@
 
 class SDShared;
 
-typedef std::function< void(const SDShared&, std::map< std::string, Quantity<real>* >) > eqType;
+typedef std::function< void(const SDShared&, const std::map< std::string, Quantity<real>* >&) > eqType;
 
 /*!
  * @brief Subdomain on shared memory (SDS)
@@ -76,7 +76,7 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * exec equation on SDS
      * to be added as thread task
      */
-    void execEquation(eqType eqFunc,
+    void execEquation(eqType& eqFunc,
             const std::map< std::string, Quantity<real>* >& quantityMap);
 
   private:

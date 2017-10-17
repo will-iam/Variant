@@ -6,7 +6,12 @@ import sys
 import os
 import numpy as np
 import script.io as io
+import config
+import script.compiler as compiler
 from collections import *
+from shutil import copyfile, copytree, rmtree
+from script.analytics import compare_data
+from script.launcher import gen_ref_result, check_test, launch_test
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
@@ -56,27 +61,9 @@ def compute_sds_number(case_path, nSDD, SDSsize):
 
 def make_perf_data(perfPath, execTime, perf_info):
     perf = io.read_perfs(perfPath).values()
-    print "execTime:", execTime
     perf.append(execTime)
     perf.append(np.mean(perf_info['computeTime']))
     perf.append(np.mean(perf_info['synchronizeTime']))
-
-    print "computeTime:"
-    print np.mean(perf_info['computeTime'])
-    print np.min(perf_info['computeTime'])
-    print np.max(perf_info['computeTime'])
-    print np.std(perf_info['computeTime'])
-    print np.median(perf_info['computeTime'])
-
-    print "synchronizeTime:"
-    print np.mean(perf_info['synchronizeTime'])
-    print np.min(perf_info['synchronizeTime'])
-    print np.max(perf_info['synchronizeTime'])
-    print np.std(perf_info['synchronizeTime'])
-    print np.median(perf_info['synchronizeTime'])
-
-    print "tuple perf: "
-    print tuple(perf)
     return tuple(perf)
 
 def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine):
@@ -117,3 +104,55 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
     print(COLOR_BLUE + "Writing to results file" + COLOR_ENDC)
     f.write(';'.join([str(v) for v in final_data.values()]) + '\n')
     f.close()
+
+def runTestBattery(compileDict, testBattery):
+    case_dir = os.path.join("case", compileDict['project_name'])
+    tmp_dir = os.path.join(config.tmp_dir, 'seek_optimal')
+    this_dir = os.path.split(os.path.abspath(__file__))[0]
+
+    for cn, testList in testBattery.items():
+	    # Cleaning tmp directory for new case
+        rmtree(tmp_dir, ignore_errors=True)
+
+	    # Defining case path for results
+        case_path = os.path.join(case_dir, cn)
+
+	    # Init results dir
+        io.make_sure_path_exists(os.path.join(config.results_dir, 'seek_optimal', cn))
+        results_path = os.path.join(config.results_dir, 'seek_optimal', cn, 'results_data.csv')
+
+	    # Getting/building reference for the case
+        if not args.nocheck:
+		    ref_test_path = os.path.join(case_dir, cn, "ref", "final")
+		    if not os.path.isdir(ref_test_path):
+		        print("Reference case does not exist, create it.")
+		        gen_ref_result(this_dir, tmp_dir, compileDict['project_name'], cn,
+                       compileDict['comp'], compileDict['mode'], compileDict['precision'])
+
+	    # Launch tests and compare results
+        print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + cn)
+
+        for test in testList:
+            # Launching runs for the test
+            perf_for_allruns = []
+            for n in range(test['nRuns']):
+                current_test_path, exec_time, variant_info, perf_info = launch_test(this_dir,
+                            tmp_dir,
+                            compileDict['project_name'], cn, compileDict['comp'], compileDict['mode'], compileDict['precision'], compileDict['std'], compileDict['bool_compile'],
+                            test, test['ncpmpi'], compileDict['vtune'])
+
+                # Check results and compare to reference.
+                if not args.nocheck:
+                    result, qty, error_data = check_test(current_test_path, ref_test_path)
+                    if result:
+                        print("Compared with reference: OK.")
+                    else:
+                        print("Compared with reference: ERROR, different result for quantity " + qty)
+                        sys.exit(1)
+                print("Total ExecTime:", exec_time)
+                print("Results for test: " + str(test) + " on run " + str(n) + " on " + str(test['ncpmpi']) + " core(s).")
+                perf_for_allruns.append(make_perf_data(current_test_path, exec_time, perf_info))
+                print "perf_for_allruns", perf_for_allruns
+            
+            # Join results
+            join_result_data(results_path, variant_info, perf_for_allruns, test['ncpmpi'], test['machine'])

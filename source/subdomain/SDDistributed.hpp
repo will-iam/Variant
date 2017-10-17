@@ -324,14 +324,11 @@ class SDDistributed {
      * Neumann boundary conditions, and the associated
      * cells
      */
-    std::map< std::pair<int, int>,
-        std::pair<int, int> >
-            _neumannCellMap;
+    std::map< std::pair<int, int>, std::pair<int, int> > _neumannCellMap;
 
     /*!
      * thread pool for executing equation on SDS in parallel
      */
-    //std::unique_ptr<ThreadPool> _threadPool;
     std::unique_ptr<ThreadPool> _threadPool;
 
     /*!
@@ -356,6 +353,8 @@ class SDDistributed {
 
     std::vector<int> _neighbourSDDVector;
 
+    // Building buffers based on recv and send maps (avoid memory allocation during loop)
+    std::map<int, std::pair< std::vector<real>, std::vector<real> > > _recvSendBuffer;
 };
 
 template<typename T> void SDDistributed::addQuantity(std::string name) {

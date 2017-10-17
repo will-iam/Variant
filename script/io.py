@@ -90,17 +90,12 @@ def read_domain(input_dir):
     return domain
 
 def read_perfs(input_dir):
-    print("read_perfs: ", input_dir + "/" + "perfs.dat")
     f = open(os.path.join(input_dir, 'perfs.dat'), 'r')
     perfs = dict()
     for line in f.readlines():
         line_list = line.split()
         perfs[line_list[0]] = int(line_list[1])
-        print "line", line
-        print line_list[0], line_list[1]
     f.close()
-
-    print perfs
     return perfs
 
 def write_quantity_from_array(output_dir, data, domain_dir, quantity_name):

@@ -110,5 +110,13 @@ tmp/
 
 # MacOs Stuff
 .DS_Store
+
+# Scons
+source/.sconsign.dblite
+.build
+*.exec
+
+# Data and Results
+results/
 model/data
 model/rapport

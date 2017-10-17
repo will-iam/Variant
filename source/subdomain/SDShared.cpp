@@ -35,7 +35,7 @@ unsigned int SDShared::getId() const {
     return _id;
 }
 
-void SDShared::execEquation(eqType eqFunc,
+void SDShared::execEquation(eqType& eqFunc,
         const std::map< std::string, Quantity<real>* >& quantityMap) {
 
     eqFunc(*this, quantityMap);

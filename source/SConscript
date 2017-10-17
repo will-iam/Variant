@@ -28,16 +28,16 @@ localenv.Append(CCFLAGS= mycflags)
 localenv.Append(CPPPATH=['#io', '#toolkit', '#subdomain', '#engine'])
 
 #holds the root of the build directory tree
-builddir = localenv['workspace'] + 'build/' + project + '/' + compiler + '/' + mymode
+builddir = os.path.join(localenv['workspace'], '.build', project, compiler, mymode)
 
 #holds the path to the executable in the build directory
-targetpath = '../' + project + '-' + mymode + '-' + compiler
+targetpath = '../' + project + '-' + mymode + '-' + compiler + '.exec'
 
 #specify the build directory
 localenv.VariantDir(builddir, ".", duplicate=0)
 
 #Build objects
-objs = SConscript('project/' + project +'/SConscript', exports = 'localenv', duplicate=0)
+objs = SConscript('project/' + project +'/SConscript', exports = 'localenv', variant_dir=os.path.join(builddir,'project', project), duplicate=0)
 objs.append(SConscript('engine/SConscript', exports = 'localenv', variant_dir=os.path.join(builddir,'engine'), duplicate=0))
 objs.append(SConscript('io/SConscript', exports = 'localenv', variant_dir=os.path.join(builddir,'io'), duplicate=0))
 objs.append(SConscript('subdomain/SConscript', exports = 'localenv', variant_dir=os.path.join(builddir,'subdomain'), duplicate=0))
@@ -46,6 +46,6 @@ objs.append(SConscript('toolkit/SConscript', exports = 'localenv', variant_dir=o
 srclst = map(lambda x: builddir + '/' + x, glob.glob('*.cpp'))
 objs.append(localenv.Object(srclst))
 
-xxx = localenv.Program(targetpath,objs)
+xxx = localenv.Program(targetpath, objs)
 
 Return('xxx')
