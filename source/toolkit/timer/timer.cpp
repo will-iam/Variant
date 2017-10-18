@@ -22,8 +22,10 @@ void Timer::end(){
     _totalSystem += getLastSystemDuration();;
 
     unsigned long int steady = getLastSteadyDuration();
-    _steadyList.push_back(steady);
     _totalSteady += steady;
+#if PROFILE >= 1
+    _steadyList.push_back(steady);
+#endif
 
     _totalClock += getLastClockDuration();
 

@@ -18,19 +18,18 @@ from analytics import compare_data
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
-def gen_ref_result(root_dir, tmp_dir, project_name, cn, comp, mode, precision):
+def gen_ref_result(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std):
     test = dict()
     test['nSDD'] = (1, 1)
     test['nSDS'] = 1
     test['SDSgeom'] = 'line'
     test['nThreads'] = 1
     return launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision,
-    'c++11', True, test, 1, False, False, False, "ref")
+    std, True, test, 1, False, False, False, "ref")
 
 def check_test(test_path, ref_path):
-    print("Checking test " + test_path)
+    print("Checking test " + test_path + " against " + ref_path)
     qties_to_compare = io.read_quantity_names(test_path)
-    #results = compare_data(ref_path, test_path, ['rho'])
     results = compare_data(ref_path, test_path, qties_to_compare)
     if results[0]:
         print("OK for all quantities")
@@ -45,8 +44,6 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
-    #case_path = os.path.join(root_dir, 'case', project_name, cn, 'init')
-    #if not os.path.isdir(case_path):
     case_path, qty_name_list = build_case.build_case(root_dir, tmp_dir, project_name, cn, ref_case)
 
     # Manage number of SDD
@@ -56,7 +53,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     # Add exec options
     io.write_exec_options(case_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], nCoresPerSDD)
 
-    input_path = os.path.join(root_dir, 'case', project_name, cn, 'init', str(nSDD_X) + 'x' + str(nSDD_Y))
+    input_path = os.path.join(root_dir, 'cases', project_name, cn, 'init', str(nSDD_X) + 'x' + str(nSDD_Y))
     # Split case for SDDs into tmp directory
     if not os.path.isdir(input_path):
         print(COLOR_BLUE + "Splitting case data" + COLOR_ENDC)

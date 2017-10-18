@@ -41,8 +41,8 @@ if not (lib in ['linux', 'macos']):
 	print "Expected a library type within: macos, linux";
 	Exit(1)
 
-if not (std in ['c++98', 'c++0x', 'c++11']):
-    print "Expected a C++ standard type within: c++98, c++0x, c++11";
+if not (std in ['c++98', 'c++0x', 'c++11', 'c++14']):
+    print "Expected a C++ standard type within: c++98, c++0x, c++11, c++14";
     Exit(1)
 
 #tell the user what we're doing

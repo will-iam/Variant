@@ -5,6 +5,7 @@ import __future__
 import os
 import sys
 import subprocess
+import io
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
 
@@ -18,9 +19,7 @@ class Engine:
             self.binary_path = self._build(project_name,
                 compiler, mode, precision, std)
         else:
-            program_file = project_name + '-' \
-                    + mode + '-' \
-                    + compiler
+            program_file = project_name + '-' + mode + '-' + compiler + '.exec'
             self.binary_path = os.path.join(config.workspace, program_file)
 
     def _build(self, project_name, compiler, mode, precision, std):
@@ -36,9 +35,7 @@ class Engine:
         if p.returncode != 0:
             print("Compilation failed")
             sys.exit(1)
-        program_file = project_name + '-' \
-                + mode + '-' \
-                + compiler
+        program_file = project_name + '-' + mode + '-' + compiler + '.exec'
         return os.path.join(config.workspace, program_file)
 
     def _clean(self, project_name, compiler, mode, precision, std):
@@ -55,6 +52,9 @@ class Engine:
 
     def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1, gdb = False, valgrind
             = False, vtune = False):
+
+	cmd = config.mpi_RUN.split(' ')
+
         if mpi_nprocs > 0:
             if gdb:
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
@@ -69,9 +69,14 @@ class Engine:
                 print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
             else:
-                print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
-#                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path])
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), self.binary_path, '-i', input_path, '-o', output_path])
+                # visible in this process + all children
+                os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = 'weak64.SDD' + str(mpi_nprocs) + '.r1'
+                os.environ['SCOREP_FILTERING_FILE'] = '/ccc/home/cont999/formation/stag26/Variant/filter'
+                #os.environ['SCOREP_MEMORY_RECORDING'] = 'true'
+                #os.environ['SCOREP_MPI_MEMORY_RECORDING'] = 'true'
+                cmd = cmd + ['-n', str(mpi_nprocs), '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
+                print ' '.join(cmd)
+                subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:
             if gdb:
                 subprocess.check_call(['gdb', '--args', self.binary_path, '-i', input_path, '-o', output_path])

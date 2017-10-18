@@ -106,7 +106,6 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
     f.close()
 
 def runTestBattery(compileDict, testBattery):
-    case_dir = os.path.join("case", compileDict['project_name'])
     tmp_dir = os.path.join(config.tmp_dir, 'seek_optimal')
     this_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -114,20 +113,17 @@ def runTestBattery(compileDict, testBattery):
 	    # Cleaning tmp directory for new case
         rmtree(tmp_dir, ignore_errors=True)
 
-	    # Defining case path for results
-        case_path = os.path.join(case_dir, cn)
-
 	    # Init results dir
         io.make_sure_path_exists(os.path.join(config.results_dir, 'seek_optimal', cn))
         results_path = os.path.join(config.results_dir, 'seek_optimal', cn, 'results_data.csv')
 
 	    # Getting/building reference for the case
         if not args.nocheck:
-		    ref_test_path = os.path.join(case_dir, cn, "ref", "final")
+		    ref_test_path = os.path.join("cases", compileDict['project_name'], cn, "ref", "final")
 		    if not os.path.isdir(ref_test_path):
 		        print("Reference case does not exist, create it.")
 		        gen_ref_result(this_dir, tmp_dir, compileDict['project_name'], cn,
-                       compileDict['comp'], compileDict['mode'], compileDict['precision'])
+                       compileDict['comp'], compileDict['mode'], compileDict['precision'], compileDict['std'])
 
 	    # Launch tests and compare results
         print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + cn)

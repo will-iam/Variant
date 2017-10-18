@@ -12,10 +12,11 @@ from shutil import rmtree
 
 def build_case(root_dir, tmp_dir, project_name, case_name, subdir = "tmp",
         force_build = False):
+    case_dir = 'cases'
     # Load all physical/numerical data from case
-    case_path = os.path.join(root_dir, 'case', project_name, case_name)
+    case_path = os.path.join(root_dir, case_dir, project_name, case_name)
 
-    output_dir = os.path.join("case", project_name, case_name, "ref", "init")\
+    output_dir = os.path.join(case_dir, project_name, case_name, "ref", "init")\
             if subdir == "ref" else os.path.join(tmp_dir, case_name, "init")
     if os.path.isdir(output_dir) and not force_build and subdir != "ref":
 	last_modif = max(os.path.getmtime(os.path.join(case_path, 'init.py')),

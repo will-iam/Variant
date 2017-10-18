@@ -20,4 +20,4 @@ find case/ -iname "tmp" -type d -exec rm -r {} + 2> /dev/null
 #python regression.py conservativeHydrodynamics --clean-compile
 
 #find -iname "hydrodynamics-*" -type f -delete 2> /dev/null
-rm hydrodynamics-*
+

@@ -12,7 +12,7 @@ compileDict = {
 'comp': 'mpi',
 'mode': 'release',
 'precision': 'double',
-'std': 'c++11',
+'std': 'c++14',
 'bool_compile': not args.nocompile,
 'vtune': args.vtune
 }
@@ -61,7 +61,8 @@ def weakSDD(initSize):
 
         for ratio in ratioThreadsCores:
             # Different SDD splits, nSDD = 2**p
-            for i in range(0, p/2 + 1):
+            #for i in range(0, p/2 + 1):
+            for i in range(p/2, p/2 + 1):
                 test = {}
                 test['SDSgeom'] = SDSgeom
                 test['nSDD'] = (2**i, 2**(p-i))
@@ -167,40 +168,46 @@ def explore():
                     nsdd = test['nSDD'][0]*test['nSDD'][1]
                     for SDSratio in SDSratioList:
                         # Exploration strong SDS, ncpmpi = nTotalCores / nsdd
-                        coreNumberList = [nTotalCores / nsdd]
-                        for ncpmpi in coreNumberList:
-                            # élimine cas impossible
-                            if ncpmpi > nTotalCores / nsdd:
-                                continue
+                        ncpmpi = nTotalCores / nsdd
 
-                            test['ncpmpi'] = ncpmpi
-                            # Pour un calcul à charge/ressource constante
-                            test['nThreads'] = ncpmpi * ratio
-                            if test['nThreads'] <= 0:
-                                continue
+                        # élimine cas impossible
+                        if ncpmpi > nTotalCores / nsdd:
+                            continue
 
-                            # Définition du nombre de SDS
-                            # test['nSDS'] = compute_sds_number(case_path, nsdd, SDSsize)
-                            test['nSDS'] = test['nThreads'] * SDSratio
+                        test['ncpmpi'] = ncpmpi
+                        # Pour un calcul à charge/ressource constante
+                        test['nThreads'] = ncpmpi * ratio
+                        if test['nThreads'] <= 0:
+                            continue
 
-                            # the maximum number is the number of cells.
-                            if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
-                                continue
+                        # Définition du nombre de SDS
+                        # test['nSDS'] = compute_sds_number(case_path, nsdd, SDSsize)
+                        test['nSDS'] = test['nThreads'] * SDSratio
 
-                            # add the number of tests.
-                            test['nRuns'] = nruns
+                        # the maximum number is the number of cells.
+                        if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
+                            continue
 
-                            # add the machine on which is run the test
-                            test['machine'] = machine
+                        # add the number of tests.
+                        test['nRuns'] = nruns
 
-                            # Finally add the test in the battery
-                            if cn not in testBattery.keys():
-                                testBattery[cn] = []
-                            testBattery[cn].append(test)
+                        # add the machine on which is run the test
+                        test['machine'] = machine
+
+                        # Finally add the test in the battery
+                        if cn not in testBattery.keys():
+                            testBattery[cn] = []
+                        testBattery[cn].append(test)
     return testBattery
 
 # Weak Comparaison
-testBattery = weakSDD(128)
+testBattery = weakSDD(64)
+#testBattery = weakSDS(64)
+#testBattery = explore()
+
+#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads': 32, 'nSDD': (1, 1), 'machine': machine, 'ncpmpi': 32, 'nSDS': 128, 'nRuns': 1}]}
+#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  4, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 4, 'nSDS': 128, 'nRuns': 1}]}
+testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 128, 'nRuns': 1}]}
 
 totalTestNumber = 0
 for k, tl in testBattery.items():

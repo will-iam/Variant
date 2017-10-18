@@ -9,11 +9,9 @@ import argparse
 import script.build_case as build_case
 import script.sdd as sdd
 
-parser = argparse.ArgumentParser(description="Regression test", prefix_chars='-')
+parser = argparse.ArgumentParser(description="Build and Split case", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
 parser.add_argument("-c", type = str, help = "Case to test", required=True)
-#parser.add_argument("-x", type = str, help = "Number of SDDs alongs x-axis", required=True)
-#parser.add_argument("-y", type = str, help = "Number of SDDs alongs y-axis", required=True)
 args = parser.parse_args()
 
 project_name = args.project_name
@@ -36,7 +34,7 @@ for p in SDD_powersOfTwo:
 this_path = os.path.split(os.path.abspath(__file__))[0]
 
 # Get case names from all directories in case/project_name/
-project_path = os.path.join("/ccc/cont002/temp/m7/weens4x/VariantCase/case", project_name)
+project_path = os.path.join("cases", project_name)
 case_path = os.path.join(project_path, case_name)
 full_domain_path, qty_name_list = build_case.build_case(this_path, project_path, project_name, case_name)
 
