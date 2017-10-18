@@ -117,15 +117,15 @@ def runTestBattery(compileDict, testBattery):
         io.make_sure_path_exists(os.path.join(config.results_dir, 'seek_optimal', cn))
         results_path = os.path.join(config.results_dir, 'seek_optimal', cn, 'results_data.csv')
 
-	    # Getting/building reference for the case
+        # Getting/building reference for the case
         if not args.nocheck:
-		    ref_test_path = os.path.join("cases", compileDict['project_name'], cn, "ref", "final")
-		    if not os.path.isdir(ref_test_path):
-		        print("Reference case does not exist, create it.")
-		        gen_ref_result(this_dir, tmp_dir, compileDict['project_name'], cn,
+            ref_test_path = os.path.join("cases", compileDict['project_name'], cn, "ref", "final")
+            if not os.path.isdir(ref_test_path):
+                print("Reference case does not exist, create it.")
+                gen_ref_result(this_dir, tmp_dir, compileDict['project_name'], cn,
                        compileDict['comp'], compileDict['mode'], compileDict['precision'], compileDict['std'])
 
-	    # Launch tests and compare results
+        # Launch tests and compare results
         print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + cn)
 
         for test in testList:
@@ -148,7 +148,7 @@ def runTestBattery(compileDict, testBattery):
                 print("Total ExecTime:", exec_time)
                 print("Results for test: " + str(test) + " on run " + str(n) + " on " + str(test['ncpmpi']) + " core(s).")
                 perf_for_allruns.append(make_perf_data(current_test_path, exec_time, perf_info))
-                print "perf_for_allruns", perf_for_allruns
-            
+                print("perf_for_allruns", perf_for_allruns)
+
             # Join results
             join_result_data(results_path, variant_info, perf_for_allruns, test['ncpmpi'], test['machine'])

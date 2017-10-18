@@ -4,13 +4,7 @@
 import __future__
 import os
 import sys
-import argparse
-import numpy as np
-
-import io
-import imp
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import config
+import script.io as io
 
 def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     io.make_sure_path_exists(output_dir)
@@ -22,8 +16,8 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     domain_Nx = int(line_split[4])
     domain_Ny = int(line_split[5])
 
-    SDD_Nx = domain_Nx / nSDD_X
-    SDD_Ny = domain_Ny / nSDD_Y
+    SDD_Nx = domain_Nx // nSDD_X
+    SDD_Ny = domain_Ny // nSDD_Y
 
     # Writing short domain info
     domain_shortinfo = open(os.path.join(output_dir, 'domain.dat'), 'w+')
@@ -60,8 +54,8 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
 
         coordX = int(line_split[1])
         coordY = int(line_split[2])
-        x = coordX / SDD_Nx
-        y = coordY / SDD_Ny
+        x = coordX // SDD_Nx
+        y = coordY // SDD_Ny
         BL_X = SDD_Nx * x
         BL_Y = SDD_Ny * y
 
@@ -322,38 +316,3 @@ def split_case(domain_dir, nSDD_X, nSDD_Y, qty_name_list):
 	for q_str in qty_name_list:
 	    split_quantity(domain_dir, output_dir, q_str, usc)
 	return output_dir
-
-#def merge_qbc(split_dir, output_dir, quantity_name):
-#    domain_shortinfo = open(os.path.join(split_dir, "domain.dat"), 'r')
-#    line_domain = domain_shortinfo.readline()
-#    line_split = line_domain.split()
-#    nSDD_X = int(line_split[4])
-#    nSDD_Y = int(line_split[5])
-#    domain_shortinfo.close()
-#
-#    qbc_stream = open(os.path.join(output_dir, quantity_name + '_bc.dat'), 'w+')
-#
-#    for SDDid in range(nSDD_X * nSDD_Y):
-#        # Build coords -> uid correspondence
-#        coords_to_uid = dict()
-#        SDDpath = os.path.join(split_dir, 'sdd' + str(SDDid))
-#        bc_f = open(os.path.join(SDDpath, 'bc.dat'), 'r')
-#        for line in bc_f.readlines():
-#            line_split = line.split()
-#            coords = (int(line_split[1]), int(line_split[2]))
-#            uid = line_split[0]
-#            coords_to_uid[coords] = uid
-#
-#        sdd_f.close()
-#
-#        # Now iterating through quantity and add to global quantity stream
-#        qbc_f = open(os.path.join(SDDpath, quantity_name + '_bc.dat'), 'r')
-#        i = 0
-#        for line in quantity_f.readlines():
-#            line_split = line.split()
-#            coords = (int(line_split[0]), int(line_split[1]))
-#            qty_stream.write(coords_to_uid[coords] + " " + line_split[2] +
-#                    "\n")
-#
-#    qty_stream.close()
-

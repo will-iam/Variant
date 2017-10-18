@@ -49,7 +49,7 @@ case_name = args.c
 
 def weakSDD(initSize):
     testBattery = {}
-    caseSizeX = initSize / 2
+    caseSizeX = initSize // 2
     caseSizeY = initSize
     for p in [0, 1, 2, 3, 4, 5, 6]:
     	# Defining case directory
@@ -62,7 +62,7 @@ def weakSDD(initSize):
         for ratio in ratioThreadsCores:
             # Different SDD splits, nSDD = 2**p
             #for i in range(0, p/2 + 1):
-            for i in range(p/2, p/2 + 1):
+            for i in range(p//2, p//2 + 1):
                 test = {}
                 test['SDSgeom'] = SDSgeom
                 test['nSDD'] = (2**i, 2**(p-i))
@@ -201,20 +201,21 @@ def explore():
     return testBattery
 
 # Weak Comparaison
-testBattery = weakSDD(64)
+#testBattery = weakSDD(64)
 #testBattery = weakSDS(64)
 #testBattery = explore()
 
 #testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads': 32, 'nSDD': (1, 1), 'machine': machine, 'ncpmpi': 32, 'nSDS': 128, 'nRuns': 1}]}
 #testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  4, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 4, 'nSDS': 128, 'nRuns': 1}]}
-testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 128, 'nRuns': 1}]}
+#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 128, 'nRuns': 1}]}
+testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (1, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 128, 'nRuns': 1}]}
 
 totalTestNumber = 0
 for k, tl in testBattery.items():
-    print "%s test(s) on case %s" % (len(tl), k)
+    print("%s test(s) on case %s" % (len(tl), k))
     totalTestNumber += len(tl)
     for t in tl:
-        print "\t", t
+        print("\t", t)
 print(totalTestNumber, "will be run")
 
 runTestBattery(compileDict, testBattery)

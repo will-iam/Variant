@@ -3,7 +3,7 @@
 
 import numpy as np
 from decimal import Decimal
-from io import read_quantity
+from script.io import read_quantity
 
 def mass(data, dx, dy):
     mass = 0
@@ -31,4 +31,3 @@ def compare_data(input_path1, input_path2, quantityNameList):
                 return False, q, (dx1, dy1, comparedata)
 
     return True, None, (None, None, None)
-

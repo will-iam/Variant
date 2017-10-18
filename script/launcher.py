@@ -9,11 +9,11 @@ from timeit import default_timer as timer
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
-import build_case
-import io
-import sdd
-import compiler
-from analytics import compare_data
+import script.build_case as build_case
+import script.io as io
+import script.sdd as sdd
+import script.compiler as compiler
+from script.analytics import compare_data
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
@@ -77,8 +77,8 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
     # Variant info
     variant_info = io.read_variant_info(output_path, nSDD_X * nSDD_Y)
-    
-    # Perfs info    
+
+    # Perfs info
     perf_info = io.read_perf_info(output_path, nSDD_X * nSDD_Y)
 
     if ref_case == "ref":
@@ -103,4 +103,3 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
 
     return final_path, int((end - start) * 1000), variant_info, perf_info
-

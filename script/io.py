@@ -168,7 +168,7 @@ def write_domain(output_dir, lx, ly, Nx, Ny, coords_to_uid):
     f.write(str(ly) + " ")
     f.write(str(Nx) + " ")
     f.write(str(Ny) + "\n")
-    for coords, uid in coords_to_uid.iteritems():
+    for coords, uid in coords_to_uid.items():
         f.write(str(uid) + " ")
         f.write(str(coords[0]) + " ")
         f.write(str(coords[1]) + "\n")
@@ -177,7 +177,7 @@ def write_domain(output_dir, lx, ly, Nx, Ny, coords_to_uid):
 
 def write_quantity(output_dir, quant_name, uid_to_val):
     f = open(os.path.join(output_dir, quant_name + '.dat'), 'w+')
-    for uid, val in uid_to_val.iteritems():
+    for uid, val in uid_to_val.items():
         f.write(str(uid) + " " + str(val) + "\n")
     f.close()
 
@@ -200,7 +200,7 @@ def write_exec_options(output_dir, nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads
 
 def write_bc(output_dir, coords_to_uid_and_bc):
     f = open(os.path.join(output_dir, 'bc.dat'), 'w+')
-    for bcc, (uid, bc) in coords_to_uid_and_bc.iteritems():
+    for bcc, (uid, bc) in coords_to_uid_and_bc.items():
         f.write(str(uid) + " ")
         f.write(str(bcc[0]) + " " + str(bcc[1]) + " ")   # (i, j) coords
         f.write(str(bc[0]) + " " + str(bc[1]) + "\n")   # boundary condition

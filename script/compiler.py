@@ -50,11 +50,8 @@ class Engine:
             cwd = os.path.join(config.workspace, 'source'))
         p.wait()
 
-    def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1, gdb = False, valgrind
-            = False, vtune = False):
-
-	cmd = config.mpi_RUN.split(' ')
-
+    def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1, gdb = False, valgrind = False, vtune = False):
+        cmd = config.mpi_RUN.split(' ')
         if mpi_nprocs > 0:
             if gdb:
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
@@ -66,8 +63,9 @@ class Engine:
                     '--log-file=valgrind-out.txt',
                     self.binary_path, '-i', input_path, '-o', output_path])
             elif vtune:
-                print ' '.join([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path])
+                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path]
+                print(' '.join(cmd))
+                subprocess.check_call(cmd)
             else:
                 # visible in this process + all children
                 os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = 'weak64.SDD' + str(mpi_nprocs) + '.r1'
@@ -75,7 +73,7 @@ class Engine:
                 #os.environ['SCOREP_MEMORY_RECORDING'] = 'true'
                 #os.environ['SCOREP_MPI_MEMORY_RECORDING'] = 'true'
                 cmd = cmd + ['-n', str(mpi_nprocs), '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
-                print ' '.join(cmd)
+                print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:
             if gdb:
