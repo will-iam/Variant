@@ -38,10 +38,8 @@ int Hydro4x1::init() {
     IO::loadExecOptions(_initpath, *_domain);
     IO::loadSDDInfo(_initpath, *_domain);
 
-    // Now that the subdomains info were loaded they can
-    // be built
-    _domain->setBoundaryThickness(1);
-    _domain->buildSubDomainsMPI();
+    // Now that the subdomains info were loaded they can be built
+    _domain->buildSubDomainsMPI(4, 1);
 
     // Initial time
     _t = 0;

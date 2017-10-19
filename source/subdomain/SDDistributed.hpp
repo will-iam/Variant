@@ -90,6 +90,7 @@ class SDDistributed {
     SDDistributed(unsigned int sizeX, unsigned int sizeY,
             int BL_X, int BL_Y,
             unsigned int boundaryThickness,
+            unsigned int neighbourHood,
             unsigned int id,
             unsigned int nSDD);
     /*!
@@ -300,6 +301,11 @@ class SDDistributed {
      * boundary thickness (number of cells)
      */
     unsigned int _boundaryThickness;
+
+    /*!
+     * number of sdds that should be around.
+     */
+    unsigned int _neighbourHood;
 
     /*!
      * id of the SDD in Domain

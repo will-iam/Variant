@@ -158,7 +158,7 @@ void Domain::addEquation(std::string eqName, eqType eqFunc) {
     _sdd->addEquation(eqName, eqFunc);
 }
 
-void Domain::buildSubDomainsMPI() {
+void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundaryThickness) {
 
     MPI_Comm_size(MPI_COMM_WORLD, &_MPI_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
@@ -167,7 +167,7 @@ void Domain::buildSubDomainsMPI() {
     assert(_Nx % _nSDD_X == 0);
     assert(_Ny % _nSDD_Y == 0);
 
-    _sdd = new SDDistributed(_SDD_Nx, _SDD_Ny, _SDD_BL_X, _SDD_BL_Y, 1, _MPI_rank, _nSDD);
+    _sdd = new SDDistributed(_SDD_Nx, _SDD_Ny, _SDD_BL_X, _SDD_BL_Y, boundaryThickness, neighbourHood, _MPI_rank, _nSDD);
 
     _sdd->buildAllSDS(_nSDS, _SDSgeom);
 
@@ -287,7 +287,28 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
     // Init boundary cells of SDD
     std::vector< std::pair<int, int> > boundaryCellList;
     for (unsigned int k = 1; k <= _boundaryThickness; ++k) {
-        /* --------------------------------------------------------
+        // --------------------------------------------------------
+        // Left
+        for (unsigned int j = 0; j < _sizeY; j++) {
+            boundaryCellList.push_back(std::pair<int, int>(-k, j));
+        }
+        // Top
+        for (unsigned int i = 0; i < _sizeX; i++) {
+            boundaryCellList.push_back(std::pair<int, int>(i, _sizeY + k - 1));
+        }
+        // Right
+        for (int j = _sizeY - 1; j >= 0; j--) {
+            boundaryCellList.push_back(std::pair<int, int>(_sizeX + k - 1, j));
+        }
+        // Bottom
+        for (int i = _sizeX - 1; i >= 0; i--) {
+            boundaryCellList.push_back(std::pair<int, int>(i, -k));
+        }
+
+        // --------------------------------------------------------
+        if (_neighbourHood == 4)
+            continue;
+
         // WITH CORNERS VERSION
         // upper left
         for (unsigned int j = _sizeY; j < _sizeY + _boundaryThickness; ++j) {
@@ -307,25 +328,8 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
         // bottom left
         for (int j = 0 - _boundaryThickness; j < 0; ++j) {
             boundaryCellList.push_back(std::pair<int, int>(-k, j));
-        } */
+        }
 
-        // --------------------------------------------------------
-        // Left
-        for (unsigned int j = 0; j < _sizeY; j++) {
-            boundaryCellList.push_back(std::pair<int, int>(-k, j));
-        }
-        // Top
-        for (unsigned int i = 0; i < _sizeX; i++) {
-            boundaryCellList.push_back(std::pair<int, int>(i, _sizeY + k - 1));
-        }
-        // Right
-        for (int j = _sizeY - 1; j >= 0; j--) {
-            boundaryCellList.push_back(std::pair<int, int>(_sizeX + k - 1, j));
-        }
-        // Bottom
-        for (int i = _sizeX - 1; i >= 0; i--) {
-            boundaryCellList.push_back(std::pair<int, int>(i, -k));
-        }
     }
 
     // Now mapping all cells to SDD and corresponding
@@ -566,11 +570,6 @@ void Domain::updateOverlapCells(std::string qtyName) {
 void Domain::updateOverlapCells() {
     // For each SDD...
     _sdd->updateOverlapCells(_nonCstQties);
-}
-
-unsigned int Domain::getBoundaryThickness() {
-
-    return _boundaryThickness;
 }
 
 void Domain::printState(std::string quantityName) {

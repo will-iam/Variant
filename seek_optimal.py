@@ -217,7 +217,7 @@ def explore():
 #}
 
 testBattery = {
-'n2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 2}]
+'n2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
 ,'p2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 3}]
 ,'d2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 4}]
 }

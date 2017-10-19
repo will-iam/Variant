@@ -7,11 +7,12 @@ SDDistributed::SDDistributed(unsigned int sizeX,
                              unsigned int sizeY,
                              int BL_X, int BL_Y,
                              unsigned int boundaryThickness,
+                             unsigned int neighbourHood,
                              unsigned int id,
                              unsigned int nSDD):
     _coordConverter(sizeX, sizeY, boundaryThickness),
     _sizeX(sizeX), _sizeY(sizeY),
-    _boundaryThickness(boundaryThickness), _id(id),
+    _boundaryThickness(boundaryThickness), _neighbourHood(neighbourHood), _id(id),
     _geometry(0, 0, sizeX, sizeY),
     _BL(BL_X, BL_Y),
     _nSDD(nSDD)

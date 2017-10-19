@@ -1,5 +1,5 @@
-find -L -iname "*.pyc" -type f -delete 2> /dev/null
 find -iname "*.o" -type f -delete 2> /dev/null
+find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -r
 find report/ -iname "*.log" -type f -delete 2> /dev/null
 find report/ -iname "*.out" -type f -delete 2> /dev/null
 find report/ -iname "*.toc" -type f -delete 2> /dev/null
@@ -20,4 +20,3 @@ find case/ -iname "tmp" -type d -exec rm -r {} + 2> /dev/null
 #python regression.py conservativeHydrodynamics --clean-compile
 
 #find -iname "hydrodynamics-*" -type f -delete 2> /dev/null
-

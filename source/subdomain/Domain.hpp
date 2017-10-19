@@ -67,13 +67,6 @@ class Domain {
             unsigned int nThreads);
 
     /*!
-    * @brief Set the thickness of the boundary layer
-    *
-    * @param boundaryThickness number of cell of the layer
-    */
-    void setBoundaryThickness(unsigned int boundaryThickness) {_boundaryThickness = boundaryThickness;}
-
-    /*!
      * @brief Returns the non-modifiable width of the domain.
      *
      * @return width of the domain
@@ -127,14 +120,6 @@ class Domain {
      * @return vector of uids of all domain cells (unordered) (unordered)
      */
     std::vector<unsigned int> getUidList() const;
-
-    /*!
-     * @brief Returns boundary thickness of the domain, ie. the number of
-     * layers of cells outside the computed domain.
-     *
-     * @return boundary thickness
-     */
-    unsigned int getBoundaryThickness();
 
     /*!
      * @brief Gets bottom-left coordinates of SDD given by its id.
@@ -218,8 +203,7 @@ class Domain {
      * This creates the SDDs and their SDSs according to options set in
      * function setOptions, that has to be called before calling this function.
      */
-    //void buildSubDomains();
-    void buildSubDomainsMPI();
+    void buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundaryThickness);
     /*!
      * @brief Builds all info needed by the domain to compute the boundary
      * according to the boundary conditions set on boundary cells.
@@ -349,8 +333,6 @@ class Domain {
     unsigned int _nSDS = 0;
     std::string _SDSgeom;
     unsigned int _nThreads = 0;
-
-    unsigned int _boundaryThickness = 0;
 
     // MPI Variables
     int _MPI_rank;

@@ -40,8 +40,7 @@ int Hydro4x2::init() {
 
     // Now that the subdomains info were loaded they can
     // be built
-    _domain->setBoundaryThickness(2);
-    _domain->buildSubDomainsMPI();
+    _domain->buildSubDomainsMPI(4, 2);
 
     // Initial time
     _t = 0;
