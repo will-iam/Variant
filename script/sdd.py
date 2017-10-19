@@ -169,7 +169,7 @@ def split_bc(bc_dir, output_dir):
     domain_shortinfo.close()
 
     Nbc = (domain_Nx + BClayer * 2 + domain_Ny) * 2 * BClayer
- 
+
     uid_to_SDD_and_coords_bc = [None] * Nbc
 
     # Opening file streams
@@ -211,9 +211,10 @@ def split_bc(bc_dir, output_dir):
             eqCoordY = 0
 
         # Determine SDD corresponding to eq coords
-        x = eqCoordX / SDD_Nx
-        y = eqCoordY / SDD_Ny
-        SDDid = x + nSDD_X * y
+        x = eqCoordX // SDD_Nx
+        y = eqCoordY // SDD_Ny
+
+        SDDid = int(x + nSDD_X * y)
 
         # Determine coords on SDD: we use bottom-left coords of SDD
         BL_X = BL[SDDid][0]

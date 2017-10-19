@@ -28,9 +28,9 @@ def compare_data(input_path1, input_path2, quantityNameList):
         if not dx1 == dx2 \
             or not dy1 == dy2 \
             or not np.array_equal(data1, data2):
-                print q, input_path1, input_path2
-                print dx1, dy1, dx2, dy2
-                print data1 - data2
+                print (q, input_path1, input_path2)
+                print (dx1, dy1, dx2, dy2)
+                print (data1 - data2)
                 return False, q, (dx1, dy1, comparedata)
 
     return True, None, (None, None, None)

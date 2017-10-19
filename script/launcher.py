@@ -9,7 +9,7 @@ from timeit import default_timer as timer
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
-import script.build_case as build_case
+from script.build_case import *
 import script.io as io
 import script.sdd as sdd
 import script.compiler as compiler
@@ -25,7 +25,7 @@ def gen_ref_result(root_dir, tmp_dir, project_name, cn, comp, mode, precision, s
     test['SDSgeom'] = 'line'
     test['nThreads'] = 1
     return launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision,
-    std, True, test, 1, False, False, False, "ref")
+    std, True, test, 1, False, False, False, get_ref_name())
 
 def check_test(test_path, ref_path):
     print("Checking test " + test_path + " against " + ref_path)
@@ -44,7 +44,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
-    case_path, qty_name_list = build_case.build_case(root_dir, tmp_dir, project_name, cn, ref_case)
+    case_path, qty_name_list = build_case(root_dir, tmp_dir, project_name, cn, ref_case)
 
     # Manage number of SDD
     nSDD_X = test['nSDD'][0]
@@ -53,7 +53,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     # Add exec options
     io.write_exec_options(case_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], nCoresPerSDD)
 
-    input_path = os.path.join(root_dir, 'cases', project_name, cn, 'init', str(nSDD_X) + 'x' + str(nSDD_Y))
+    input_path = os.path.join(root_dir, get_case_path(project_name, cn) , 'init', str(nSDD_X) + 'x' + str(nSDD_Y))
     # Split case for SDDs into tmp directory
     if not os.path.isdir(input_path):
         print(COLOR_BLUE + "Splitting case data" + COLOR_ENDC)
@@ -81,7 +81,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     # Perfs info
     perf_info = io.read_perf_info(output_path, nSDD_X * nSDD_Y)
 
-    if ref_case == "ref":
+    if ref_case == get_ref_name():
         final_path = os.path.abspath(os.path.join(case_path, os.pardir, "final"))
     else:
         final_path = os.path.join(tmp_dir, project_name, cn, 'full_domain')

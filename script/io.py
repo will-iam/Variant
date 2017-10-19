@@ -179,7 +179,7 @@ def gen_coords_to_uid_bc(Nx, Ny, BClayer):
         coords_to_uid_bc[(i, -1)] = uid
         uid += 1
     '''
-    
+
     return coords_to_uid_bc
 
 def write_domain(output_dir, lx, ly, Nx, Ny, coords_to_uid, BClayer):

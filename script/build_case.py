@@ -4,21 +4,25 @@
 import __future__
 import os
 import sys
-import argparse
-
-import io
-import imp
+from importlib import *
 from shutil import rmtree
 
-def build_case(root_dir, tmp_dir, project_name, case_name, subdir = "tmp",
-        force_build = False):
-    case_dir = 'cases'
-    # Load all physical/numerical data from case
-    case_path = os.path.join(root_dir, case_dir, project_name, case_name)
+import script.io as io
 
-    output_dir = os.path.join(case_dir, project_name, case_name, "ref", "init")\
-            if subdir == "ref" else os.path.join(tmp_dir, case_name, "init")
-    if os.path.isdir(output_dir) and not force_build and subdir != "ref":
+
+def get_ref_name():
+    return 'ref' + str(sys.version_info[0])
+
+def get_case_path(project_name, case_name):
+    return os.path.join("cases", project_name, case_name)
+
+def build_case(root_dir, tmp_dir, project_name, case_name, force_build = False):
+
+    # Load all physical/numerical data from case
+    case_path = os.path.join(root_dir, get_case_path(project_name, case_name))
+    output_dir = os.path.join(get_case_path(project_name, case_name), get_ref_name(), "init")
+
+    if os.path.isdir(output_dir) and not force_build and subdir != get_ref_name() + sys.version_info:
         last_modif = max(os.path.getmtime(os.path.join(case_path, 'init.py')),
             os.path.getmtime(os.path.join(case_path, 'chars.py')))
         if last_modif < os.path.getctime(output_dir):
@@ -32,8 +36,13 @@ def build_case(root_dir, tmp_dir, project_name, case_name, subdir = "tmp",
             return output_dir, list(qtyList)
 
     sys.path.append(case_path)
+    # Reload chars also else, you build the case with the wrong characteristics
+    import chars
+    chars = reload(chars)
+
     import init as case
     case = reload(case)
+
     del sys.path[-1]
 
     rmtree(output_dir, ignore_errors=True)
@@ -51,7 +60,7 @@ def build_case(root_dir, tmp_dir, project_name, case_name, subdir = "tmp",
     io.write_bc(output_dir, case.coords_to_uid_and_bc)
 
     # Write quantities and boundary conditions if necessary
-    for q_name, q in case.quantityDict.iteritems():
+    for q_name, q in case.quantityDict.items():
         io.write_quantity(output_dir, q_name, q)
 
     # Write file with list of quantities

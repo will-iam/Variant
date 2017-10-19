@@ -12,6 +12,7 @@ from collections import *
 from shutil import copyfile, copytree, rmtree
 from script.analytics import compare_data
 from script.launcher import gen_ref_result, check_test, launch_test
+from script.build_case import get_ref_name
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
@@ -60,11 +61,11 @@ def compute_sds_number(case_path, nSDD, SDSsize):
     return compute_sds_number2(totalCells, nSDD, SDSsize)
 
 def make_perf_data(perfPath, execTime, perf_info):
-    perf = io.read_perfs(perfPath).values()
-    perf.append(execTime)
-    perf.append(np.mean(perf_info['computeTime']))
-    perf.append(np.mean(perf_info['synchronizeTime']))
-    return tuple(perf)
+    perf_values = list(io.read_perfs(perfPath).values())
+    perf_values.append(execTime)
+    perf_values.append(np.mean(perf_info['computeTime']))
+    perf_values.append(np.mean(perf_info['synchronizeTime']))
+    return tuple(perf_values)
 
 def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine):
 	# Joining variant infos from SDD data
@@ -93,7 +94,7 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
         perf_dict[n] = perf_for_allruns[n]
 
 	# Final and file data
-    tmp_data = OrderedDict(vi_dict.items() + perf_dict.items())
+    tmp_data = OrderedDict(list(vi_dict.items()) + list(perf_dict.items()))
     final_data = OrderedDict([(k, tmp_data[k]) for k in sorted(tmp_data)])
     final_data["machineName"] = machine
     final_data["nCoresPerSDD"] = ncpmpi
@@ -106,7 +107,7 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
     f.close()
 
 def runTestBattery(compileDict, testBattery):
-    tmp_dir = os.path.join(config.tmp_dir, 'seek_optimal')
+    tmp_dir = config.tmp_dir
     this_dir = os.path.split(os.path.abspath(__file__))[0]
 
     for cn, testList in testBattery.items():
@@ -114,12 +115,12 @@ def runTestBattery(compileDict, testBattery):
         rmtree(tmp_dir, ignore_errors=True)
 
 	    # Init results dir
-        io.make_sure_path_exists(os.path.join(config.results_dir, 'seek_optimal', cn))
-        results_path = os.path.join(config.results_dir, 'seek_optimal', cn, 'results_data.csv')
+        io.make_sure_path_exists(os.path.join(config.results_dir, cn))
+        results_path = os.path.join(config.results_dir, cn, 'results_data.csv')
 
         # Getting/building reference for the case
         if not args.nocheck:
-            ref_test_path = os.path.join("cases", compileDict['project_name'], cn, "ref", "final")
+            ref_test_path = os.path.join("cases", compileDict['project_name'], cn, get_ref_name() , "final")
             if not os.path.isdir(ref_test_path):
                 print("Reference case does not exist, create it.")
                 gen_ref_result(this_dir, tmp_dir, compileDict['project_name'], cn,
