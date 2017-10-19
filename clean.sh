@@ -1,4 +1,4 @@
-find -iname "*.pyc" -type f -delete 2> /dev/null
+find -L -iname "*.pyc" -type f -delete 2> /dev/null
 find -iname "*.o" -type f -delete 2> /dev/null
 find report/ -iname "*.log" -type f -delete 2> /dev/null
 find report/ -iname "*.out" -type f -delete 2> /dev/null

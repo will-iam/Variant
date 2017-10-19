@@ -538,8 +538,8 @@ void SDDistributed::buildSendMap() {
 
         // To reserve the size of the buffer
         // init for 4 quantities.
-        _recvSendBuffer[SDDto].first.reserve(4 * numberOfCellsToSend[SDDto]);
-        _recvSendBuffer[SDDto].second.reserve(4 * numberOfCellsToSend[SDDto]);
+        _recvSendBuffer[SDDto].first.reserve(10 * numberOfCellsToSend[SDDto]);
+        _recvSendBuffer[SDDto].second.reserve(10 * numberOfCellsToSend[SDDto]);
     }
 
     // Sync processes

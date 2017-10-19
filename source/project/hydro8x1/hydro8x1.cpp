@@ -1,4 +1,4 @@
-#include "hydrodynamics.hpp"
+#include "hydro8x1.hpp"
 #include "IO.hpp"
 
 #include <ios>
@@ -7,17 +7,17 @@
 #include <fstream>
 #include <string>
 
-Hydrodynamics::Hydrodynamics():
+Hydro8x1::Hydro8x1():
     Engine() {
 
 }
 
-Hydrodynamics::~Hydrodynamics() {
+Hydro8x1::~Hydro8x1() {
 
     delete _domain;
 }
 
-int Hydrodynamics::init() {
+int Hydro8x1::init() {
 
     // Init domain
     _domain = new Domain();
@@ -85,15 +85,15 @@ int Hydrodynamics::init() {
 
     // Init tasks pool
     _domain->buildThreads();
-    _domain->addEquation("advection", std::bind(&Hydrodynamics::advection, this,
+    _domain->addEquation("advection", std::bind(&Hydro8x1::advection, this,
                                    std::placeholders::_1, std::placeholders::_2));
-    _domain->addEquation("source", std::bind(&Hydrodynamics::source, this,
+    _domain->addEquation("source", std::bind(&Hydro8x1::source, this,
                                    std::placeholders::_1, std::placeholders::_2));
 
     return 0;
 }
 
-int Hydrodynamics::start() {
+int Hydro8x1::start() {
 
     int i = 0;
     _nIterations = 0;
@@ -160,12 +160,12 @@ int Hydrodynamics::start() {
     return 0;
 }
 
-int Hydrodynamics::finalize() {
+int Hydro8x1::finalize() {
     writeState();
     return 0;
 }
 
-void Hydrodynamics::computeDT() {
+void Hydro8x1::computeDT() {
     // Updating according to CFL and max velocity
     _dt = _CFL / (_Domain_uxmax / _dx + _Domain_uymax / _dy);
 
@@ -173,7 +173,7 @@ void Hydrodynamics::computeDT() {
     _dt = std::min(_dt, _T - _t);
 }
 
-void Hydrodynamics::advection(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap) {
+void Hydro8x1::advection(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap) {
 
     Quantity<real>& rho = *quantityMap.at("rho");
     Quantity<real>& rhou_x = *quantityMap.at("rhou_x");
@@ -265,7 +265,7 @@ void Hydrodynamics::advection(const SDShared& sds, const std::map< std::string, 
     }
 }
 
-void Hydrodynamics::source(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
+void Hydro8x1::source(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
 
     Quantity<real>& rho = *quantityMap.at("rho");
     Quantity<real>& rhou_x = *quantityMap.at("rhou_x");
@@ -317,12 +317,12 @@ void Hydrodynamics::source(const SDShared& sds, const std::map< std::string, Qua
 }
 
 
-void Hydrodynamics::writeState() {
+void Hydro8x1::writeState() {
 
     writeState(_outputpath);
 }
 
-void Hydrodynamics::writeState(std::string directory) {
+void Hydro8x1::writeState(std::string directory) {
 
     IO::writeQuantity(directory, "rho", *_domain);
     IO::writeQuantity(directory, "rhou_x", *_domain);
@@ -338,7 +338,7 @@ void Hydrodynamics::writeState(std::string directory) {
     IO::writeSDDTime(directory, *_domain, "synchronize", _timerSynchronization.getSteadyTimeList());
 }
 
-void Hydrodynamics::boundaryConditionsOnSpeed() {
+void Hydro8x1::boundaryConditionsOnSpeed() {
 
     _domain->updateOverlapCells("rhou_x");
     _domain->updateOverlapCells("rhou_y");

@@ -68,11 +68,12 @@ class Engine:
                 subprocess.check_call(cmd)
             else:
                 # visible in this process + all children
-                os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = 'weak64.SDD' + str(mpi_nprocs) + '.r1'
-                os.environ['SCOREP_FILTERING_FILE'] = '/ccc/home/cont999/formation/stag26/Variant/filter'
+                #os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = 'weak64.SDD' + str(mpi_nprocs) + '.r1'
+                #os.environ['SCOREP_FILTERING_FILE'] = '/ccc/home/cont999/formation/stag26/Variant/filter'
                 #os.environ['SCOREP_MEMORY_RECORDING'] = 'true'
                 #os.environ['SCOREP_MPI_MEMORY_RECORDING'] = 'true'
-                cmd = cmd + ['-n', str(mpi_nprocs), '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
+                #cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
+                cmd = cmd + ['-n', str(mpi_nprocs), self.binary_path, '-i', input_path, '-o', output_path]
                 print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:

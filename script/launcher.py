@@ -64,7 +64,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     copyfile(os.path.join(case_path, 'scheme_info.dat'), os.path.join(input_path, 'scheme_info.dat'))
 
     # Building output paths (the engine cannot create them itself)
-    output_path = os.path.join(tmp_dir, "final")
+    output_path = os.path.join(tmp_dir, project_name, cn, "final")
     rmtree(output_path, ignore_errors=True)
     copytree(input_path, output_path)
 
@@ -84,7 +84,7 @@ def launch_test(root_dir, tmp_dir, project_name, cn, comp, mode, precision, std,
     if ref_case == "ref":
         final_path = os.path.abspath(os.path.join(case_path, os.pardir, "final"))
     else:
-        final_path = os.path.join(tmp_dir, 'full_domain')
+        final_path = os.path.join(tmp_dir, project_name, cn, 'full_domain')
     io.make_sure_path_exists(final_path)
 
     # Merge back

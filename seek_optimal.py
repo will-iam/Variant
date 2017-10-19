@@ -206,9 +206,21 @@ def explore():
 #testBattery = explore()
 
 #testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads': 32, 'nSDD': (1, 1), 'machine': machine, 'ncpmpi': 32, 'nSDS': 128, 'nRuns': 1}]}
-#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  4, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 4, 'nSDS': 128, 'nRuns': 1}]}
-#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 128, 'nRuns': 1}]}
-testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (1, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 128, 'nRuns': 1}]}
+#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  4, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 4, 'nSDS': 16, 'nRuns': 1}]}
+#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (1, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]}
+#testBattery = {'2dsod1024x1024' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]}
+
+#testBattery = {
+#'n2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
+#,'p2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
+#,'d2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
+#}
+
+testBattery = {
+'n2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
+#,'p2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
+#,'d2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
+}
 
 totalTestNumber = 0
 for k, tl in testBattery.items():

@@ -118,11 +118,11 @@ if mymode == 'debug':
     '-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
 
 # Set the library path
-if lib == 'linux':
-	env.Append(LIBPATH = [ currentPath + '/common/lib/linux'])
+#if lib == 'linux':
+#	env.Append(LIBPATH = [ currentPath + '/common/lib/linux'])
 
-if lib == 'macos':
-	env.Append(LIBPATH = [currentPath + '/common/lib/mac'])
+#if lib == 'macos':
+#	env.Append(LIBPATH = [currentPath + '/common/lib/mac'])
 
 # Computing precision
 if precision == 'double':

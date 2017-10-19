@@ -7,6 +7,7 @@
 #include "exception/exception.hpp"
 #include "IO.hpp"
 #include "engine.hpp"
+//#include <scorep/SCOREP_User.h>
 
 using namespace std;
 
@@ -130,7 +131,10 @@ int Engine::main(int argc, char** argv) {
     }
 
     // Check return of start, if ok nothing to do
+    //SCOREP_USER_REGION_DEFINE( my_region_handle )
+    //SCOREP_USER_OA_PHASE_BEGIN( my_region_handle, "mainRegion", SCOREP_USER_REGION_TYPE_COMMON )
     result = start();
+    //SCOREP_USER_OA_PHASE_END( my_region_handle )
 
     if(result < 0) {
 

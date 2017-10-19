@@ -15,6 +15,7 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     domain_ly = line_split[3]
     domain_Nx = int(line_split[4])
     domain_Ny = int(line_split[5])
+    BClayer = int(line_split[6])
 
     SDD_Nx = domain_Nx // nSDD_X
     SDD_Ny = domain_Ny // nSDD_Y
@@ -23,7 +24,7 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     domain_shortinfo = open(os.path.join(output_dir, 'domain.dat'), 'w+')
     domain_shortinfo.write(domain_lx + " " + domain_ly +\
             " " + str(domain_Nx) + " " + str(domain_Ny) +\
-            " " + str(nSDD_X) + " " + str(nSDD_Y) + "\n")
+            " " + str(nSDD_X) + " " + str(nSDD_Y) + " " + str(BClayer) + "\n")
     domain_shortinfo.close()
 
     uid_to_SDD_and_coords = [None] * (domain_Nx * domain_Ny)
@@ -160,12 +161,16 @@ def split_bc(bc_dir, output_dir):
     domain_Ny = int(line_split[3])
     nSDD_X = int(line_split[4])
     nSDD_Y = int(line_split[5])
+    BClayer = int(line_split[6])
+
     nSDD = nSDD_X * nSDD_Y
     SDD_Nx = domain_Nx / nSDD_X
     SDD_Ny = domain_Ny / nSDD_Y
     domain_shortinfo.close()
 
-    uid_to_SDD_and_coords_bc = [None] * (2 * (domain_Nx + domain_Ny) + 4)
+    Nbc = (domain_Nx + BClayer * 2 + domain_Ny) * 2 * BClayer
+ 
+    uid_to_SDD_and_coords_bc = [None] * Nbc
 
     # Opening file streams
     file_streams = list()
@@ -193,16 +198,16 @@ def split_bc(bc_dir, output_dir):
         eqCoordY = coordY
 
         # Left
-        if coordX == -1:
+        if coordX < 0:
             eqCoordX = 0
         # Top
-        if coordY == domain_Ny:
+        if coordY >= domain_Ny:
             eqCoordY = domain_Ny - 1
         # Right
-        if coordX == domain_Nx:
+        if coordX >= domain_Nx:
             eqCoordX = domain_Nx - 1
         # Bottom
-        if coordY == -1:
+        if coordY < 0:
             eqCoordY = 0
 
         # Determine SDD corresponding to eq coords
@@ -226,7 +231,7 @@ def split_bc(bc_dir, output_dir):
     for SDDid in range(nSDD):
         file_streams[SDDid].close()
 
-    return uid_to_SDD_and_coords_bc
+    return
 
 def split_qbc(split_dir, output_dir, quantity_name, uid_to_SDD_and_coords_bc):
     domain_shortinfo = open(os.path.join(output_dir, "domain.dat"), 'r')
@@ -310,9 +315,8 @@ def split_case(domain_dir, nSDD_X, nSDD_Y, qty_name_list):
 	    print("Split already exists")
 	    return output_dir
 	io.make_sure_path_exists(output_dir)
-	usc = split_domain(domain_dir, output_dir, nSDD_X,
-		nSDD_Y)
-	usc_bc = split_bc(domain_dir, output_dir)
+	usc = split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y)
+	split_bc(domain_dir, output_dir)
 	for q_str in qty_name_list:
 	    split_quantity(domain_dir, output_dir, q_str, usc)
 	return output_dir

@@ -4,6 +4,7 @@
 import numpy as np
 import os
 import errno
+import sys
 from decimal import Decimal
 from shutil import copy2
 
@@ -139,35 +140,58 @@ def gen_coords_to_uid(Nx, Ny):
             coords_to_uid[(i, j)] = i + j * Nx
     return coords_to_uid
 
-def gen_coords_to_uid_bc(Nx, Ny):
+def gen_coords_to_uid_bc(Nx, Ny, BClayer):
     coords_to_uid_bc = dict()
     uid = Nx * Ny
-    # Left border
+
+    for k in range(1, BClayer + 1):
+        # Left border
+        for j in range(-k, Ny - 1 + k):
+            coords_to_uid_bc[(-k, j)] = uid
+            uid += 1
+        # Top border
+        for i in range(-k, Nx - 1 + k):
+            coords_to_uid_bc[(i, Ny - 1 + k)] = uid
+            uid += 1
+        # Right border
+        for j in range(Ny, -k, -1):
+            coords_to_uid_bc[(Nx - 1 + k, j)] = uid
+            uid += 1
+        # Bottom border
+        for i in range(Nx, -k, -1):
+            coords_to_uid_bc[(i, -k)] = uid
+            uid += 1
+    '''
+    # Left border
     for j in range(-1, Ny):
         coords_to_uid_bc[(-1, j)] = uid
         uid += 1
-    # Top border
+    # Top border
     for i in range(-1, Nx):
         coords_to_uid_bc[(i, Ny)] = uid
         uid += 1
-    # Right border
+    # Right border
     for j in range(Ny, -1, -1):
         coords_to_uid_bc[(Nx, j)] = uid
         uid += 1
-    # Bottom border
+    # Bottom border
     for i in range(Nx, -1, -1):
         coords_to_uid_bc[(i, -1)] = uid
         uid += 1
+    '''
+    
     return coords_to_uid_bc
 
-def write_domain(output_dir, lx, ly, Nx, Ny, coords_to_uid):
+def write_domain(output_dir, lx, ly, Nx, Ny, coords_to_uid, BClayer):
     make_sure_path_exists(output_dir)
     f = open(os.path.join(output_dir, 'domain.dat'), 'w+')
     f.write("2D cartesian ")
     f.write(str(lx) + " ")
     f.write(str(ly) + " ")
     f.write(str(Nx) + " ")
-    f.write(str(Ny) + "\n")
+    f.write(str(Ny) + " ")
+    f.write(str(BClayer) + "\n")
+
     for coords, uid in coords_to_uid.items():
         f.write(str(uid) + " ")
         f.write(str(coords[0]) + " ")
