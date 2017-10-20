@@ -26,7 +26,7 @@ SDSgeom = 'line'
 caseSizeList = [(256, 256)]
 ratioThreadsCores = [1]
 SDSratioList = [4]
-nruns = 1
+nruns = 5
 
 #nSDD = [1, 4, 16, 64, 256] en puissance de 2 = [0, 2, 4, 6, 8]
 #SDD_powersOfTwo = [0, 2, 4, 6]#

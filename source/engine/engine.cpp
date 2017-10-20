@@ -26,7 +26,7 @@ int Engine::main(int argc, char** argv) {
     char initfile[ stringsize ];
     char outputpath[ stringsize ];
     bool initfileSet = false;
-    bool outputpathSet = false; 
+    bool outputpathSet = false;
     int testFlag = 0;
 
     struct option long_options[] = {
@@ -154,12 +154,9 @@ int Engine::main(int argc, char** argv) {
         _timerTotal.reportLast();
         cout << "[0] - Computation time: ";
 	    _timerComputation.reportTotal();
-        cout << "[0] - Synchronization time: ";
-	    _timerSynchronization.reportTotal();
 
         perfResults["loopTime"] = _timerTotal.getLastSteadyDuration();
         perfResults["nIterations"] = _nIterations;
-
 
 	    cout << Console::_green;
 	    TimeStamp::printLocalTime();
@@ -207,17 +204,11 @@ void Engine::updateGlobalUxmax() {
 void Engine::updateDomainUxmax() {
 
     _SDD_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
-
-    MPI_Allreduce(&_SDD_uxmax, &_Domain_uxmax, 1, MPI_REALTYPE,
-            MPI_MAX, MPI_COMM_WORLD);
+    MPI_Allreduce(&_SDD_uxmax, &_Domain_uxmax, 1, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
 }
 
 void Engine::updateDomainUymax() {
 
     _SDD_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
-
-    MPI_Allreduce(&_SDD_uymax, &_Domain_uymax, 1, MPI_REALTYPE,
-            MPI_MAX, MPI_COMM_WORLD);
+    MPI_Allreduce(&_SDD_uymax, &_Domain_uymax, 1, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
 }
-
-

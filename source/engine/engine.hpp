@@ -67,8 +67,6 @@ class Engine {
 
     Timer _timerTotal;
     Timer _timerComputation;
-    Timer _timerSynchronization;
-
     int _MPI_rank;
 
     std::vector<real> _SDS_uxmax;

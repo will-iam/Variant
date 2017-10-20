@@ -97,19 +97,17 @@ int Hydro4x2::start() {
     int i = 0;
     _nIterations = 0;
     while (_t < _T) {
-       if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
-            std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
-            i = int(_t / _T * 10.0) + 1;
-        }    
-        ++_nIterations;
-
         // Update speed parameters in order to compute dt
-        _timerSynchronization.begin();
         updateDomainUxmax();
         updateDomainUymax();
-        _timerSynchronization.end();
         _timerComputation.begin();
 
+        if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
+            std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
+            i = int(_t / _T * 10.0) + 1;
+        }
+
+        ++_nIterations;
         std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
         std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
 
@@ -118,9 +116,7 @@ int Hydro4x2::start() {
 
         // Synchronize overlap cells: requires communication
    	    _timerComputation.end();
-        _timerSynchronization.begin();
         _domain->updateOverlapCells();
-        _timerSynchronization.end();
         _timerComputation.begin();
 
         // update BoundaryCells
@@ -138,9 +134,7 @@ int Hydro4x2::start() {
 
         // Resynchronize overlap cells for rho quantity before calling next step
         _timerComputation.end();
-        _timerSynchronization.begin();
         _domain->updateOverlapCells();
-        _timerSynchronization.end();
         _timerComputation.begin();
 
         // update BoundaryCells
@@ -333,8 +327,6 @@ void Hydro4x2::writeState(std::string directory) {
 
     std::map<std::string, int> resultMap;
     resultMap["computeTime"] = _timerComputation.getTotalSteadyDuration();
-    resultMap["synchronizeTime"] = _timerSynchronization.getTotalSteadyDuration();
     IO::writeSDDPerfResults(directory, *_domain, resultMap);
     IO::writeSDDTime(directory, *_domain, "compute", _timerComputation.getSteadyTimeList());
-    IO::writeSDDTime(directory, *_domain, "synchronize", _timerSynchronization.getSteadyTimeList());
 }

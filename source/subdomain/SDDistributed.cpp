@@ -244,38 +244,30 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
     //MPI_Barrier(MPI_COMM_WORLD);
 }
 
-void SDDistributed::updateNeumannCells(std::string quantityName,
-        bool changeToOpposite) {
+void SDDistributed::updateNeumannCells(std::string quantityName, bool changeToOpposite) {
 
     if (_neumannCellMap.empty())
         return;
 
     Quantity<real>* quantity = getQuantity(quantityName);
 
-    for (auto it = _neumannCellMap.begin();
-            it != _neumannCellMap.end();
-            ++it) {
+    for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
         std::pair<int, int> coords = it->first;
         std::pair<int, int> targetCoords = it->second;
-        //std::cout << "(" << coords.first << ";" << coords.second << ") --> ";
-        //std::cout << "(" << targetCoords.first << ";" << targetCoords.second << ")" << std::endl;
 
         if (changeToOpposite) {
             quantity->set(-quantity->get(0, targetCoords.first, targetCoords.second),
                     0, coords.first, coords.second);
         }
-
         else {
             quantity->set(quantity->get(0, targetCoords.first, targetCoords.second),
                     0, coords.first, coords.second);
         }
     }
-    //getchar();
 }
 
 void SDDistributed::updateDirichletCells(std::string quantityName) {
 
-    //std::cout << _dirichletCellMap.size() << std::endl;
     if (_dirichletCellMap.empty())
         return;
 
@@ -298,7 +290,6 @@ void SDDistributed::initThreadPool(unsigned int nThreads) {
 
     assert(nThreads > 0);
     _threadPool = std::unique_ptr<ThreadPool>(new ThreadPool(std::forward<unsigned int>(nThreads)));
-    //_threadPool = std::unique_ptr<ctpl::thread_pool>(new ctpl::thread_pool(std::forward<unsigned int>(nThreads)));
 }
 
 void SDDistributed::setValue(std::string quantityName,

@@ -18,7 +18,7 @@ COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
 # Performance attributes
-perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('computeTime', int), ('synchronizeTime', int)]
+perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('computeTime', int)]
 
 perf_attrnames = [t[0] for t in perf_dtypes]
 vi_dtypes = [('nSizeX', 'int'), ('nSizeY', 'int'), ('nSDD', 'int'), ('nSDD_X', 'int'), ('nSDD_Y', 'int'),
@@ -64,23 +64,27 @@ def make_perf_data(perfPath, execTime, perf_info):
     perf_values = list(io.read_perfs(perfPath).values())
     perf_values.append(execTime)
     perf_values.append(np.mean(perf_info['computeTime']))
-    perf_values.append(np.mean(perf_info['synchronizeTime']))
+
+    # Find the min compute time for each iteration
+    # sumMinComputeTime
+    # Find the max compute time for each iteration
+    # sumMaxComputeTime
+
+    # Add it to perf_dtypes
+
     return tuple(perf_values)
 
 def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine):
 	# Joining variant infos from SDD data
     variant_info = np.rec.array(variant_info, vi_dtypes)
-    stats_dtype = [dtype for dtype in vi_dtypes
-						if dtype[0] in ['nNeighbourSDD',
-							 'nOverlapCells',
-							 'nBoundaryCells']]
-    vi = [variant_info[dtype[0]][0] if dtype not in stats_dtype
-						else (np.mean(variant_info[dtype[0]]),
+    stats_dtype = [dtype for dtype in vi_dtypes if dtype[0] in ['nNeighbourSDD', 'nOverlapCells', 'nBoundaryCells']]
+    vi = [variant_info[dtype[0]][0] if dtype not in stats_dtype else
+                            (np.mean(variant_info[dtype[0]]),
                               np.median(variant_info[dtype[0]]),
-							  np.min(variant_info[dtype[0]]),
-							  np.max(variant_info[dtype[0]]),
-							  np.std(variant_info[dtype[0]]))
-						for dtype in vi_dtypes]
+                              np.min(variant_info[dtype[0]]),
+                              np.max(variant_info[dtype[0]]),
+                              np.std(variant_info[dtype[0]]))
+                            for dtype in vi_dtypes]
 
     vi_dict = dict()
     for i, n in enumerate(vi_attrnames):
