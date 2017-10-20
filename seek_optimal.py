@@ -23,16 +23,16 @@ nTotalCores = args.max_proc_number
 SDSgeom = 'line'
 #caseSizeList = [128, 192, 256, 320, 384, 448, 512, 576, 640, 704, 768, 1024]
 #caseSizeList = [(256, 512), (512, 256)]
-caseSizeList = [(256, 512)]
+caseSizeList = [(256, 256)]
 ratioThreadsCores = [1]
 SDSratioList = [4]
 nruns = 1
 
 #nSDD = [1, 4, 16, 64, 256] en puissance de 2 = [0, 2, 4, 6, 8]
 #SDD_powersOfTwo = [0, 2, 4, 6]#
-#SDD_powersOfTwo = [0, 1, 2, 3, 4, 5, 6]
+SDD_powersOfTwo = [0, 1, 2, 3, 4, 5, 6]
 #SDD_powersOfTwo = [6]
-SDD_powersOfTwo = [2]
+#SDD_powersOfTwo = [2]
 #SDD_powersOfTwo = [0]
 #SDD_powersOfTwo = [2, 3, 4, 5, 6, 7, 8]
 
@@ -156,7 +156,7 @@ def explore():
     for caseSizeXY in caseSizeList:
     	# Defining case directory
         cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-
+        print cn
         for ratio in ratioThreadsCores:
             for p in SDD_powersOfTwo:
                 # Different SDD splits, nSDD = 2**p
@@ -201,33 +201,16 @@ def explore():
     return testBattery
 
 # Weak Comparaison
-#testBattery = weakSDD(64)
+#testBattery = weakSDD(128)
 #testBattery = weakSDS(64)
-#testBattery = explore()
-
-#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads': 32, 'nSDD': (1, 1), 'machine': machine, 'ncpmpi': 32, 'nSDS': 128, 'nRuns': 1}]}
-#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  4, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 4, 'nSDS': 16, 'nRuns': 1}]}
-#testBattery = {'2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (1, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]}
-#testBattery = {'2dsod1024x1024' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]}
-
-#testBattery = {
-#'n2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
-#,'p2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
-#,'d2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (4, 8), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
-#}
-
-testBattery = {
-'n2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 1}]
-,'p2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 3}]
-,'d2dsod128x128' :[{'SDSgeom': 'line', 'nThreads':  1, 'nSDD': (2, 2), 'machine': machine, 'ncpmpi': 1, 'nSDS': 1, 'nRuns': 4}]
-}
+testBattery = explore()
 
 totalTestNumber = 0
 for k, tl in testBattery.items():
     print("%s test(s) on case %s" % (len(tl), k))
     totalTestNumber += len(tl)
     for t in tl:
-        print("\t", t)
+        print("\t%s" % t)
 print(totalTestNumber, "will be run")
 
 runTestBattery(compileDict, testBattery)

@@ -23,6 +23,9 @@ SDDistributed::SDDistributed(unsigned int sizeX,
 
 SDDistributed::~SDDistributed() {
 
+    delete[] _requestArray;
+    delete[] _statusArray;
+
     for (auto it =
          _quantityMap.begin(); it != _quantityMap.end(); ++it)
         delete(it->second);
@@ -92,9 +95,6 @@ Quantity<real>* SDDistributed::getQuantity(std::string name) {
 
 void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUpdate) {
 
-    // Status map
-    std::map<int, MPI_Status> statuses;
-
     // Clear and reserve here
     for (auto& toSDD: _recvSendBuffer) {
 	    toSDD.second.first.clear();
@@ -111,16 +111,114 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
         }
     }
 
+    /* Original Version with allocation.
     // Send and Receive the data.
+    std::map<int, MPI_Status> statusMap;
     for (auto& toSDD: _recvSendBuffer) {
-        // Init recv buffer size
         toSDD.second.first.resize(toSDD.second.second.size());
+        // Init recv buffer size
         MPI_Sendrecv(&toSDD.second.second[0], toSDD.second.second.size(),
                         MPI_REALTYPE, toSDD.first, _id * _nSDD + toSDD.first,
                      &toSDD.second.first[0], toSDD.second.first.size(),
                         MPI_REALTYPE, toSDD.first, toSDD.first * _nSDD + _id,
-                     MPI_COMM_WORLD, &statuses[toSDD.first]);
+                     MPI_COMM_WORLD, &statusMap[toSDD.first]);
+    }*/
+
+    /* Original Version without allocation
+    // Send and Receive the data.
+    for (auto& toSDD: _recvSendBuffer) {
+        toSDD.second.first.resize(toSDD.second.second.size());
+        // Init recv buffer size
+        MPI_Sendrecv(&toSDD.second.second[0], toSDD.second.second.size(),
+                        MPI_REALTYPE, toSDD.first, _id * _nSDD + toSDD.first,
+                     &toSDD.second.first[0], toSDD.second.first.size(),
+                        MPI_REALTYPE, toSDD.first, toSDD.first * _nSDD + _id,
+                     MPI_COMM_WORLD, &status);
+    }*/
+
+    /*
+    // Version with send and recv split.
+    for (auto& toSDD: _recvSendBuffer) {
+        toSDD.second.first.resize(toSDD.second.second.size());
+        // Init recv buffer size
+        MPI_Send(&toSDD.second.second[0], toSDD.second.second.size(),
+                        MPI_REALTYPE, toSDD.first, _id * _nSDD + toSDD.first, MPI_COMM_WORLD);
+
+        MPI_Recv(&toSDD.second.first[0], toSDD.second.first.size(),
+                        MPI_REALTYPE, toSDD.first, toSDD.first * _nSDD + _id,
+                     MPI_COMM_WORLD, &status);
+    } */
+
+   /*
+   // Version with send and recv split: deadlock ...
+    for (const auto& toSDDid: _neighbourSDDVector) {
+        auto& data = _recvSendBuffer[toSDDid];
+
+        // Init recv buffer size
+        data.first.resize(data.second.size());
+
+        MPI_Recv(&data.first[0], data.first.size(), MPI_REALTYPE,
+            toSDDid, toSDDid * _nSDD + _id,
+            MPI_COMM_WORLD, &status);
+
+        MPI_Send(&data.second[0], data.second.size(),MPI_REALTYPE,
+            toSDDid, _id * _nSDD + toSDDid,
+            MPI_COMM_WORLD);
+    }*/
+
+    /* Première version avec Isend, Irecv: toujours autant de communications.
+    for (auto& toSDD: _recvSendBuffer) {
+        // Init recv buffer size
+        toSDD.second.first.resize(toSDD.second.second.size());
+        MPI_Request revc_request, send_request;
+
+        MPI_Irecv(&toSDD.second.first[0], toSDD.second.first.size(),
+                        MPI_REALTYPE, toSDD.first, toSDD.first * _nSDD + _id,
+                     MPI_COMM_WORLD, &revc_request);
+
+        MPI_Isend(&toSDD.second.second[0], toSDD.second.second.size(),
+            MPI_REALTYPE, toSDD.first, _id * _nSDD + toSDD.first, MPI_COMM_WORLD, &send_request);
+
+        MPI_Wait(&revc_request, &status);
+        MPI_Wait(&send_request, &status);
     }
+    */
+
+    /*
+    size_t i = 0;
+    MPI_Request requestArray[8];
+    MPI_Status statusArray[8];
+
+    for (auto& toSDD: _recvSendBuffer) {
+        // Init recv buffer size
+        toSDD.second.first.resize(toSDD.second.second.size());
+        MPI_Request revc_request, send_request;
+
+        MPI_Irecv(&toSDD.second.first[0], toSDD.second.first.size(),
+                        MPI_REALTYPE, toSDD.first, toSDD.first * _nSDD + _id,
+                     MPI_COMM_WORLD, &requestArray[i++]);
+
+        MPI_Isend(&toSDD.second.second[0], toSDD.second.second.size(),
+            MPI_REALTYPE, toSDD.first, _id * _nSDD + toSDD.first, MPI_COMM_WORLD, &requestArray[i++]);
+    }
+    MPI_Waitall(i, requestArray, statusArray);*/
+
+    size_t i = 0;
+    for (const auto& toSDDid: _neighbourSDDVector) {
+        auto& data = _recvSendBuffer[toSDDid];
+
+        // Init recv buffer size
+        data.first.resize(data.second.size());
+
+        MPI_Irecv(&data.first[0], data.first.size(),
+                  MPI_REALTYPE, toSDDid, toSDDid * _nSDD + _id,
+                  MPI_COMM_WORLD, &_requestArray[i++]);
+
+        MPI_Isend(&data.second[0], data.second.size(),
+                  MPI_REALTYPE, toSDDid, _id * _nSDD + toSDDid,
+                  MPI_COMM_WORLD, &_requestArray[i++]);
+    }
+    MPI_Waitall(i, _requestArray, _statusArray);
 
     // Parsing recved message: updating cells
     std::map<int, int> bufIndices;
@@ -135,14 +233,15 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
             }
         }
         else {
+            auto& v(_recvSendBuffer[SDDid].first);
             for (auto const& qtyName: qtiesToUpdate) {
                 Quantity<real>& qty = *_quantityMap[qtyName];
-                qty.set(_recvSendBuffer[SDDid].first[bufIndices[SDDid]], 0, coordsHere.first, coordsHere.second);
+                qty.set(v[bufIndices[SDDid]], 0, coordsHere.first, coordsHere.second);
                 ++bufIndices[SDDid];
             }
         }
     }
-    MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void SDDistributed::updateNeumannCells(std::string quantityName,

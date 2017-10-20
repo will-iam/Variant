@@ -53,7 +53,7 @@ class Hydro4x2: public Engine {
      * the transport equation on a given subdomain on
      * shared memory. Solving on a "small" portion of
      * the global domain such as a SDS leaves control to
-     * the user on how the computations are done (parallel 
+     * the user on how the computations are done (parallel
      * threads, geometrical shape of the computed domain,
      * etc.)
      */
@@ -65,13 +65,13 @@ class Hydro4x2: public Engine {
 
     /*!
      * @brief Initialize transport upwind scheme engine
-     * 
+     *
      * @return success/failure integer
      */
     int init() final;
     /*!
      * @brief Start iteration loop of the scheme
-     * 
+     *
      * @return success/failure integer
      */
     int start() final;
@@ -81,16 +81,7 @@ class Hydro4x2: public Engine {
     // Scheme implementation
     void computeDT();
 
-    /*!
-     * @brief Applies boundary conditions on the
-     * speed, according to the boundary conditions on
-     * the mass
-     */
-    void boundaryConditionsOnSpeed();
-
     // Variables
-    //real _lx;
-    //real _ly;
     int _Nx;
     int _Ny;
     real _dx;
@@ -105,4 +96,3 @@ class Hydro4x2: public Engine {
 };
 
 #endif
-

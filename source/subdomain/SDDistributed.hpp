@@ -10,6 +10,7 @@
  */
 
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <iostream>
 #include <memory>
@@ -356,11 +357,12 @@ class SDDistributed {
      * number of total SDDs
      */
     unsigned int _nSDD;
-
     std::vector<int> _neighbourSDDVector;
 
     // Building buffers based on recv and send maps (avoid memory allocation during loop)
-    std::map<int, std::pair< std::vector<real>, std::vector<real> > > _recvSendBuffer;
+    std::unordered_map<int, std::pair< std::vector<real>, std::vector<real> > > _recvSendBuffer;
+    MPI_Request* _requestArray;
+    MPI_Status* _statusArray;
 };
 
 template<typename T> void SDDistributed::addQuantity(std::string name) {

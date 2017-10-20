@@ -540,11 +540,26 @@ void SDDistributed::buildSendMap() {
             //std::cout << thereCoordsAndSDD << " -> " <<  _MPISend_map[thereCoordsAndSDD] << std::endl;
         }
 
-        // To reserve the size of the buffer
-        // init for 4 quantities.
-        _recvSendBuffer[SDDto].first.reserve(10 * numberOfCellsToSend[SDDto]);
-        _recvSendBuffer[SDDto].second.reserve(10 * numberOfCellsToSend[SDDto]);
+        // To reserve the size of the buffer init for 4 quantities.
+        if (numberOfCellsToSend[SDDto] > 0) {
+            _recvSendBuffer[SDDto].first.reserve(4 * numberOfCellsToSend[SDDto]);
+            _recvSendBuffer[SDDto].second.reserve(4 * numberOfCellsToSend[SDDto]);
+        }
     }
+ 
+    if (_recvSendBuffer.size() != _neighbourSDDVector.size())
+        exitfail("Buffer does not contain all the neighbours.");
+
+    for (const auto& sddId : _neighbourSDDVector) {
+        if (_recvSendBuffer.find(sddId) == _recvSendBuffer.end())
+            exitfail("Could not find SDD in neighbourhood.");    
+    }
+
+    // shuffle vector to dilute the effect of always start with the lower ranking.
+    std::random_shuffle(_neighbourSDDVector.begin(), _neighbourSDDVector.end());
+
+    _requestArray = new MPI_Request[_neighbourSDDVector.size() * 2];
+    _statusArray = new MPI_Status[_neighbourSDDVector.size() * 2];
 
     // Sync processes
     MPI_Barrier(MPI_COMM_WORLD);

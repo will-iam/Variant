@@ -35,6 +35,7 @@ def build_case(root_dir, tmp_dir, project_name, case_name, force_build = False):
             del chars
             return output_dir, list(qtyList)
 
+    print(case_path)
     sys.path.append(case_path)
     # Reload chars also else, you build the case with the wrong characteristics
     import chars

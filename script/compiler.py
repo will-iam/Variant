@@ -63,17 +63,20 @@ class Engine:
                     '--log-file=valgrind-out.txt',
                     self.binary_path, '-i', input_path, '-o', output_path])
             elif vtune:
-                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), 'amplxe-cl', '-r', 'report-vtune', '-collect', 'hotspots', self.binary_path, '-i', input_path, '-o', output_path]
+                #project = os.path.basename(self.binary_path).split('-')[0]
+                vcmd = ['amplxe-cl', '-r', 'vtune-hs', '-collect', 'hotspots']
+                #vcmd = ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
+                #vcmd = ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
+                #vcmd = ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
+                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores)] + vcmd + [self.binary_path, '-i', input_path, '-o', output_path]
                 print(' '.join(cmd))
                 subprocess.check_call(cmd)
             else:
-                # visible in this process + all children
-                #os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = 'weak64.SDD' + str(mpi_nprocs) + '.r1'
-                #os.environ['SCOREP_FILTERING_FILE'] = '/ccc/home/cont999/formation/stag26/Variant/filter'
-                #os.environ['SCOREP_MEMORY_RECORDING'] = 'true'
-                #os.environ['SCOREP_MPI_MEMORY_RECORDING'] = 'true'
-                #cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
-                cmd = cmd + ['-n', str(mpi_nprocs), self.binary_path, '-i', input_path, '-o', output_path]
+                '''
+                # to add environment variable visible in this process + all children:
+                os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
+                '''
+                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
                 print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:

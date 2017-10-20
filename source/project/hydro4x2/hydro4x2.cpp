@@ -100,14 +100,16 @@ int Hydro4x2::start() {
        if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
             std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
             i = int(_t / _T * 10.0) + 1;
-        }
-
-   	    _timerComputation.begin();
+        }    
         ++_nIterations;
 
         // Update speed parameters in order to compute dt
+        _timerSynchronization.begin();
         updateDomainUxmax();
         updateDomainUymax();
+        _timerSynchronization.end();
+        _timerComputation.begin();
+
         std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
         std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
 
@@ -115,11 +117,11 @@ int Hydro4x2::start() {
         computeDT();
 
         // Synchronize overlap cells: requires communication
-   	_timerComputation.end();
-	_timerSynchronization.begin();
+   	    _timerComputation.end();
+        _timerSynchronization.begin();
         _domain->updateOverlapCells();
-	_timerSynchronization.end();
-   	_timerComputation.begin();
+        _timerSynchronization.end();
+        _timerComputation.begin();
 
         // update BoundaryCells
         _domain->updateBoundaryCells("rho");
@@ -135,11 +137,11 @@ int Hydro4x2::start() {
         _domain->switchQuantityPrevNext("rhoe");
 
         // Resynchronize overlap cells for rho quantity before calling next step
-   	_timerComputation.end();
-	_timerSynchronization.begin();
+        _timerComputation.end();
+        _timerSynchronization.begin();
         _domain->updateOverlapCells();
-	_timerSynchronization.end();
-   	_timerComputation.begin();
+        _timerSynchronization.end();
+        _timerComputation.begin();
 
         // update BoundaryCells
         _domain->updateBoundaryCells("rho");
@@ -153,7 +155,7 @@ int Hydro4x2::start() {
         _domain->switchQuantityPrevNext("rhoe");
 
         _t += _dt;
-   	_timerComputation.end();
+        _timerComputation.end();
     }
 
     return 0;
@@ -335,15 +337,4 @@ void Hydro4x2::writeState(std::string directory) {
     IO::writeSDDPerfResults(directory, *_domain, resultMap);
     IO::writeSDDTime(directory, *_domain, "compute", _timerComputation.getSteadyTimeList());
     IO::writeSDDTime(directory, *_domain, "synchronize", _timerSynchronization.getSteadyTimeList());
-}
-
-void Hydro4x2::boundaryConditionsOnSpeed() {
-
-    _domain->updateOverlapCells("rhou_x");
-    _domain->updateOverlapCells("rhou_y");
-
-    // For the case of the speed, we change the Neumann cells
-    // into their opposite
-    _domain->updateBoundaryCells("rhou_x", true);
-    _domain->updateBoundaryCells("rhou_y", true);
 }
