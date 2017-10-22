@@ -93,18 +93,20 @@ int Hydro4x1::init() {
 
 int Hydro4x1::start() {
 
-    int i = 0;
+    int iPrint = 0;
     _nIterations = 0;
     while (_t < _T) {
+        if (_MPI_rank == 0 && _t / _T * 10.0 >= iPrint) {
+            iPrint = int(_t / _T * 10.0) + 1;
+            std::cout << "[0] - Computation done: " <<  _t / _T * 100.0 << "%, time: ";
+            _timerIteration.reportTotal();
+        }
+
+        _timerIteration.begin();
         // Update speed parameters in order to compute dt
         updateDomainUxmax();
         updateDomainUymax();
         _timerComputation.begin();
-
-        if (_MPI_rank == 0 && _t / _T * 10.0 >= i) {
-            std::cout << "Done " <<  _t / _T * 100.0 << "%" <<  std::endl;
-            i = int(_t / _T * 10.0) + 1;
-        }
 
         ++_nIterations;
         std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
@@ -149,6 +151,7 @@ int Hydro4x1::start() {
 
         _t += _dt;
    	    _timerComputation.end();
+        _timerIteration.end();
     }
 
     return 0;
@@ -323,9 +326,6 @@ void Hydro4x1::writeState(std::string directory) {
     IO::writeQuantity(directory, "rhou_y", *_domain);
     IO::writeQuantity(directory, "rhoe", *_domain);
     IO::writeVariantInfo(directory, *_domain);
-
-    std::map<std::string, int> resultMap;
-    resultMap["computeTime"] = _timerComputation.getTotalSteadyDuration();
-    IO::writeSDDPerfResults(directory, *_domain, resultMap);
-    IO::writeSDDTime(directory, *_domain, "compute", _timerComputation.getSteadyTimeList());
+    IO::writeSDDTime(directory, *_domain, "compute", _timerComputation.getSteadyTimeDeque());
+    IO::writeSDDTime(directory, *_domain, "iteration", _timerIteration.getSteadyTimeDeque());
 }

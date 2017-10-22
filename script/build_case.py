@@ -6,23 +6,20 @@ import os
 import sys
 from importlib import *
 from shutil import rmtree
-
+import config
 import script.io as io
 
+def build_case(case_path, output_dir, force_build = False):
+    '''
+    Load all physical/numerical data from case
+    '''
 
-def get_ref_name():
-    return 'ref' + str(sys.version_info[0])
+    # If the directort does not exist, then build:
+    if not os.path.isdir(output_dir):
+        force_build = True
+        io.make_sure_path_exists(output_dir)
 
-def get_case_path(project_name, case_name):
-    return os.path.join("cases", project_name, case_name)
-
-def build_case(root_dir, tmp_dir, project_name, case_name, force_build = False):
-
-    # Load all physical/numerical data from case
-    case_path = os.path.join(root_dir, get_case_path(project_name, case_name))
-    output_dir = os.path.join(get_case_path(project_name, case_name), get_ref_name(), "init")
-
-    if os.path.isdir(output_dir) and not force_build and subdir != get_ref_name() + sys.version_info:
+    if not force_build:
         last_modif = max(os.path.getmtime(os.path.join(case_path, 'init.py')),
             os.path.getmtime(os.path.join(case_path, 'chars.py')))
         if last_modif < os.path.getctime(output_dir):
@@ -33,7 +30,7 @@ def build_case(root_dir, tmp_dir, project_name, case_name, force_build = False):
             del sys.path[-1]
             qtyList = chars.quantityList
             del chars
-            return output_dir, list(qtyList)
+            return list(qtyList)
 
     print(case_path)
     sys.path.append(case_path)
@@ -51,7 +48,6 @@ def build_case(root_dir, tmp_dir, project_name, case_name, force_build = False):
     io.make_sure_path_exists(output_dir)
 
     # Write scheme info
-    sys.path.insert(1, root_dir)
     io.write_scheme_info(output_dir, case.T, case.CFL)
 
     # Write domain
@@ -72,7 +68,7 @@ def build_case(root_dir, tmp_dir, project_name, case_name, force_build = False):
     del case
 
     # Return path to case directory
-    return output_dir, q_name_list
+    return q_name_list
 
 if __name__ == "__main__":
     # Argument parser

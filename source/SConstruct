@@ -110,12 +110,13 @@ if mymode == 'profile':
 	#mylinkflags.append('-pg')
 
 if mymode == 'release':
-	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-g', '-march=native']
+	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native']
 
 if mymode == 'debug':
    	#mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
-   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g',
-    '-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
+   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
+	if platform.system() == 'Linux':
+		mycflags = mycflags + ['-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
 
 # Set the library path
 #if lib == 'linux':

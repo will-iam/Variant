@@ -247,16 +247,13 @@ def read_variant_info(data_dir, nSDD):
     return whole_data
 
 def read_perf_info(data_dir, nSDD):
-    perfs = {}
+    computeTime = {}
+    iterationTime = {}
     for i in range(nSDD):
-        f = open(os.path.join(data_dir, 'sdd' + str(i), 'perfs.dat'), 'r')
-        for line in f.readlines():
-            line_list = line.split()
-            if line_list[0] not in perfs:
-                perfs[line_list[0]] = []
-            perfs[line_list[0]].append(int(line_list[1]))
-        f.close()
-    return perfs
+        computeTime[i] = np.loadtxt(os.path.join(data_dir, 'sdd' + str(i), 'timer-compute.dat'))
+        iterationTime[i] = np.loadtxt(os.path.join(data_dir, 'sdd' + str(i), 'timer-iteration.dat'))
+
+    return {'computeTime': computeTime, 'iterationTime': iterationTime}
 
 def write_quantity_names(output_dir, qty_names):
     f = open(os.path.join(output_dir, 'quantities.dat'), 'w')

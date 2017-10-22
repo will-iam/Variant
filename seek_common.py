@@ -5,20 +5,17 @@ import argparse
 import sys
 import os
 import numpy as np
-import script.io as io
 import config
-import script.compiler as compiler
 from collections import *
-from shutil import copyfile, copytree, rmtree
-from script.analytics import compare_data
-from script.launcher import gen_ref_result, check_test, launch_test
-from script.build_case import get_ref_name
+from shutil import rmtree
+from script.launcher import launch_test
+import script.io as io
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
 # Performance attributes
-perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('computeTime', int)]
+perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('minComputeSum', int), ('maxComputeSum', int), ('maxIterationSum', int)]
 
 perf_attrnames = [t[0] for t in perf_dtypes]
 vi_dtypes = [('nSizeX', 'int'), ('nSizeY', 'int'), ('nSDD', 'int'), ('nSDD_X', 'int'), ('nSDD_Y', 'int'),
@@ -63,18 +60,51 @@ def compute_sds_number(case_path, nSDD, SDSsize):
 def make_perf_data(perfPath, execTime, perf_info):
     perf_values = list(io.read_perfs(perfPath).values())
     perf_values.append(execTime)
-    perf_values.append(np.mean(perf_info['computeTime']))
 
-    # Find the min compute time for each iteration
-    # sumMinComputeTime
-    # Find the max compute time for each iteration
-    # sumMaxComputeTime
+    print "Make Perf Data"
+    iterationTimeDict = perf_info['iterationTime']
+    computeTimeDict = perf_info['computeTime']
 
-    # Add it to perf_dtypes
+
+    sumComputeTimeMatrix = np.empty((len(perf_info['iterationTime']), len(iterationTimeDict[0])))
+    iterationTimeMatrix = np.empty((len(perf_info['iterationTime']), len(iterationTimeDict[0])))
+
+    for sdd in iterationTimeDict:
+        # First Sum the compute time to make a new array.
+        if len(computeTimeDict[sdd]) // 3 !=  len(iterationTimeDict[sdd]):
+            print('The list sizes do not correspond.')
+            sys.exit(1)
+
+        counter = 0
+        partialSum = 0
+        index = 0
+        iterationTimeMatrix[sdd] = iterationTimeDict[sdd]
+        for t in computeTimeDict[sdd]:
+            partialSum += t
+            counter += 1
+            if counter == 3:
+                sumComputeTimeMatrix[sdd][index] = partialSum
+                index += 1
+                counter = 0
+                partialSum = 0
+
+        print len(sumComputeTimeMatrix[sdd]), len(iterationTimeMatrix[sdd])
+
+    # For each value, find the min and the max.
+    minComputeSum = np.sum(np.amin(sumComputeTimeMatrix, axis=0))
+    maxComputeSum = np.sum(np.amax(sumComputeTimeMatrix, axis=0))
+    maxIterationSum = np.sum(np.amax(iterationTimeMatrix, axis=0))
+
+
+    print minComputeSum, maxComputeSum, maxIterationSum
+
+    perf_values.append(minComputeSum)
+    perf_values.append(maxComputeSum)
+    perf_values.append(maxIterationSum)
 
     return tuple(perf_values)
 
-def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine):
+def join_result_data(resultPath, variant_info, perf_for_allruns, nCoresPerSDD, machine):
 	# Joining variant infos from SDD data
     variant_info = np.rec.array(variant_info, vi_dtypes)
     stats_dtype = [dtype for dtype in vi_dtypes if dtype[0] in ['nNeighbourSDD', 'nOverlapCells', 'nBoundaryCells']]
@@ -101,7 +131,7 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
     tmp_data = OrderedDict(list(vi_dict.items()) + list(perf_dict.items()))
     final_data = OrderedDict([(k, tmp_data[k]) for k in sorted(tmp_data)])
     final_data["machineName"] = machine
-    final_data["nCoresPerSDD"] = ncpmpi
+    final_data["nCoresPerSDD"] = nCoresPerSDD
     f = open(resultPath, 'a')
     if (os.stat(resultPath).st_size == 0):
         f.write(';'.join(final_data.keys()) + '\n')
@@ -110,50 +140,43 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, ncpmpi, machine
     f.write(';'.join([str(v) for v in final_data.values()]) + '\n')
     f.close()
 
-def runTestBattery(compileDict, testBattery):
+def runTestBattery(engineOptionDict, testBattery):
     tmp_dir = config.tmp_dir
-    this_dir = os.path.split(os.path.abspath(__file__))[0]
 
     for cn, testList in testBattery.items():
-	    # Cleaning tmp directory for new case
-        rmtree(tmp_dir, ignore_errors=True)
-
 	    # Init results dir
         io.make_sure_path_exists(os.path.join(config.results_dir, cn))
         results_path = os.path.join(config.results_dir, cn, 'results_data.csv')
 
-        # Getting/building reference for the case
-        if not args.nocheck:
-            ref_test_path = os.path.join("cases", compileDict['project_name'], cn, get_ref_name() , "final")
-            if not os.path.isdir(ref_test_path):
-                print("Reference case does not exist, create it.")
-                gen_ref_result(this_dir, tmp_dir, compileDict['project_name'], cn,
-                       compileDict['comp'], compileDict['mode'], compileDict['precision'], compileDict['std'])
-
         # Launch tests and compare results
-        print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + cn)
-
+        print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + engineOptionDict['project_name'] + '/' + cn)
+        # Cleaning tmp directory for new case
+        rmtree(tmp_dir, ignore_errors=True)
         for test in testList:
             # Launching runs for the test
             perf_for_allruns = []
             for n in range(test['nRuns']):
-                current_test_path, exec_time, variant_info, perf_info = launch_test(this_dir,
-                            tmp_dir,
-                            compileDict['project_name'], cn, compileDict['comp'], compileDict['mode'], compileDict['precision'], compileDict['std'], compileDict['bool_compile'],
-                            test, test['ncpmpi'], compileDict['vtune'])
+                # Check results and compare to reference (one check for all runs).
+                if not args.nocheck and n == test['nRuns'] - 1:
+                    compare_with_ref = True
+                else:
+                    compare_with_ref = False
 
-                # Check results and compare to reference.
-                if not args.nocheck:
-                    result, qty, error_data = check_test(current_test_path, ref_test_path)
-                    if result:
-                        print("Compared with reference: OK.")
-                    else:
-                        print("Compared with reference: ERROR, different result for quantity " + qty)
-                        sys.exit(1)
+                # Launch Test
+                tmp_test_path, exec_time = launch_test(tmp_dir, engineOptionDict, cn, test, compare_with_ref)
+
+                totalSDDNumber = test['nSDD'][0] * test['nSDD'][1]
+
+                # Variant info
+                variant_info = io.read_variant_info(tmp_test_path, totalSDDNumber)
+
+                # Perfs info
+                perf_info = io.read_perf_info(tmp_test_path, totalSDDNumber)
+
                 print("Total ExecTime:", exec_time)
-                print("Results for test: " + str(test) + " on run " + str(n) + " on " + str(test['ncpmpi']) + " core(s).")
-                perf_for_allruns.append(make_perf_data(current_test_path, exec_time, perf_info))
+                print("Results for test: " + str(test) + " on run " + str(n) + " on " + str(test['nCoresPerSDD']) + " core(s).")
+                perf_for_allruns.append(make_perf_data(tmp_test_path, exec_time, perf_info))
                 print("perf_for_allruns", perf_for_allruns)
 
             # Join results
-            join_result_data(results_path, variant_info, perf_for_allruns, test['ncpmpi'], test['machine'])
+            join_result_data(results_path, variant_info, perf_for_allruns, test['nCoresPerSDD'], test['machine'])

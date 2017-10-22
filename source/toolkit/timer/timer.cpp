@@ -14,7 +14,7 @@ void Timer::end(){
     _endSteady = steady_clock::now();
     unsigned long int steady = getLastSteadyDuration();
     _totalSteady += steady;
-    _steadyList.push_back(steady);
+    _steadyDeque.push_back(steady);
     _call += 1.;
 }
 

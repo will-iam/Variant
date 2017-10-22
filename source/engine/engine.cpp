@@ -102,7 +102,7 @@ int Engine::main(int argc, char** argv) {
         TimeStamp::printLocalTime();
         cout << ": Initialize Engine" << Console::_normal << endl;
 
-        _timerTotal.begin();
+        _timer.begin();
     }
 
     // Check return of initialize, if ok nothing to do
@@ -117,17 +117,17 @@ int Engine::main(int argc, char** argv) {
 
     if (_MPI_rank == 0) {
 
-        _timerTotal.end();
+        _timer.end();
 
-        _timerTotal.reportLast();
+        _timer.reportLast();
 
-        perfResults["initTime"] = _timerTotal.getLastSteadyDuration();
+        perfResults["initTime"] = _timer.getLastSteadyDuration();
 
         cout << Console::_green;
         TimeStamp::printLocalTime();
         cout << ": Engine starts" << Console::_normal << endl;
 
-        _timerTotal.begin();
+        _timer.begin();
     }
 
     // Check return of start, if ok nothing to do
@@ -145,31 +145,29 @@ int Engine::main(int argc, char** argv) {
 
     if (_MPI_rank == 0) {
 
-        _timerTotal.end();
+        _timer.end();
 
         cout << Console::_green;
         TimeStamp::printLocalTime();
         cout << ": Engine stopped normally." << endl;
 	    cout << Console::_normal << "Total loop time: ";
-        _timerTotal.reportLast();
-        cout << "[0] - Computation time: ";
-	    _timerComputation.reportTotal();
+        _timer.reportLast();
 
-        perfResults["loopTime"] = _timerTotal.getLastSteadyDuration();
+        perfResults["loopTime"] = _timer.getLastSteadyDuration();
         perfResults["nIterations"] = _nIterations;
 
 	    cout << Console::_green;
 	    TimeStamp::printLocalTime();
 	    cout << ": Engine finalizes" << Console::_normal << endl;
-	    _timerTotal.begin();
+	    _timer.begin();
     }
 
     finalize();
 
     if (_MPI_rank == 0) {
-	    _timerTotal.end();
-	    _timerTotal.reportLast();
-	    perfResults["finalizeTime"] = _timerTotal.getLastSteadyDuration();
+	    _timer.end();
+	    _timer.reportLast();
+	    perfResults["finalizeTime"] = _timer.getLastSteadyDuration();
 	    IO::writePerfResults(_outputpath, perfResults);
     }
 

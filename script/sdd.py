@@ -21,7 +21,7 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     SDD_Ny = domain_Ny // nSDD_Y
 
     # Writing short domain info
-    domain_shortinfo = open(os.path.join(output_dir, 'domain.dat'), 'w+')
+    domain_shortinfo = open(os.path.join(output_dir, 'domain.info'), 'w+')
     domain_shortinfo.write(domain_lx + " " + domain_ly +\
             " " + str(domain_Nx) + " " + str(domain_Ny) +\
             " " + str(nSDD_X) + " " + str(nSDD_Y) + " " + str(BClayer) + "\n")
@@ -82,7 +82,7 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     return uid_to_SDD_and_coords
 
 def merge_domain(split_dir, output_dir):
-    domain_shortinfo = open(os.path.join(split_dir, "domain.dat"), 'r')
+    domain_shortinfo = open(os.path.join(split_dir, "domain.info"), 'r')
     line_domain = domain_shortinfo.readline()
     line_split = line_domain.split()
     domain_shortinfo.close()
@@ -122,13 +122,12 @@ def merge_domain(split_dir, output_dir):
 
 def split_quantity(quantity_dir, output_dir, quantity_name,
         uid_to_SDD_and_coords):
-    domain_shortinfo = open(os.path.join(output_dir, "domain.dat"), 'r')
+    domain_shortinfo = open(os.path.join(output_dir, "domain.info"), 'r')
     line_domain = domain_shortinfo.readline()
     line_split = line_domain.split()
     domain_shortinfo.close()
 
     nSDD = int(line_split[4]) * int(line_split[5])
-
     quantity_f = open(os.path.join(quantity_dir, quantity_name + '.dat'), 'r')
 
     file_streams = list()
@@ -155,8 +154,9 @@ def split_quantity(quantity_dir, output_dir, quantity_name,
         fs.close()
 
 def split_bc(bc_dir, output_dir):
-    domain_shortinfo = open(os.path.join(output_dir, "domain.dat"), 'r')
+    domain_shortinfo = open(os.path.join(output_dir, "domain.info"), 'r')
     line_split = domain_shortinfo.readline().split()
+
     domain_Nx = int(line_split[2])
     domain_Ny = int(line_split[3])
     nSDD_X = int(line_split[4])
@@ -269,7 +269,7 @@ def split_qbc(split_dir, output_dir, quantity_name, uid_to_SDD_and_coords_bc):
         fs.close()
 
 def merge_quantity(split_dir, output_dir, quantity_name):
-    domain_shortinfo = open(os.path.join(split_dir, "domain.dat"), 'r')
+    domain_shortinfo = open(os.path.join(split_dir, "domain.info"), 'r')
     line_domain = domain_shortinfo.readline()
     line_split = line_domain.split()
     nSDD_X = int(line_split[4])

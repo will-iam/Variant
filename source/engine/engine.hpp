@@ -65,8 +65,7 @@ class Engine {
     real _T;
     real _CFL;
 
-    Timer _timerTotal;
-    Timer _timerComputation;
+    Timer _timer;
     int _MPI_rank;
 
     std::vector<real> _SDS_uxmax;

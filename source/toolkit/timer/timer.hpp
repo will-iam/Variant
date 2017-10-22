@@ -2,7 +2,7 @@
 #define TIMER_H
 
 #include <chrono>
-#include <list>
+#include <deque>
 
 #if __cplusplus >= 201103L
 typedef std::chrono::steady_clock steady_clock;
@@ -23,12 +23,12 @@ class Timer {
         unsigned long int getLastSteadyDuration() const;
         double getMeanSteadyDuration() const;
         double getTotalSteadyDuration() const;
-        const std::list<unsigned long int>& getSteadyTimeList() const {return _steadyList;}
+        const std::deque<unsigned long int>& getSteadyTimeDeque() const {return _steadyDeque;}
     private:
         std::chrono::time_point<steady_clock> _startSteady, _endSteady;
         double _totalSteady;
         double _call;
-        std::list<unsigned long int> _steadyList;
+        std::deque<unsigned long int> _steadyDeque;
 };
 
 #endif // TIMER_H

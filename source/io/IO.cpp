@@ -23,6 +23,7 @@ int IO::loadSDDInfo(std::string directory, Domain& domain) {
     MPI_Comm_rank(MPI_COMM_WORLD, &SDDid);
     std::ostringstream oss;
     oss << SDDid;
+
     std::ifstream ifs(directory + "/sdd" + oss.str() + "/sdd.dat", std::ios::in);
     std::string tmpStr;
     std::getline(ifs, tmpStr, ' ');
@@ -39,11 +40,10 @@ int IO::loadSDDInfo(std::string directory, Domain& domain) {
     return 0;
 }
 
-int IO::loadDomainInfo(std::string directory,
-                   Domain& domain) {
+int IO::loadDomainInfo(std::string directory, Domain& domain) {
 
     // Read exec options
-    std::ifstream ifs(directory + "/domain.dat", std::ios::in);
+    std::ifstream ifs(directory + "/domain.info", std::ios::in);
     if (!ifs)
         std::cerr << "Failed to load domain info" << std::endl;
     std::string tmpStr;
@@ -81,8 +81,7 @@ int IO::loadSchemeInfo(std::string directory, Engine& engine) {
     return 0;
 }
 
-int IO::loadExecOptions(std::string directory,
-        Domain& domain) {
+int IO::loadExecOptions(std::string directory, Domain& domain) {
 
     std::ifstream ifs(directory + "/exec_options.dat", std::ios::in);
     if (!ifs) {
@@ -113,12 +112,14 @@ int IO::loadExecOptions(std::string directory,
 int IO::loadQuantity(std::string directory,
         std::string quantityName, Domain& domain, bool constant) {
 
+
     SDDistributed& sdd = domain.getSDD();
 
     domain.addQuantity(quantityName, constant);
 
     std::ostringstream oss;
     oss << sdd.getId();
+
     std::ifstream ifs(directory + "/sdd" + oss.str() + "/" + quantityName + ".dat",
                       std::ios::in);
     std::string tmpStr;
@@ -137,8 +138,40 @@ int IO::loadQuantity(std::string directory,
     }
 
     ifs.close();
+
     return 0;
 }
+
+int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
+
+    SDDistributed& sdd = domain.getSDD();
+    std::ostringstream oss;
+    oss << sdd.getId();
+    std::ifstream ifs(directory + "/sdd" + oss.str() + "/bc.dat");
+    if (!ifs)
+        std::cerr << "Failed to open boundary conditions file" << std::endl;
+    std::string tmpStr;
+
+    // Reading unique id <-> coords correspondence
+    while (std::getline(ifs, tmpStr)) {
+
+        std::istringstream iss(tmpStr);
+        unsigned int uid;   iss >> uid;
+        int iCoord;         iss >> iCoord;
+        int jCoord;         iss >> jCoord;
+        char BCtype;        iss >> BCtype;
+        real value;         iss >> value;
+
+        domain.addBoundaryCoords(std::pair<int, int>(iCoord, jCoord), BCtype, value);
+    }
+    ifs.close();
+
+    // Build domain boundary map between SDDs before leaving
+    domain.buildBoundaryMap();
+
+    return 0;
+}
+
 
 int IO::writeQuantity(std::string directory,
         std::string quantityName, const Domain& domain) {
@@ -171,35 +204,6 @@ int IO::writeQuantity(std::string directory,
     return 0;
 }
 
-int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
-
-    SDDistributed& sdd = domain.getSDD();
-    std::ostringstream oss;
-    oss << sdd.getId();
-    std::ifstream ifs(directory + "/sdd" + oss.str() + "/bc.dat");
-    if (!ifs)
-        std::cerr << "Failed to open boundary conditions file" << std::endl;
-    std::string tmpStr;
-
-    // Reading unique id <-> coords correspondence
-    while (std::getline(ifs, tmpStr)) {
-
-        std::istringstream iss(tmpStr);
-        unsigned int uid;   iss >> uid;
-        int iCoord;         iss >> iCoord;
-        int jCoord;         iss >> jCoord;
-        char BCtype;        iss >> BCtype;
-        real value;         iss >> value;
-
-        domain.addBoundaryCoords(std::pair<int, int>(iCoord, jCoord), BCtype, value);
-    }
-    ifs.close();
-
-    // Build domain boundary map between SDDs before leaving
-    domain.buildBoundaryMap();
-    return 0;
-}
-
 int IO::writePerfResults(std::string directory, const std::map<std::string, int>& results) {
 
     std::ofstream ofs(directory + "/perfs.dat");
@@ -225,14 +229,14 @@ int IO::writeSDDPerfResults(std::string directory, const Domain& domain, const s
     return 0;
 }
 
-int IO::writeSDDTime(std::string directory, const Domain& domain, const std::string& timerName, const std::list<unsigned long int>& timeList) {
+int IO::writeSDDTime(std::string directory, const Domain& domain, const std::string& timerName, const std::deque<unsigned long int>& timeDeque) {
 
     const SDDistributed& sdd = domain.getSDDconst();
     std::ostringstream oss;
     oss << sdd.getId();
     std::ofstream ofs(directory + "/sdd" + oss.str() + "/timer-" + timerName + ".dat", std::ios::out);
 
-    for (auto const& r: timeList)
+    for (auto const& r: timeDeque)
         ofs << r << std::endl;
 
     ofs.close();

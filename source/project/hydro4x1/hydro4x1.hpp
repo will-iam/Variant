@@ -93,6 +93,10 @@ class Hydro4x1: public Engine {
     real _gamma;
 
     Domain* _domain;
+
+    // Members for profiling
+    Timer _timerIteration;
+    Timer _timerComputation;
 };
 
 #endif

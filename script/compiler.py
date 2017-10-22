@@ -10,17 +10,23 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
 
 class Engine:
-    def __init__(self, project_name, build = True, compiler = 'intel',
-            mode = 'debug', precision = 'double', std='c++11',
-            clean = False):
+    def __init__(self, engineOptionDict, build = True, clean = False):
+        self._project_name = engineOptionDict['project_name']
+        self._compiler = engineOptionDict['compiler']
+        self._mode = engineOptionDict['mode']
+        self._precision = engineOptionDict['precision']
+        self._std = engineOptionDict['std']
+        self._gdb = engineOptionDict['gdb']
+        self._vtune = engineOptionDict['vtune']
+        self._valgrind = engineOptionDict['valgrind']
+
         if clean:
-            self._clean(project_name, compiler, mode, precision, std)
+            self._clean(self._project_name, self._compiler, self._mode, self._precision, self._std)
         elif build:
-            self.binary_path = self._build(project_name,
-                compiler, mode, precision, std)
+            self._binary_path = self._build(self._project_name, self._compiler, self._mode, self._precision, self._std)
         else:
-            program_file = project_name + '-' + mode + '-' + compiler + '.exec'
-            self.binary_path = os.path.join(config.workspace, program_file)
+            program_file = self._project_name + '-' + self._mode + '-' + self._compiler + '.exec'
+            self._binary_path = os.path.join(config.workspace, program_file)
 
     def _build(self, project_name, compiler, mode, precision, std):
         p = subprocess.Popen(['scons',
@@ -50,25 +56,25 @@ class Engine:
             cwd = os.path.join(config.workspace, 'source'))
         p.wait()
 
-    def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1, gdb = False, valgrind = False, vtune = False):
+    def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1):
         cmd = config.mpi_RUN.split(' ')
         if mpi_nprocs > 0:
-            if gdb:
+            if self._gdb:
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
                     'xterm', '-e', 'gdb', '--args',
-                    self.binary_path, '-i', input_path, '-o', output_path])
-            elif valgrind:
+                    self._binary_path, '-i', input_path, '-o', output_path])
+            elif self._valgrind:
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
                     'valgrind', '--leak-check=yes',
                     '--log-file=valgrind-out.txt',
-                    self.binary_path, '-i', input_path, '-o', output_path])
-            elif vtune:
-                #project = os.path.basename(self.binary_path).split('-')[0]
+                    self._binary_path, '-i', input_path, '-o', output_path])
+            elif self._vtune:
+                #project = os.path.basename(self._binary_path).split('-')[0]
                 vcmd = ['amplxe-cl', '-r', 'vtune-hs', '-collect', 'hotspots']
                 #vcmd = ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
                 #vcmd = ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
                 #vcmd = ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
-                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores)] + vcmd + [self.binary_path, '-i', input_path, '-o', output_path]
+                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores)] + vcmd + [self._binary_path, '-i', input_path, '-o', output_path]
                 print(' '.join(cmd))
                 subprocess.check_call(cmd)
             else:
@@ -76,14 +82,15 @@ class Engine:
                 # to add environment variable visible in this process + all children:
                 os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
                 '''
-                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), self.binary_path, '-i', input_path, '-o', output_path]
+                #cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path]
+                cmd = cmd + ['-n', str(mpi_nprocs), self._binary_path, '-i', input_path, '-o', output_path]
                 print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:
-            if gdb:
-                subprocess.check_call(['gdb', '--args', self.binary_path, '-i', input_path, '-o', output_path])
-            elif valgrind:
+            if self._gdb:
+                subprocess.check_call(['gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path])
+            elif self._valgrind:
                 subprocess.check_call(['valgrind', '--leak-check=yes',
-                    self.binary_path, '-c', str(nthreads), '-i', input_path, '-o', output_path])
+                    self._binary_path, '-c', str(nthreads), '-i', input_path, '-o', output_path])
             else:
-                subprocess.check_call([self.binary_path, '-i', input_path, '-o', output_path])
+                subprocess.check_call([self._binary_path, '-i', input_path, '-o', output_path])

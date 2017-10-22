@@ -7,14 +7,16 @@ import itertools
 from decimal import *
 from seek_common import *
 
-compileDict = {
+engineOptionDict = {
 'project_name': args.project_name,
-'comp': 'mpi',
+'compiler': 'mpi',
 'mode': 'release',
 'precision': 'double',
 'std': 'c++14',
-'bool_compile': not args.nocompile,
-'vtune': args.vtune
+'must_compile': not args.nocompile,
+'vtune': args.vtune,
+'gdb' : False,
+'valgrind' : False
 }
 
 # Define execution parameters
@@ -40,7 +42,7 @@ SDD_powersOfTwo = [0, 1, 2, 3, 4, 5, 6]
 
 # Clean compile if requested.
 if args.clean_compile:
-    engine = compiler.Engine(compileDict['project_name'], False, compileDict['comp'], compileDict['mode'], compileDict['precision'], compileDict['std'], True)
+    engine = compiler.Engine(engineOptionDict, False, True)
     print("Cleaned target")
     sys.exit(0)
 
@@ -68,17 +70,17 @@ def weakSDD(initSize):
                 test['nSDD'] = (2**i, 2**(p-i))
                 nsdd = test['nSDD'][0]*test['nSDD'][1]
                 for SDSratio in SDSratioList:
-                    # Exploration strong SDS, ncpmpi = nTotalCores / nsdd
-                    ncpmpi = 1
+                    # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
+                    nCoresPerSDD = 1
 
                     # élimine cas impossible
-                    if ncpmpi > nTotalCores / nsdd:
+                    if nCoresPerSDD > nTotalCores / nsdd:
                         continue
 
-                    test['ncpmpi'] = ncpmpi
+                    test['nCoresPerSDD'] = nCoresPerSDD
 
                     # Pour un calcul à charge/ressource constante
-                    test['nThreads'] = ncpmpi * ratio
+                    test['nThreads'] = nCoresPerSDD * ratio
                     if test['nThreads'] <= 0:
                         continue
 
@@ -118,17 +120,17 @@ def weakSDS(initSize):
             test['SDSgeom'] = SDSgeom
             test['nSDD'] = (1, 1)
             for SDSratio in SDSratioList:
-                # Exploration strong SDS, ncpmpi = nTotalCores / nsdd
-                ncpmpi = 2**p
+                # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
+                nCoresPerSDD = 2**p
 
                 # élimine cas impossible
-                if ncpmpi > nTotalCores:
+                if nCoresPerSDD > nTotalCores:
                     continue
 
-                test['ncpmpi'] = ncpmpi
+                test['nCoresPerSDD'] = nCoresPerSDD
 
                 # Pour un calcul à charge/ressource constante
-                test['nThreads'] = ncpmpi * ratio
+                test['nThreads'] = nCoresPerSDD * ratio
                 if test['nThreads'] <= 0:
                     continue
 
@@ -167,16 +169,16 @@ def explore():
                     test['nSDD'] = (2**i, 2**(p-i))
                     nsdd = test['nSDD'][0]*test['nSDD'][1]
                     for SDSratio in SDSratioList:
-                        # Exploration strong SDS, ncpmpi = nTotalCores / nsdd
-                        ncpmpi = nTotalCores / nsdd
+                        # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
+                        nCoresPerSDD = nTotalCores / nsdd
 
                         # élimine cas impossible
-                        if ncpmpi > nTotalCores / nsdd:
+                        if nCoresPerSDD > nTotalCores / nsdd:
                             continue
 
-                        test['ncpmpi'] = ncpmpi
+                        test['nCoresPerSDD'] = nCoresPerSDD
                         # Pour un calcul à charge/ressource constante
-                        test['nThreads'] = ncpmpi * ratio
+                        test['nThreads'] = nCoresPerSDD * ratio
                         if test['nThreads'] <= 0:
                             continue
 
@@ -205,6 +207,8 @@ def explore():
 #testBattery = weakSDS(64)
 testBattery = explore()
 
+testBattery = {'n2dsod256x256' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (2, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 2}]}
+
 totalTestNumber = 0
 for k, tl in testBattery.items():
     print("%s test(s) on case %s" % (len(tl), k))
@@ -213,5 +217,5 @@ for k, tl in testBattery.items():
         print("\t%s" % t)
 print(totalTestNumber, "will be run")
 
-runTestBattery(compileDict, testBattery)
+runTestBattery(engineOptionDict, testBattery)
 print("\nTest successfully passed\n")
