@@ -25,6 +25,20 @@ def get_ref_name():
 def get_case_path(project_name, case_name):
     return os.path.join(config.cases_dir, project_name, case_name)
 
+def case_exist(project_name, case_name):
+    case_path = get_case_path(project_name, case_name)
+    if not os.path.isdir(case_path):
+        return False
+
+    if not os.path.isfile(os.path.join(case_path, 'init.py')):
+        return False
+
+    if not os.path.isfile(os.path.join(case_path, 'chars.py')):
+        return False
+
+    return True
+
+
 def check_test(test_path, ref_path):
     print("Checking test " + test_path + " against " + ref_path)
     qties_to_compare = io.read_quantity_names(test_path)

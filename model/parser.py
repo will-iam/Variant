@@ -16,15 +16,21 @@ def fn(x):
 
 # Retrouve la clef du cas test
 def makeCaseKey(caseSizeX, caseSizeY):
+    if caseSizeX == 64 and caseSizeY == 64:
+        return '64x64x274'
+    if caseSizeX == 64 and caseSizeY == 128:
+        return '64x64x280'
     if caseSizeX == 128 and caseSizeY == 128:
         return '128x128x556'
+    if caseSizeX == 128 and caseSizeY == 256:
+        return '128x256x566'
     if caseSizeX == 256 and caseSizeY == 256:
         return '256x256x1121'
-    elif caseSizeX == 256 and caseSizeY = 512:
+    elif caseSizeX == 256 and caseSizeY == 512:
         return '256x512x1138'
-    elif caseSizeX == 512 and caseSizeY = 512:
+    elif caseSizeX == 512 and caseSizeY == 512:
         return '512x512x2252'
-    return ''
+    raise ValueError("Could not find %sx%s" % (caseSizeX, caseSizeY))
 
 def extractKey(key):
     firstSplit = key.split('x')
@@ -93,7 +99,7 @@ def makeKey(attrnames, data_line):
 
     # Make unique key
     key = "%sx%sx%s:%s:%s:%s" % (Nx, Ny, Ni, R, Nt, Ns)
-    print "[DATA] - %s: %s run(s) ressources = %s" % (key, len(nIterationsList), R), " case: %sx%s" % (Nx, Ny)
+    #print "[DATA] - %s: %s run(s) ressources = %s" % (key, len(nIterationsList), R), " case: %sx%s" % (Nx, Ny)
 
     return key,  nPhysicalCells * nSDD * Ni
 
@@ -134,7 +140,7 @@ def parseData(filepath, data, filterKey):
 
             # Passe tous les résultats qui ne sont pas en accord avec la clef.
             if not key.startswith(filterKey):
-                # print "filtered:", key, filterKey
+                #print "filtered:", key, filterKey
                 continue
 
             if key not in data.keys():
@@ -147,34 +153,36 @@ def parseData(filepath, data, filterKey):
             nCoresPerSDD = int(data_line[attrnames.index('nCoresPerSDD')])
             point = tuple([nSDD_X, nSDD_Y, nCoresPerSDD])
 
-            synchronizeTimeList = data_line[attrnames.index('synchronizeTime')]
-            computeTimeList = data_line[attrnames.index('computeTime')]
+            minComputeSumList = data_line[attrnames.index('minComputeSum')]
+            maxComputeSumList = data_line[attrnames.index('maxComputeSum')]
+            maxIterationSumList = data_line[attrnames.index('maxIterationSum')]
             loopTimeList = data_line[attrnames.index('loopTime')]
             nNeighbourSDD = data_line[attrnames.index('nNeighbourSDD')]
             nPhysicalCells = int(data_line[attrnames.index('nPhysicalCells')])
             machine = data_line[attrnames.index('machineName')]
 
-            runNumber = len(synchronizeTimeList)
+            runNumber = len(maxIterationSumList)
 
-            if runNumber != len(loopTimeList) or runNumber != len(computeTimeList):
+            if runNumber != len(loopTimeList) or runNumber != len(minComputeSumList) or runNumber != len(maxComputeSumList):
                 print("Erreur dans le fichier de données")
                 sys.exit(1)
 
             for i in range(0, runNumber):
                 runAdded += 1
                 loopTime = float(loopTimeList[i])/normalizer
-                synchronizeTime = float(synchronizeTimeList[i])/normalizer
-                computeTime = float(computeTimeList[i])/normalizer
-                data[key].append({"point": point, "loopTime": loopTime, "synchronizeTime": synchronizeTime, "computeTime": computeTime,
+                minComputeSum = float(minComputeSumList[i])/normalizer
+                maxComputeSum = float(maxComputeSumList[i])/normalizer
+                maxIterationSum = float(maxIterationSumList[i])/normalizer
+                data[key].append({"point": point, "loopTime": loopTime, "minComputeSum": minComputeSum, "maxComputeSum": maxComputeSum, "maxIterationSum": maxIterationSum,
                          "meanNeighbour": nNeighbourSDD[0], "maxNeighbour": nNeighbourSDD[2], "nPhysicalCells": nPhysicalCells, "machine": machine})
                 #print data_line
                 #print i, nSDD_X, nSDD_Y, nCoresPerSDD, data[key][-1]
 
-        print "\t - leave file:", filepath, "run added:", runAdded
+        print "\t - leaving file", filepath, "run added:", runAdded
         f.close()
 
-def readData(caseName, data, filterKey):
-    dirpath = os.path.join('data', str(caseName))
+def readData(projectName, caseName, data, filterKey):
+    dirpath = os.path.join('data', projectName, str(caseName))
     for filename in os.listdir(dirpath):
         if not filename.endswith(".csv"):
             continue
@@ -184,9 +192,8 @@ def readData(caseName, data, filterKey):
 
 def getData(filterKey = ''):
     data = {}
-    for caseName in os.listdir("data"):
-        if 'x' not in caseName:
-            continue
-        print "Start reading file list from %s directory:" % caseName
-        readData(caseName, data, filterKey)
+    for projectName in os.listdir('data'):
+        for caseName in os.listdir(os.path.join('data',projectName)):
+            print "Start reading file list from %s/%s directory:" % (projectName, caseName)
+            readData(projectName, caseName, data, filterKey)
     return data

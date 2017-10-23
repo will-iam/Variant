@@ -8,7 +8,7 @@ import numpy as np
 import config
 from collections import *
 from shutil import rmtree
-from script.launcher import launch_test
+from script.launcher import launch_test, case_exist
 import script.io as io
 
 COLOR_BLUE = '\x1b[1;36m'
@@ -88,8 +88,6 @@ def make_perf_data(perfPath, execTime, perf_info):
                 counter = 0
                 partialSum = 0
 
-        print len(sumComputeTimeMatrix[sdd]), len(iterationTimeMatrix[sdd])
-
     # For each value, find the min and the max.
     minComputeSum = np.sum(np.amin(sumComputeTimeMatrix, axis=0))
     maxComputeSum = np.sum(np.amax(sumComputeTimeMatrix, axis=0))
@@ -142,14 +140,21 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, nCoresPerSDD, m
 
 def runTestBattery(engineOptionDict, testBattery):
     tmp_dir = config.tmp_dir
+    project_name = engineOptionDict['project_name']
+
+    # Checkt that all cases do exist
+    for cn in testBattery:
+        if not case_exist(project_name, cn):
+            print('Test ', project_name, cn, "doesn't exist")
+            sys.exit(1)
 
     for cn, testList in testBattery.items():
 	    # Init results dir
-        io.make_sure_path_exists(os.path.join(config.results_dir, cn))
-        results_path = os.path.join(config.results_dir, cn, 'results_data.csv')
+        io.make_sure_path_exists(os.path.join(config.results_dir, project_name, cn))
+        results_path = os.path.join(config.results_dir, project_name, cn, 'results_data.csv')
 
         # Launch tests and compare results
-        print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + engineOptionDict['project_name'] + '/' + cn)
+        print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + project_name + '/' + cn)
         # Cleaning tmp directory for new case
         rmtree(tmp_dir, ignore_errors=True)
         for test in testList:

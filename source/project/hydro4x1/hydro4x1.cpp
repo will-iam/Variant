@@ -95,17 +95,20 @@ int Hydro4x1::start() {
 
     int iPrint = 0;
     _nIterations = 0;
+
+    // Initialize first and then put it at the end of the loop,
+    // instead of the beginning so the All Reduce is at the end and
+    // everybody is synchronized when the time measures the end of the iteration.
+    updateDomainUxmax();
+    updateDomainUymax();
+
     while (_t < _T) {
         if (_MPI_rank == 0 && _t / _T * 10.0 >= iPrint) {
             iPrint = int(_t / _T * 10.0) + 1;
             std::cout << "[0] - Computation done: " <<  _t / _T * 100.0 << "%, time: ";
             _timerIteration.reportTotal();
         }
-
         _timerIteration.begin();
-        // Update speed parameters in order to compute dt
-        updateDomainUxmax();
-        updateDomainUymax();
         _timerComputation.begin();
 
         ++_nIterations;
@@ -151,6 +154,11 @@ int Hydro4x1::start() {
 
         _t += _dt;
    	    _timerComputation.end();
+
+        // Update speed parameters in order to compute dt
+        updateDomainUxmax();
+        updateDomainUymax();
+
         _timerIteration.end();
     }
 
