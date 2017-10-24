@@ -6,6 +6,10 @@ import sys
 import itertools
 from decimal import *
 from seek_common import *
+import script.compiler as compiler
+
+# Get case names from all directories in case/project_name/
+case_name = args.case
 
 engineOptionDict = {
 'project_name': args.project_name,
@@ -26,26 +30,13 @@ SDSgeom = 'line'
 ratioThreadsCores = [1]
 SDSratioList = [4]
 nruns = 5
-nCoresPerNode = 64
-
-#nSDD = [1, 4, 16, 64, 256] en puissance de 2 = [0, 2, 4, 6, 8]
-#SDD_powersOfTwo = [0, 2, 4, 6]#
-
-#SDD_powersOfTwo = [6]
-#SDD_powersOfTwo = [2]
-#SDD_powersOfTwo = [0]
-#SDD_powersOfTwo = [2, 3, 4, 5, 6, 7, 8]
-
-
+nCoresPerNode = 8
 
 # Clean compile if requested.
 if args.clean_compile:
-    engine = compiler.Engine(engineOptionDict, False, True)
+    compiler.Engine(engineOptionDict, False, True)
     print("Cleaned target")
     sys.exit(0)
-
-# Get case names from all directories in case/project_name/
-case_name = args.c
 
 def weakSDD(initSize):
     testBattery = {}
@@ -200,7 +191,6 @@ def strongSDD(caseSizeXY):
     testBattery = {}
     # Defining case directory
     cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-    print cn
     for ratio in ratioThreadsCores:
         for p in range(minSdd, maxSdd + 1):
             # Different SDD splits, nSDD = 2**p
@@ -250,7 +240,6 @@ def explore(caseSizeXY):
     testBattery = {}
     # Defining case directory
     cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-    print cn
     for ratio in ratioThreadsCores:
         for p in range(minSdd, maxSdd + 1):
             # Different SDD splits, nSDD = 2**p
@@ -297,10 +286,12 @@ def explore(caseSizeXY):
 #testBattery = weakSDD(64)
 #testBattery = weakSDS(64)
 #testBattery = strongSDD((256, 256))
-testBattery = strongSDS((256, 256))
-#testBattery = explore((512, 512))
+#testBattery = strongSDS((256, 256))
+#testBattery = explore((256, 256))
 
-#testBattery = {'n2dsod256x256' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (2, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 2}]}
+testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (2, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
+testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (4, 4), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
+testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (1, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
 
 totalTestNumber = 0
 for k, tl in testBattery.items():

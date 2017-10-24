@@ -92,6 +92,7 @@ class Hydro4x1: public Engine {
     // Physical constants
     real _gamma;
 
+    // The Famous Domain
     Domain* _domain;
 
     // Members for profiling

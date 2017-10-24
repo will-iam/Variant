@@ -13,28 +13,26 @@ sizeList = []
 initSize = 64
 caseSizeX = initSize / 2
 caseSizeY = initSize
+sizeDataDict = []
 for p in [0, 1, 2, 3, 4, 5, 6]:
 	# Defining case directory
     if p % 2 == 1:
         caseSizeY = caseSizeY * 2
     else:
         caseSizeX = caseSizeX * 2
-    point = (caseSizeX, caseSizeY, 2**p)
-    print point
-    sizeList.append(point)
-
-
-sizeDataDict = {}
-for size in sizeList:
-    data = {}
-    caseKey = parser.makeCaseKey(size[0], size[1]) + ':' + str(size[2])
-    data = parser.getData(caseKey)
+    filterDict = {'nSizeX' : caseSizeX, 'nSizeY' : caseSizeY, 'R' : 2**p}
+    print filterDict
+    data = parser.getData(filterDict)
     if len(data):
-        sizeDataDict[size] = data
+        sizeDataDict.append(data)
+
+if len(sizeDataDict) == 0:
+    print("No data found.")
+    sys.exit(1)
 
 sdsWeakDict = {}
 sddWeakDict = {}
-for size, data in sizeDataDict.items():
+for data in sizeDataDict:
     for key, value in data.items():
         keyDict = parser.extractKey(key)
         if keyDict['Nt'] != 1:

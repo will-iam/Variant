@@ -92,7 +92,12 @@ class Hydro8x1: public Engine {
     // Physical constants
     real _gamma;
 
+    // The Famous Domain
     Domain* _domain;
+
+    // Members for profiling
+    Timer _timerIteration;
+    Timer _timerComputation;
 };
 
 #endif

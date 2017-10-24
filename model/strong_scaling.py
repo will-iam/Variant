@@ -10,23 +10,22 @@ from collections import *
 
 # make point
 caseSize = (256, 256)
-sizeList = []
-for p in range(0, 7):
-    point = (caseSize[0], caseSize[1], 2**p)
-    print point
-    sizeList.append(point)
+sizeDataDict = []
 
-sizeDataDict = {}
-for size in sizeList:
-    data = {}
-    caseKey = parser.makeCaseKey(size[0], size[1]) + ':' + str(size[2])
-    data = parser.getData(caseKey)
+for p in range(0, 7):
+    filterDict = {'nSizeX' : caseSize[0], 'nSizeY' : caseSize[1], 'R' : 2**p}
+    print filterDict
+    data = parser.getData(filterDict)
     if len(data):
-        sizeDataDict[size] = data
+        sizeDataDict.append(data)
+
+if len(sizeDataDict) == 0:
+    print("No data found.")
+    sys.exit(1)
 
 sdsStrongDict = {}
 sddStrongDict = {}
-for size, data in sizeDataDict.items():
+for data in sizeDataDict:
     for key, value in data.items():
         keyDict = parser.extractKey(key)
         if keyDict['Nt'] != 1:

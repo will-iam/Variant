@@ -27,23 +27,16 @@ vi_attrnames = [t[0] for t in vi_dtypes]
 
 parser = argparse.ArgumentParser(description="Performance measures", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
-parser.add_argument("-c", type = str, help = "Case to test",
-        required=True)
+parser.add_argument("--case", type = str, help = "Case to test", required=True)
 parser.add_argument("--machine", type = str, help = "Hostname of the test", default='unknown')
-
-parser.add_argument("--max_thread_number", type = int, help = "Max. number of threads",
-	default=1)
-parser.add_argument("--max_proc_number", type = int, help = "Max. number of procs",
-	default=1)
-parser.add_argument("--nocompile", action='store_true', default=False,
-        help = "Never compiles project before calling it")
-parser.add_argument("--clean-compile", action='store_true',
-        default=False, help = "Clean SCons compilation file")
-parser.add_argument("--nocheck", action='store_true', default=False,
-        help = "Never compare computed results to reference")
-parser.add_argument("--vtune", action='store_true', default=False,
-        help = "Enable vtune tool")
+parser.add_argument("--max_thread_number", type = int, help = "Max. number of threads", default=1)
+parser.add_argument("--max_proc_number", type = int, help = "Max. number of procs", default=1)
+parser.add_argument("--nocompile", action='store_true', default=False, help = "Never compiles project before calling it")
+parser.add_argument("--clean-compile", action='store_true', default=False, help = "Clean SCons compilation file")
+parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
+parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
 args = parser.parse_args()
+
 
 def compute_sds_number2(total_cells, nSDD, SDSsize):
     return total_cells / (nSDD * SDSsize)
@@ -61,10 +54,8 @@ def make_perf_data(perfPath, execTime, perf_info):
     perf_values = list(io.read_perfs(perfPath).values())
     perf_values.append(execTime)
 
-    print "Make Perf Data"
     iterationTimeDict = perf_info['iterationTime']
     computeTimeDict = perf_info['computeTime']
-
 
     sumComputeTimeMatrix = np.empty((len(perf_info['iterationTime']), len(iterationTimeDict[0])))
     iterationTimeMatrix = np.empty((len(perf_info['iterationTime']), len(iterationTimeDict[0])))
@@ -92,9 +83,6 @@ def make_perf_data(perfPath, execTime, perf_info):
     minComputeSum = np.sum(np.amin(sumComputeTimeMatrix, axis=0))
     maxComputeSum = np.sum(np.amax(sumComputeTimeMatrix, axis=0))
     maxIterationSum = np.sum(np.amax(iterationTimeMatrix, axis=0))
-
-
-    print minComputeSum, maxComputeSum, maxIterationSum
 
     perf_values.append(minComputeSum)
     perf_values.append(maxComputeSum)

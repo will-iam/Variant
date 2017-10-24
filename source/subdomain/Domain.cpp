@@ -339,9 +339,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
 
         // For each boundary cell we check its type : either a
         // boundary cell of the domain, or an overlap cell
-
-        std::pair< int, std::pair<int, int> > SDDandCoords
-            = domain.getShiftSDDandCoords(*it);
+        std::pair< int, std::pair<int, int> > SDDandCoords = domain.getShiftSDDandCoords(*it);
 
         // If it is an overlap cell, we simply add it to the list of
         // overlap cells
@@ -452,7 +450,6 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
         }
 
         //std::cout << it->first << "..." << it->second << std::endl;
-        //std::cout << domain.getSDDandCoords(_id, *it).first << std::endl;
     }
 }
 
@@ -546,13 +543,13 @@ void SDDistributed::buildSendMap() {
             _recvSendBuffer[SDDto].second.reserve(4 * numberOfCellsToSend[SDDto]);
         }
     }
- 
+
     if (_recvSendBuffer.size() != _neighbourSDDVector.size())
         exitfail("Buffer does not contain all the neighbours.");
 
     for (const auto& sddId : _neighbourSDDVector) {
         if (_recvSendBuffer.find(sddId) == _recvSendBuffer.end())
-            exitfail("Could not find SDD in neighbourhood.");    
+            exitfail("Could not find SDD in neighbourhood.");
     }
 
     // shuffle vector to dilute the effect of always start with the lower ranking.

@@ -49,12 +49,17 @@ def computeNeighborNumber(x, y, withCorner = False):
 
 
 
-def expectation(data, field, caseKey):
+def expectation(data, field, filterKey):
     '''
     Dans cette première étape on récupère les données produites sur un seul coeur pour estimer le
     temps de calcul Tc.
     '''
-    TcData = data[caseKey]
+    caseKeyList = [k for k in data.keys() if k.endswith(filterKey)]
+    if len(caseKeyList) > 1:
+        print("Weird ...")
+        sys.exit(1)
+
+    TcData = data[caseKeyList[0]]
 
     if not len(TcData):
         print("Aucune données sur le cas %s" % caseKey)
@@ -76,16 +81,16 @@ def expectation(data, field, caseKey):
         pointExpectDict[(point[0], point[1], point[2], len(TcLoopTimeList))] = np.exp(meanTc)
     return pointExpectDict
 
-def synchronizeEstimate(data, caseKey):
+def synchronizeEstimate(data, resource):
 
     rawTsData = {}
     for k, v in data.items():
-        if  k.startswith(caseKey) and k.endswith(':1:4'):
+        if  k.endswith(str(resource) + ':1:4'):
             for p in v:
                 coord = p['point']
                 if coord not in rawTsData.keys():
                     rawTsData[coord] = []
-                t = p['loopTime'] - p["computeTime"]
+                t = p['maxIterationSum'] - p['maxComputeSum']
                 #print p['point'], 100. * p['synchronizeTime'] / (p['loopTime'] - p["computeTime"]), "%%"
                 rawTsData[coord].append(np.log(t))
 
@@ -113,16 +118,19 @@ def synchronizeEstimate(data, caseKey):
 
     return pointExpectDict
 
-def chargeEstimate(data, caseKey):
+def chargeEstimate(data, resource):
     '''
     Dans cette première étape on récupère les données produites avec un seul thread et 64 SDD pour estimer le
     temps de calcul Tc.
     '''
-    constant = 64
-    TcKey = caseKey + ':' + str(constant) + ':1:4'
-    TcData = data[TcKey]
+    TcKeyFiltered = [k for k in data.keys() if k.endswith(':' + str(resource) + ':1:4')]
+    if len(TcKeyFiltered) > 1:
+        print("Weird ...")
+        sys.exit(1)
+
+    TcData = data[TcKeyFiltered[0]]
     if not len(TcData):
-        print("Aucune données sur le cas %s" % caseKey)
+        print("Aucune données sur le cas %s" % TcKeyFiltered[0])
         sys.exit(1)
     #pprint(TcData)
 
@@ -132,7 +140,7 @@ def chargeEstimate(data, caseKey):
     pointMachineTimeDict = {}
     for element in TcData:
         coord = element['point']
-        if coord[0] * coord[1] != constant:
+        if coord[0] * coord[1] != resource:
             continue
 
         point = element['point']
@@ -153,7 +161,7 @@ def chargeEstimate(data, caseKey):
         if point not in machinePointTimeDict[machine].keys():
             machinePointTimeDict[machine][point] = []
 
-        a = np.log(element["computeTime"])
+        a = np.log(element["maxComputeSum"])
         allTime.append(a)
         timeByPointDict[point].append(a)
         pointMachineTimeDict[point][machine].append(a)
@@ -272,25 +280,24 @@ def chargeEstimate(data, caseKey):
     plt.show()
     print "Expectations of points all together:", np.exp(meanTc)
     '''
-    return np.exp(meanTc) * constant
+    return np.exp(meanTc) * resource
 
 
-def greeksEstimate(data):
+def greeksEstimate(data, resource):
     '''
     delta = débit de la communication.
     lambda = latence pour ouvrir une communication.
     '''
 
-
     TsData = []
     for k, v in data.items():
-        if not k.endswith(':64:1:4'):
+        if not k.endswith(':' + str(resource) + ':1:4'):
             continue
 
         for p in v:
 
             coord = p['point']
-            if coord[0] * coord[1] * coord[2] != 64:
+            if coord[0] * coord[1] * coord[2] != resource:
                 print("Erreur dans la récupération des données")
                 sys.exit(1)
 
@@ -316,7 +323,7 @@ def greeksEstimate(data):
     interfaceSizeDict = {}
     neighbourhoodDict = {}
     for p in TsData:
-        ts = np.log(p['loopTime'] - p['computeTime'])
+        ts = np.log(p['maxIterationSum'] - p['maxComputeSum'])
         #ts = p['loopTime'] - p['computeTime']
 
         coord = p['point']
@@ -525,25 +532,24 @@ def greeksEstimate(data):
     return B
 
 # Définition du cas d'étude
-caseSize = 512
-caseKey = parser.makeCaseKey(caseSize)
-data = parser.getData()
+filterDict = {'nSizeX' : 512, 'nSizeY' : 512}
+resource = 8
+data = parser.getData(filterDict)
 if not len(data):
     print("Aucune données.")
     sys.exit(1)
 #pprint(data)
 
 # Estimation de Tc sur un seul point de fonctionnement.
-expectTc = chargeEstimate(data, caseKey)
+expectTc = chargeEstimate(data, resource)
 print("E[Tc] = %s milliseconds per (iteration x cell number)" % (expectTc))
 
 # Estimation des paramètres du modèle de Ts en fonction de plusieurs cas
-greeks = greeksEstimate(data)
+greeks = greeksEstimate(data, resource)
 print("Greeks: ", greeks)
 
 # Estimation de Ts par point de fonctionnement.
-TsKey = caseKey + ':64'
-expectTsDict = synchronizeEstimate(data, TsKey)
+expectTsDict = synchronizeEstimate(data, resource)
 for point, expectTs in expectTsDict.items():
     print("E[Ts] = %s milliseconds per (iteration x cell number) - %s - (%s)" % (expectTs, point, computeNeighborNumber(point[0],point[1])))
 minTuple = sorted(expectTsDict.items(), key=operator.itemgetter(1))[1]
@@ -552,8 +558,7 @@ maxTuple = sorted(expectTsDict.items(), key=operator.itemgetter(1))[-1]
 print("max(E[Ts]) value = %s on point: %s" % (maxTuple[1], maxTuple[0]))
 
 # Estimation de T par point de fonctionnement.
-TtotKey = caseKey + ':64:1:4'
-expectTtotDict = expectation(data, 'loopTime', TtotKey)
+expectTtotDict = expectation(data, 'loopTime', str(resource) + ':1:4')
 minPoint = (0,0,0)
 minValue = 1e300
 for point, expectTot in expectTtotDict.items():
@@ -585,7 +590,7 @@ for point, expectTt in expectTtDict.items():
     nx = point[0]
     ny = point[1]
     h = computeNeighborNumber(nx, ny)
-    interface_size = caseSize + caseSize
+    interface_size = filterDict['nSizeX'] + filterDict['nSizeY']
 
     estimate = np.exp(greeks[0]) * np.power(h, greeks[1] + greeks[2]) * np.power(interface_size, greeks[2])
     estimateMod = estimate * np.power(2, 2 + greeks[2])

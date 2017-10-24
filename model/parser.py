@@ -6,34 +6,42 @@ import sys
 import numpy as np
 import argparse
 
+parser = argparse.ArgumentParser(description="Performance measures", prefix_chars='-')
+parser.add_argument("project_name", type = str, help = "Name of scheme")
+parser.add_argument("--case", type = str, help = "Case to test", required=True)
+parser.add_argument("--machine", type = str, help = "Hostname of the test", default='unknown')
+args = parser.parse_args()
 
-'''
-['SDSgeom', 'SoA_or_AoS', 'computeTime', 'finalizeTime', 'initTime', 'loopTime', 'nBoundaryCells', 'nIterations', 'nNeighbourSDD', 'nOverlapCells', 'nPhysicalCells', 'nSDD', 'nSDD_X', 'nSDD_Y', 'nSDS', 'nThreads', 'synchronizeTime', 'thread_iteration_type', 'totalExecTime', 'machineName', 'nCoresPerSDD']
-'''
 
 def fn(x):
     return (x-2)*2 + 2
-
+'''
 # Retrouve la clef du cas test
 def makeCaseKey(caseSizeX, caseSizeY):
     if caseSizeX == 64 and caseSizeY == 64:
-        return '64x64x274'
+        return '%s/%s/64x64x274' % (args.project_name, args.case)
     if caseSizeX == 64 and caseSizeY == 128:
-        return '64x64x280'
+        return '64x64x280' % (args.project_name, args.case)
     if caseSizeX == 128 and caseSizeY == 128:
-        return '128x128x556'
+        return '128x128x556' % (args.project_name, args.case)
     if caseSizeX == 128 and caseSizeY == 256:
-        return '128x256x566'
+        return '128x256x566' % (args.project_name, args.case)
     if caseSizeX == 256 and caseSizeY == 256:
-        return '256x256x1121'
+        return '256x256x1121' % (args.project_name, args.case)
     elif caseSizeX == 256 and caseSizeY == 512:
         return '256x512x1138'
     elif caseSizeX == 512 and caseSizeY == 512:
         return '512x512x2252'
     raise ValueError("Could not find %sx%s" % (caseSizeX, caseSizeY))
+'''
 
 def extractKey(key):
-    firstSplit = key.split('x')
+    zeroSplit = key.split('/')
+    projectName = zeroSplit[0]
+    caseName = zeroSplit[1]
+    data = zeroSplit[2]
+
+    firstSplit = data.split('x')
     Nx = int(firstSplit[0])
     Ny = int(firstSplit[1])
     secondSplit = firstSplit[2].split(':')
@@ -43,7 +51,7 @@ def extractKey(key):
     Nt = int(secondSplit[2])
     Ns = int(secondSplit[3])
 
-    return {"Nx":Nx, "Ny":Ny, "Ni":Ni, "R":R, "Nt":Nt, "Ns":Ns}
+    return {"projectName": projectName, "caseName": caseName, "Nx":Nx, "Ny":Ny, "Ni":Ni, "R":R, "Nt":Nt, "Ns":Ns}
 
 def makeKey(attrnames, data_line):
     '''
@@ -98,13 +106,13 @@ def makeKey(attrnames, data_line):
     Ns = int(data_line[attrnames.index('nSDS')]) / (Nt * nCoresPerSDD)
 
     # Make unique key
-    key = "%sx%sx%s:%s:%s:%s" % (Nx, Ny, Ni, R, Nt, Ns)
+    key = "%s/%s/%sx%sx%s:%s:%s:%s" % (args.project_name, args.case, Nx, Ny, Ni, R, Nt, Ns)
     #print "[DATA] - %s: %s run(s) ressources = %s" % (key, len(nIterationsList), R), " case: %sx%s" % (Nx, Ny)
 
     return key,  nPhysicalCells * nSDD * Ni
 
 
-def parseData(filepath, data, filterKey):
+def parseData(filepath, data, filterDict):
     attrnames = []
     with open(filepath, 'r') as f:
         runAdded = 0
@@ -138,13 +146,11 @@ def parseData(filepath, data, filterKey):
             # reset multiline parsing
             previous_line = ''
 
-            # Passe tous les résultats qui ne sont pas en accord avec la clef.
-            if not key.startswith(filterKey):
-                #print "filtered:", key, filterKey
+            # Filtered by machine
+            machine = data_line[attrnames.index('machineName')]
+            if args.machine and machine != args.machine:
+                print("machine filtered: %s != %s" %(args.project_name, machine))
                 continue
-
-            if key not in data.keys():
-                data[key] = []
 
             # Paramètres d'entrées, point de fonctionnement.
             # nSDD_X, nSDD_Y, nCoresPerSDD
@@ -153,19 +159,32 @@ def parseData(filepath, data, filterKey):
             nCoresPerSDD = int(data_line[attrnames.index('nCoresPerSDD')])
             point = tuple([nSDD_X, nSDD_Y, nCoresPerSDD])
 
+            if 'R' in filterDict.keys() and filterDict['R'] != nSDD_X * nSDD_Y * nCoresPerSDD:
+                continue
+
+            nSizeX = int(data_line[attrnames.index('nSizeX')])
+            if 'nSizeX' in filterDict.keys() and filterDict['nSizeX'] != nSizeX:
+                continue
+
+            nSizeY = int(data_line[attrnames.index('nSizeY')])
+            if 'nSizeY' in filterDict.keys() and filterDict['nSizeY'] != nSizeY:
+                continue
+
             minComputeSumList = data_line[attrnames.index('minComputeSum')]
             maxComputeSumList = data_line[attrnames.index('maxComputeSum')]
             maxIterationSumList = data_line[attrnames.index('maxIterationSum')]
             loopTimeList = data_line[attrnames.index('loopTime')]
             nNeighbourSDD = data_line[attrnames.index('nNeighbourSDD')]
             nPhysicalCells = int(data_line[attrnames.index('nPhysicalCells')])
-            machine = data_line[attrnames.index('machineName')]
 
             runNumber = len(maxIterationSumList)
 
             if runNumber != len(loopTimeList) or runNumber != len(minComputeSumList) or runNumber != len(maxComputeSumList):
                 print("Erreur dans le fichier de données")
                 sys.exit(1)
+
+            if key not in data.keys():
+                data[key] = []
 
             for i in range(0, runNumber):
                 runAdded += 1
@@ -178,22 +197,28 @@ def parseData(filepath, data, filterKey):
                 #print data_line
                 #print i, nSDD_X, nSDD_Y, nCoresPerSDD, data[key][-1]
 
-        print "\t - leaving file", filepath, "run added:", runAdded
+        print("\t - parsed %s run added: %s" % (filepath, runAdded))
         f.close()
 
-def readData(projectName, caseName, data, filterKey):
+def readData(projectName, caseName, data, filterDict):
     dirpath = os.path.join('data', projectName, str(caseName))
     for filename in os.listdir(dirpath):
         if not filename.endswith(".csv"):
             continue
-        print "\t - parsing data from %s/%s:" % (caseName, filename)
+        #print "\t - parsing data from %s/%s:" % (caseName, filename)
         filepath = os.path.join(dirpath, filename)
-        parseData(filepath, data, filterKey)
+        parseData(filepath, data, filterDict)
 
-def getData(filterKey = ''):
+def getData(filterDict = {}):
     data = {}
-    for projectName in os.listdir('data'):
-        for caseName in os.listdir(os.path.join('data',projectName)):
-            print "Start reading file list from %s/%s directory:" % (projectName, caseName)
-            readData(projectName, caseName, data, filterKey)
+    for projectDir in os.listdir('data'):
+        if projectDir != args.project_name:
+            continue
+
+        for caseDir in os.listdir(os.path.join('data', projectDir)):
+            if not caseDir.startswith(args.case):
+                continue
+
+            print "Start reading file list from %s/%s directory:" % (projectDir, caseDir)
+            readData(projectDir, caseDir, data, filterDict)
     return data
