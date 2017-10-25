@@ -71,48 +71,49 @@ class Domain {
      *
      * @return width of the domain
      */
-    real getlx() const;
+    inline real getlx() const { return _lx; }
     /*!
      * @brief Returns the non-modifiable height of the domain.
      *
      * @return height of the domain
      */
-    real getly() const;
+    inline real getly() const { return _ly; }
     /*!
      * @brief Returns the non-modifiable number of cells on the x-axis.
      *
      * @return number of cells on x-axis
      */
-    unsigned int getSizeX() const;
+    inline unsigned int getSizeX() const { return _Nx; }
     /*!
      * @brief Returns the non-modifiable number of cells on the y-axis.
      *
      * @return number of cells on y-axis
      */
-    unsigned int getSizeY() const;
+    inline unsigned int getSizeY() const{ return _Ny; }
     /*!
      * @brief Returns the non-modifiable space step on the x-axis (ie. the width of a cell).
      *
      * @return space step on the x-axis
      */
-    real getdx() const;
+    inline real getdx() const { return _dx; }
     /*!
      * @brief Returns the non-modifiable space step on the y-axis (ie. the height of a cell).
      *
      * @return space step on the y-axis
      */
-    real getdy() const;
+    inline real getdy() const { return _dy; }
 
-    unsigned int getNumberSDD() const;
-    unsigned int getNumberSDD_X() const;
-    unsigned int getNumberSDD_Y() const;
+    inline unsigned int getNumberSDD() const { return _nSDD; }
+    inline unsigned int getNumberSDD_X() const { return _nSDD_X; }
+    inline unsigned int getNumberSDD_Y() const { return _nSDD_Y; }
+    inline unsigned int getNumberSDS() const { return _nSDS; }
+    inline std::string getSDSGeometry() const { return _SDSgeom; }
+    inline unsigned int getNumberThreads() const  { return _nThreads; }
+
     unsigned int getNumberNeighbourSDDs() const;
     unsigned int getNumberPhysicalCells() const;
     unsigned int getNumberOverlapCells() const;
     unsigned int getNumberBoundaryCells() const;
-    unsigned int getNumberSDS() const;
-    std::string getSDSGeometry() const;
-    unsigned int getNumberThreads() const;
 
     /*!
      * @brief Returns vector containing unique ids of all cells.

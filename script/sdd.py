@@ -168,21 +168,17 @@ def split_bc(bc_dir, output_dir):
     SDD_Ny = domain_Ny / nSDD_Y
     domain_shortinfo.close()
 
-    Nbc = (domain_Nx + BClayer * 2 + domain_Ny) * 2 * BClayer
-
-    uid_to_SDD_and_coords_bc = [None] * Nbc
-
     # Opening file streams
     file_streams = list()
     BL = list()
     for SDDid in range(nSDD):
         SDDpath = os.path.join(output_dir, 'sdd' + str(SDDid))
-        file_streams.append(open(os.path.join(SDDpath, 'bc.dat'), 'w+'))
         # BL coordinates of SDDs, needed for coord conversion
         sdd_f = open(os.path.join(SDDpath, 'sdd.dat'), 'r')
         line_split = sdd_f.readline().split()
         BL.append((int(line_split[0]), int(line_split[1])))
         sdd_f.close()
+        file_streams.append(open(os.path.join(SDDpath, 'bc.dat'), 'w+'))
 
     bc_f = open(os.path.join(bc_dir, 'bc.dat'), 'r')
     for line in bc_f:
@@ -213,27 +209,58 @@ def split_bc(bc_dir, output_dir):
         # Determine SDD corresponding to eq coords
         x = eqCoordX // SDD_Nx
         y = eqCoordY // SDD_Ny
-
         SDDid = int(x + nSDD_X * y)
 
         # Determine coords on SDD: we use bottom-left coords of SDD
         BL_X = BL[SDDid][0]
         BL_Y = BL[SDDid][1]
 
+        newLine = uid + " " + str(coordX - BL_X) + " " + str(coordY - BL_Y) + " " + BCtype + " " + value + "\n"
         # and add the boundary cell to the corresponding file
-        file_streams[SDDid].write(uid + " " + str(coordX - BL_X) + " " +
-                str(coordY - BL_Y) + " " + BCtype + " " + value + "\n")
+        file_streams[SDDid].write(newLine)
 
-        SDD_and_coords = dict()
-        SDD_and_coords['SDDid'] = SDDid
-        SDD_and_coords['coords'] = (coordX - BL_X, coordY - BL_Y)
-        uid_to_SDD_and_coords_bc[int(uid) - domain_Nx * domain_Ny] = SDD_and_coords
+        # Corners ...
+        cornerX = eqCoordX
+        if BL_X > 0 and eqCoordX - BClayer - BL_X < 0:
+            cornerX = eqCoordX - BClayer
+        elif BL_X + SDD_Nx < domain_Nx and eqCoordX + BClayer - BL_X > 0:
+            cornerX = eqCoordX + BClayer
 
-    for SDDid in range(nSDD):
-        file_streams[SDDid].close()
+        cornerY = eqCoordY
+        if BL_Y > 0 and eqCoordY - BClayer - BL_Y < 0:
+            cornerY = eqCoordY - BClayer
+        elif BL_Y + SDD_Ny < domain_Ny and eqCoordY + BClayer - BL_Y > 0:
+            cornerY = eqCoordY + BClayer
+
+        otherX = cornerX // SDD_Nx
+        otherY = cornerY // SDD_Ny
+        otherSDDid = int(otherX + nSDD_X * otherY)
+
+        '''
+        if coordX == -1 and coordY == 32:
+            print "BL_X: ", BL_X, "BL_Y: ", BL_Y
+            print "coordX: ", coordX, "coordY: ", coordY
+            print "eqCoordX: ", eqCoordX, "eqCoordY: ", eqCoordY
+            print "cornerX: ", cornerX, "cornerY: ", cornerY
+            print "my SDD: ", SDDid
+            print "my other SDD: ", otherSDDid
+        '''
+
+        if otherSDDid != SDDid:
+            # Determine coords on SDD: we use bottom-left coords of SDD
+            otherBL_X = BL[otherSDDid][0]
+            otherBL_Y = BL[otherSDDid][1]
+
+            # and add the boundary cell to the corresponding file
+            newLine = uid + " " + str(coordX - otherBL_X) + " " + str(coordY - otherBL_Y) + " " + BCtype + " " + value + "\n"
+            file_streams[otherSDDid].write(newLine)
+
+    bc_f.close()
+    for i in range(nSDD):
+        file_streams[i].close()
 
     return
-
+'''
 def split_qbc(split_dir, output_dir, quantity_name, uid_to_SDD_and_coords_bc):
     domain_shortinfo = open(os.path.join(output_dir, "domain.dat"), 'r')
     line_split = domain_shortinfo.readline().split()
@@ -267,7 +294,7 @@ def split_qbc(split_dir, output_dir, quantity_name, uid_to_SDD_and_coords_bc):
     qbc_f.close()
     for fs in file_streams:
         fs.close()
-
+'''
 def merge_quantity(split_dir, output_dir, quantity_name):
     domain_shortinfo = open(os.path.join(split_dir, "domain.info"), 'r')
     line_domain = domain_shortinfo.readline()

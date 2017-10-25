@@ -3,6 +3,9 @@
 
 import numpy as np
 from decimal import Decimal
+import sys
+import os
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from script.io import read_quantity
 
 def mass(data, dx, dy):

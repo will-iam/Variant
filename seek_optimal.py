@@ -10,16 +10,15 @@ import script.compiler as compiler
 
 # Get case names from all directories in case/project_name/
 case_name = args.case
-
 engineOptionDict = {
 'project_name': args.project_name,
 'compiler': 'mpi',
-'mode': 'release',
+'mode': 'release' if not args.debug else 'debug',
 'precision': 'double',
 'std': 'c++14',
 'must_compile': not args.nocompile,
 'vtune': args.vtune,
-'gdb' : False,
+'gdb' : args.debug,
 'valgrind' : False
 }
 
@@ -289,9 +288,13 @@ def explore(caseSizeXY):
 #testBattery = strongSDS((256, 256))
 #testBattery = explore((256, 256))
 
-testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (2, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
-testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (4, 4), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
-testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (1, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
+#testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (2, 2), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
+#testBattery = {'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (4, 4), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]}
+testBattery = {
+'n2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (4, 4), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]
+#,'p2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (4, 4), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]
+,'d2dsod128x128' : [{'SDSgeom': 'line', 'nThreads': 1, 'nSDD': (4, 4), 'machine': 'unknown', 'nCoresPerSDD': 1, 'nSDS': 16, 'nRuns': 1}]
+}
 
 totalTestNumber = 0
 for k, tl in testBattery.items():

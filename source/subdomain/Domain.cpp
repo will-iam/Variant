@@ -39,54 +39,9 @@ void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSD
     _nThreads = nThreads;
 }
 
-real Domain::getlx() const {
-
-    return _lx;
-}
-
-real Domain::getly() const {
-
-    return _ly;
-}
-
-unsigned int Domain::getSizeX() const {
-
-    return _Nx;
-}
-
-unsigned int Domain::getSizeY() const {
-
-    return _Ny;
-}
-
-real Domain::getdx() const {
-
-    return _dx;
-}
-
-real Domain::getdy() const {
-
-    return _dx;
-}
-
-unsigned int Domain::getNumberSDD() const {
-
-    return _nSDD;
-}
-
-unsigned int Domain::getNumberSDD_X() const {
-
-    return _nSDD_X;
-}
-
 unsigned int Domain::getNumberNeighbourSDDs() const {
 
     return _sdd->getNumberNeighbourSDDs();
-}
-
-unsigned int Domain::getNumberSDD_Y() const {
-
-    return _nSDD_Y;
 }
 
 unsigned int Domain::getNumberPhysicalCells() const {
@@ -102,21 +57,6 @@ unsigned int Domain::getNumberOverlapCells() const {
 unsigned int Domain::getNumberBoundaryCells() const {
 
     return _sdd->getNumberBoundaryCells();
-}
-
-unsigned int Domain::getNumberSDS() const {
-
-    return _nSDS;
-}
-
-std::string Domain::getSDSGeometry() const {
-
-    return _SDSgeom;
-}
-
-unsigned int Domain::getNumberThreads() const {
-
-    return _nThreads;
 }
 
 std::vector<unsigned int> Domain::getUidList() const {
@@ -142,6 +82,9 @@ void Domain::addCoord(unsigned int uid, std::pair<int, int> coords) {
 }
 
 void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, real value) {
+
+    if (coordsOnSDD.first == 128 && coordsOnSDD.second == -1)
+        std::cout << "ici aussi: " << std::endl;
 
     _SDD_coordsToBC[coordsOnSDD] = std::pair<char, real>(BCtype, value);
 }
@@ -214,46 +157,89 @@ Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
 
     int boundarySide = getBoundarySide(coordsOnDomain);
 
-    switch (boundarySide) {
+    if (boundarySide == INSIDE) {
+        // In case it is an overlap cell
+        // Getting SDDid and coords of "real" cell
+        // corresponding to the coords on domain
 
-        case INSIDE:
-            // In case it is an overlap cell
-            // Getting SDDid and coords of "real" cell
-            // corresponding to the coords on domain
+        // Finding the correct SDD
+        for (unsigned int i = 0; i < _nSDD; i++) {
 
-            // Finding the correct SDD
-            for (unsigned int i = 0; i < _nSDD; i++) {
+            // If coord is in rectangle then it is found
+            std::array<int, 4> BLandSize = _SDD_BLandSize_List.at(i);
+            std::pair<int, int> BL(BLandSize[0], BLandSize[1]);
+            std::pair<int, int> SDDsize(BLandSize[2], BLandSize[3]);
+            if (coordsOnDomain.first >= BL.first &&
+                coordsOnDomain.first < BL.first + SDDsize.first &&
+                coordsOnDomain.second >= BL.second &&
+                coordsOnDomain.second < BL.second + SDDsize.second) {
 
-                // If coord is in rectangle then it is found
-                std::array<int, 4> BLandSize = _SDD_BLandSize_List.at(i);
-                std::pair<int, int> BL(BLandSize[0], BLandSize[1]);
-                std::pair<int, int> SDDsize(BLandSize[2], BLandSize[3]);
-                if (coordsOnDomain.first >= BL.first &&
-                    coordsOnDomain.first < BL.first + SDDsize.first &&
-                    coordsOnDomain.second >= BL.second &&
-                    coordsOnDomain.second < BL.second + SDDsize.second) {
-
-                    std::pair<int, int>
-                    coordsOnCorrectSDD(coordsOnDomain.first - BL.first,
-                                       coordsOnDomain.second - BL.second);
-                    return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
-                }
+                std::pair<int, int>
+                coordsOnCorrectSDD(coordsOnDomain.first - BL.first,
+                                   coordsOnDomain.second - BL.second);
+                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
             }
-            break;
-
-        // If it is on boundary, then we return the boundary side
-        // and the same coords on domain
-        default:
-
-            return std::pair< int, std::pair<int, int> >(boundarySide, coordsOnDomain);
-            break;
+        }
     }
 
-    // If we are here then we could not find the "real" cell,
-    // ie. something went wrong
-    std::cerr << coordsOnDomain.first << "..." << coordsOnDomain.second << std::endl;
-    assert(false);
-    return std::pair< int, std::pair<int, int> >();
+    /*
+    // In case it is boundary AND an overlap cell
+    // Finding the SDD owner
+    for (unsigned int i = 0; i < _nSDD; i++) {
+
+        // If coord is in rectangle then it is found
+        std::array<int, 4> BLandSize = _SDD_BLandSize_List.at(i);
+        std::pair<int, int> BL(BLandSize[0], BLandSize[1]);
+        std::pair<int, int> SDDsize(BLandSize[2], BLandSize[3]);
+        std::pair<int, int> coordsOnCorrectSDD(coordsOnDomain.first - BL.first, coordsOnDomain.second - BL.second);
+
+        // If it's in the x range
+        if (coordsOnDomain.first >= BL.first && coordsOnDomain.first < BL.first + SDDsize.first) {
+            // If it's at the top
+            if (BL.second + SDDsize.second == _Ny && coordsOnDomain.second >= BL.second + SDDsize.second) {
+                std::cerr << "1 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
+                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
+                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
+                exitfail("wrong");
+                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
+            }
+
+            // If it's at the bottom
+            if (BL.second == 0 && coordsOnDomain.second < 0) {
+                std::cerr << "2 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
+                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
+                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
+                exitfail("wrong");
+                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
+            }
+        }
+
+        // If it's in the y range
+        if (coordsOnDomain.second >= BL.second && coordsOnDomain.second < BL.second + SDDsize.second) {
+            // If it's at the right
+            if (BL.first + SDDsize.first == _Nx && coordsOnDomain.first >= BL.first + SDDsize.first) {
+                std::cerr << "3 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
+                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
+                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
+                exitfail("wrong");
+                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
+            }
+
+            // If it's at the left
+            if (BL.first == 0 && coordsOnDomain.first < 0) {
+                std::cerr << "4 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
+                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
+                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
+                exitfail("wrong");
+                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
+            }
+        }
+    } */
+
+
+    // If it is on boundary, then we return the boundary side
+    // and the same coords on domain
+    return std::pair< int, std::pair<int, int> >(boundarySide, coordsOnDomain);
 }
 
 std::pair<int, std::pair<int, int> >
@@ -270,12 +256,13 @@ Domain::getShiftSDDandCoords(std::pair<int, int> coords) const {
 }
 
 std::pair<int, int> Domain::getBLOfSDD(unsigned int SDDid) const {
-
     std::array<int, 4> BLandSize = _SDD_BLandSize_List[SDDid];
     return std::pair<int, int>(BLandSize[0], BLandSize[1]);
 }
 
 std::pair<char, real> Domain::getBoundaryCondition(std::pair<int, int> coordsOnSDD) const {
+    if (_SDD_coordsToBC.find(coordsOnSDD) == _SDD_coordsToBC.end())
+        exitfail("Boundary conditions not found on proc: %", _MPI_rank);
 
     return _SDD_coordsToBC.at(coordsOnSDD);
 }
@@ -287,6 +274,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
     // Init boundary cells of SDD
     std::vector< std::pair<int, int> > boundaryCellList;
     for (unsigned int k = 1; k <= _boundaryThickness; ++k) {
+
         // --------------------------------------------------------
         // Left
         for (unsigned int j = 0; j < _sizeY; j++) {
@@ -544,8 +532,16 @@ void SDDistributed::buildSendMap() {
         }
     }
 
-    if (_recvSendBuffer.size() != _neighbourSDDVector.size())
+    if (_recvSendBuffer.size() != _neighbourSDDVector.size()) {
+        std::cerr << std::endl << "neighbourSDDVector: ";
+        for (auto& v : _neighbourSDDVector)
+            std::cerr << v << " ";
+        std::cerr << std::endl << "recvSendBuffer: ";
+        for (auto& p : _recvSendBuffer)
+            std::cerr << p.first << " ";
+        std::cerr << std::endl;
         exitfail("Buffer does not contain all the neighbours.");
+    }
 
     for (const auto& sddId : _neighbourSDDVector) {
         if (_recvSendBuffer.find(sddId) == _recvSendBuffer.end())

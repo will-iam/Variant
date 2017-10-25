@@ -207,6 +207,9 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
     for (const auto& toSDDid: _neighbourSDDVector) {
         auto& data = _recvSendBuffer[toSDDid];
 
+        //if (_id == 1)
+        //    std::cout << "numberOfCellsToSend: " << data.second.size() << " from 1 to " << toSDDid << std::endl;
+
         // Init recv buffer size
         data.first.resize(data.second.size());
 

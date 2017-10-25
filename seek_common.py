@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
+import __future__
 import argparse
 import sys
 import os
@@ -35,6 +36,7 @@ parser.add_argument("--nocompile", action='store_true', default=False, help = "N
 parser.add_argument("--clean-compile", action='store_true', default=False, help = "Clean SCons compilation file")
 parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
 parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
+parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging tool")
 args = parser.parse_args()
 
 

@@ -29,13 +29,6 @@
 #define TOP -3
 #define BOTTOM -4
 
-// Types of ghost cells : boundary condition type (border of the domain),
-// or overlap (inside the domain)
-#define OVERLAP 0
-#define DIRICHLET 1
-#define PERIODIC 2
-#define NEUMANN 3
-
 // Forward declaration
 class Domain;
 

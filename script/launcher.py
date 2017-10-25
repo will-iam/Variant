@@ -9,6 +9,7 @@ from shutil import copyfile, copytree, rmtree
 from timeit import default_timer as timer
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
+
 import config
 from script.build_case import build_case
 import script.io as io

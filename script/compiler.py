@@ -60,9 +60,9 @@ class Engine:
         cmd = config.mpi_RUN.split(' ')
         if mpi_nprocs > 0:
             if self._gdb:
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
-                    'xterm', '-e', 'gdb', '--args',
-                    self._binary_path, '-i', input_path, '-o', output_path])
+                cmd = [config.mpi_RUN, '-n', str(mpi_nprocs), 'xterm', '-e', 'gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path]
+                print(' '.join(cmd))
+                subprocess.check_call(cmd)
             elif self._valgrind:
                 subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
                     'valgrind', '--leak-check=yes',
