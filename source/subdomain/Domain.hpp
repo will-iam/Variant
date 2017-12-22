@@ -64,7 +64,7 @@ class Domain {
      */
     void setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
             unsigned int nSDS, std::string SDSgeom,
-            unsigned int nThreads);
+            unsigned int nThreads, unsigned int nCommonSDS);
 
     /*!
      * @brief Returns the non-modifiable width of the domain.
@@ -109,11 +109,12 @@ class Domain {
     inline unsigned int getNumberSDS() const { return _nSDS; }
     inline std::string getSDSGeometry() const { return _SDSgeom; }
     inline unsigned int getNumberThreads() const  { return _nThreads; }
+    inline unsigned int getNumberCommonSDS() const  { return _nCommonSDS; }
 
     unsigned int getNumberNeighbourSDDs() const;
     unsigned int getNumberPhysicalCells() const;
     unsigned int getNumberOverlapCells() const;
-    unsigned int getNumberBoundaryCells() const;
+    size_t getNumberBoundaryCells() const;
 
     /*!
      * @brief Returns vector containing unique ids of all cells.
@@ -222,7 +223,7 @@ class Domain {
      * @brief Calls all added equations, ie. computes an iteration of
      * the scheme on the domain.
      */
-    void execEquation(std::string eqName);
+    void execEquation(const std::string& eqName);
 
     /*!
      * @brief updates overlap cells of all SDDs according to their
@@ -231,24 +232,8 @@ class Domain {
      * @param quantityName name of quantity to update
      */
     void updateOverlapCells();
-    void updateOverlapCells(std::string qtyName);
-    /*!
-     * @brief updates boundary of all SDDs according to their
-     * values on reference cells on other SDDs, for a given quantity.
-     *
-     * /!\ This has to be called AFTER updating overlap cells, since boundary        // Updating umax for computation of the next dt
-        _umax = std::max(_umax, std::abs(ux.get(0, i, j)));
-        _umax = std::max(_umax, std::abs(uy.get(0, i, j)));
+    void updateOverlapCells(const std::string& qtyName);
 
-     * cells may be updated with values on overlap cells.
-     * The boolean parameter is optional and can be used for some physical
-     * quantities that require the Neumann boundary condition to be opposite.
-     *
-     * @param quantityName name of quantity to update
-     * @param changeNeumannToOpposite if true, this changes the value into its
-     * opposite on cells that have Neumann BC.
-     */
-    void updateBoundaryCells(std::string quantityName, bool changeNeumannToOpposite = false);
 
     /*! @brief Returns non-modifiable id of SDD and coordinates on SDD of cell
      * given by its coordinates on the domain.
@@ -334,6 +319,7 @@ class Domain {
     unsigned int _nSDS = 0;
     std::string _SDSgeom;
     unsigned int _nThreads = 0;
+    unsigned int _nCommonSDS = 0;
 
     // MPI Variables
     int _MPI_rank;

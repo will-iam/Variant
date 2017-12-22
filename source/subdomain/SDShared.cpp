@@ -1,22 +1,5 @@
 #include "SDShared.hpp"
 
-SDShared::SDShared(unsigned int bottomLeft_X, unsigned int bottomLeft_Y,
-                   unsigned int sizeX, unsigned int sizeY,
-                   const CoordConverter& coordConverter,
-                   unsigned int id):
-    std::vector< std::pair<int, int> >(),
-    _coordConverter(coordConverter),
-    _id(id)
-{
-    reserve(sizeX * sizeY);
-    // Building coordinates contained by SDS
-    for (unsigned int i = 0; i < sizeX; i++) {
-        for (unsigned int j = 0; j < sizeY; j++) {
-            push_back(std::pair<int, int>(bottomLeft_X + i, bottomLeft_Y + j));
-        }
-    }
-}
-
 SDShared::SDShared(const std::vector< std::pair<int, int> >& coords,
         const CoordConverter& coordConverter,
         unsigned int index):
@@ -25,18 +8,53 @@ SDShared::SDShared(const std::vector< std::pair<int, int> >& coords,
     _id(index) {
 }
 
-unsigned int SDShared::getMemIndex(int i, int j) const {
-
-    return _coordConverter.convert(i, j);
-}
-
-unsigned int SDShared::getId() const {
-
-    return _id;
-}
-
 void SDShared::execEquation(eqType& eqFunc,
         const std::map< std::string, Quantity<real>* >& quantityMap) {
 
     eqFunc(*this, quantityMap);
+}
+
+void SDShared::addDirichletCell(std::pair < std::pair<int, int>, real > d) {
+    _dirichletCellMap[d.first] = d.second;
+}
+
+void SDShared::addNeumannCell(std::pair< std::pair<int, int>, std::pair<int, int> > n) {
+    _neumannCellMap[n.first] = n.second;
+}
+
+void SDShared::updateBoundaryCells(Quantity<real>* quantity, bool changeNeumannToOpposite) const {
+
+    updateDirichletCells(quantity);
+    updateNeumannCells(quantity, changeNeumannToOpposite);
+}
+
+void SDShared::updateDirichletCells(Quantity<real>* quantity) const {
+
+    if (_dirichletCellMap.empty())
+        return;
+
+    for (auto it = _dirichletCellMap.begin(); it != _dirichletCellMap.end(); ++it) {
+        const auto coords = it->first;
+        quantity->set(it->second, 0, coords.first, coords.second);
+    }
+}
+
+void SDShared::updateNeumannCells(Quantity<real>* quantity, bool changeToOpposite) const {
+
+    if (_neumannCellMap.empty())
+        return;
+
+    if (changeToOpposite) {
+        for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
+            const auto& coords = it->first;
+            const auto& targetCoords = it->second;
+            quantity->set(-quantity->get(0, targetCoords.first, targetCoords.second), 0, coords.first, coords.second);
+        }
+    } else {
+        for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
+            const auto& coords = it->first;
+            const auto& targetCoords = it->second;
+            quantity->set(quantity->get(0, targetCoords.first, targetCoords.second), 0, coords.first, coords.second);
+        }
+   }
 }

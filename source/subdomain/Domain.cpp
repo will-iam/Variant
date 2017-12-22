@@ -29,7 +29,7 @@ void Domain::initRect(real lx, real ly,
 
 void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSDD_Y,
         unsigned int nSDS, std::string SDSgeom,
-        unsigned int nThreads) {
+        unsigned int nThreads, unsigned int nCommonSDS) {
 
     _nSDD = nSDD;
     _nSDD_X = nSDD_X;
@@ -37,6 +37,7 @@ void Domain::setOptions(unsigned int nSDD, unsigned int nSDD_X, unsigned int nSD
     _nSDS = nSDS;
     _SDSgeom = SDSgeom;
     _nThreads = nThreads;
+    _nCommonSDS = nCommonSDS;
 }
 
 unsigned int Domain::getNumberNeighbourSDDs() const {
@@ -54,7 +55,7 @@ unsigned int Domain::getNumberOverlapCells() const {
     return _sdd->getNumberOverlapCells();
 }
 
-unsigned int Domain::getNumberBoundaryCells() const {
+size_t Domain::getNumberBoundaryCells() const {
 
     return _sdd->getNumberBoundaryCells();
 }
@@ -82,9 +83,6 @@ void Domain::addCoord(unsigned int uid, std::pair<int, int> coords) {
 }
 
 void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, real value) {
-
-    if (coordsOnSDD.first == 128 && coordsOnSDD.second == -1)
-        std::cout << "ici aussi: " << std::endl;
 
     _SDD_coordsToBC[coordsOnSDD] = std::pair<char, real>(BCtype, value);
 }
@@ -128,12 +126,18 @@ void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundar
 
 void Domain::buildBoundaryMap() {
 
-    _sdd->buildRecvMap(*this);
+    std::map< std::pair<int, int>, real > dirichletCellMap;
+    std::map< std::pair<int, int>, std::pair<int, int> > neumannCellMap;
+
+    _sdd->buildRecvMap(*this, dirichletCellMap, neumannCellMap);
     MPI_Barrier(MPI_COMM_WORLD);
     _sdd->buildSendMap();
+
+    // Once we have the boundary cells, dispatch them among the SDS available.
+    _sdd->dispatchBoundaryCell(dirichletCellMap, neumannCellMap);
 }
 
-void Domain::execEquation(std::string eqName) {
+void Domain::execEquation(const std::string& eqName) {
 
     _sdd->execEquation(eqName);
 }
@@ -182,61 +186,6 @@ Domain::getSDDandCoords(std::pair<int, int> coordsOnDomain) const {
         }
     }
 
-    /*
-    // In case it is boundary AND an overlap cell
-    // Finding the SDD owner
-    for (unsigned int i = 0; i < _nSDD; i++) {
-
-        // If coord is in rectangle then it is found
-        std::array<int, 4> BLandSize = _SDD_BLandSize_List.at(i);
-        std::pair<int, int> BL(BLandSize[0], BLandSize[1]);
-        std::pair<int, int> SDDsize(BLandSize[2], BLandSize[3]);
-        std::pair<int, int> coordsOnCorrectSDD(coordsOnDomain.first - BL.first, coordsOnDomain.second - BL.second);
-
-        // If it's in the x range
-        if (coordsOnDomain.first >= BL.first && coordsOnDomain.first < BL.first + SDDsize.first) {
-            // If it's at the top
-            if (BL.second + SDDsize.second == _Ny && coordsOnDomain.second >= BL.second + SDDsize.second) {
-                std::cerr << "1 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
-                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
-                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
-                exitfail("wrong");
-                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
-            }
-
-            // If it's at the bottom
-            if (BL.second == 0 && coordsOnDomain.second < 0) {
-                std::cerr << "2 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
-                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
-                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
-                exitfail("wrong");
-                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
-            }
-        }
-
-        // If it's in the y range
-        if (coordsOnDomain.second >= BL.second && coordsOnDomain.second < BL.second + SDDsize.second) {
-            // If it's at the right
-            if (BL.first + SDDsize.first == _Nx && coordsOnDomain.first >= BL.first + SDDsize.first) {
-                std::cerr << "3 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
-                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
-                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
-                exitfail("wrong");
-                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
-            }
-
-            // If it's at the left
-            if (BL.first == 0 && coordsOnDomain.first < 0) {
-                std::cerr << "4 - x: " << coordsOnDomain.first << ", y: " << coordsOnDomain.second << std::endl;
-                std::cerr << "BL.first: " << BL.first << ", SDDsize.first: " << SDDsize.first << std::endl;
-                std::cerr << "BL.second: " << BL.second << ", SDDsize.second: " << SDDsize.second << std::endl;
-                exitfail("wrong");
-                return std::pair< int, std::pair<int, int> >(i, coordsOnCorrectSDD);
-            }
-        }
-    } */
-
-
     // If it is on boundary, then we return the boundary side
     // and the same coords on domain
     return std::pair< int, std::pair<int, int> >(boundarySide, coordsOnDomain);
@@ -252,7 +201,6 @@ Domain::getShiftSDDandCoords(std::pair<int, int> coords) const {
     std::pair<int, int> coordsOnDomain(coords.first + _SDD_BL_X, coords.second + _SDD_BL_Y);
 
     return getSDDandCoords(coordsOnDomain);
-
 }
 
 std::pair<int, int> Domain::getBLOfSDD(unsigned int SDDid) const {
@@ -269,7 +217,9 @@ std::pair<char, real> Domain::getBoundaryCondition(std::pair<int, int> coordsOnS
 
 // Because it needs a method from the class Domain, we
 // define this function from SDDistributed here
-void SDDistributed::buildRecvMap(const Domain& domain) {
+void SDDistributed::buildRecvMap(const Domain& domain,
+        std::map< std::pair<int, int>, real >& dirichletCellMap,
+        std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap) {
 
     // Init boundary cells of SDD
     std::vector< std::pair<int, int> > boundaryCellList;
@@ -322,8 +272,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
 
     // Now mapping all cells to SDD and corresponding
     // coords on SDD, or to boundary
-    for (std::vector< std::pair<int, int> >::iterator it = boundaryCellList.begin();
-            it != boundaryCellList.end(); ++it) {
+    for (std::vector< std::pair<int, int> >::iterator it = boundaryCellList.begin(); it != boundaryCellList.end(); ++it) {
 
         // For each boundary cell we check its type : either a
         // boundary cell of the domain, or an overlap cell
@@ -335,7 +284,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
 
             _MPIRecv_map[*it] = SDDandCoords;
             // Adding the SDD to the list of neighbours
-            if (find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
+            if (_nSDD > 1 && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
                 _neighbourSDDVector.push_back(SDDandCoords.first);
         }
 
@@ -344,19 +293,19 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
 
             // In this case SDDandCoords.second is the coords
             // of the cell on the domain
-            int boundarySide = SDDandCoords.first;
+
             std::pair<int, int> coordsOnDomain = SDDandCoords.second;
             std::pair<char, double> bc = domain.getBoundaryCondition(*it);
 
             if (bc.first == 'D') {
                 // Dirichlet BC
-                _dirichletCellMap[*it] = bc.second;
+                dirichletCellMap[*it] = bc.second;
             }
 
             else if (bc.first == 'N') {
-
                 // This is a little more complicated since
                 // it depends on the boundary side and coordinates
+                int boundarySide = SDDandCoords.first;
                 std::pair<int, int> targetCell(coordsOnDomain);
                 switch (boundarySide) {
                     case LEFT:
@@ -391,7 +340,7 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
                 coordsOfTargetCell.second = targetCell.second - thisSDDBL.second;
 
                 // Finally add target cell as neumann cell
-                _neumannCellMap[*it] = coordsOfTargetCell;
+                neumannCellMap[*it] = coordsOfTargetCell;
             }
 
             else if (bc.first == 'P') {
@@ -399,27 +348,18 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
                 // cells with periodic BC are actually the same
                 // as overlap cells targetted to the other side !
                 std::pair<int, int> targetCell(coordsOnDomain);
-                switch (boundarySide) {
+                if (targetCell.first < 0) {
+                    targetCell.first += domain.getSizeX();
+                }
+                else if (targetCell.first >= (int)(domain.getSizeX())) {
+                    targetCell.first -= domain.getSizeX();
+                }
 
-                    case LEFT:
-                        targetCell.first += domain.getSizeX();
-                        break;
-
-                    case BOTTOM:
-                        targetCell.second += domain.getSizeY();
-                        break;
-
-                    case RIGHT:
-                        targetCell.first -= domain.getSizeX();
-                        break;
-
-                    case TOP:
-                        targetCell.second -= domain.getSizeY();
-                        break;
-
-                    default:
-                        assert(false);
-                        break;
+                if (targetCell.second < 0) {
+                    targetCell.second += domain.getSizeY();
+                }
+                else if (targetCell.second >= (int)(domain.getSizeY())) {
+                    targetCell.second -= domain.getSizeY();
                 }
 
                 // Determine SDD and coords on SDD of target cell
@@ -429,6 +369,12 @@ void SDDistributed::buildRecvMap(const Domain& domain) {
                 // If target cell still is on the boudary, then we ignore it
                 if (SDDandCoordsOfTargetCell.first >= 0) {
                     _MPIRecv_map[*it] = SDDandCoordsOfTargetCell;
+                    //std::cerr <<  "coordsOnDomain.first: " << coordsOnDomain.first << ", coordsOnDomain.second: " << coordsOnDomain.second << std::endl;
+                    //std::cerr <<  "targetCell.first: " << targetCell.first << ", targetCell.second: " << targetCell.second << std::endl;
+                    //std::cerr <<  "SDDandCoordsOfTargetCell.first: " << SDDandCoordsOfTargetCell.first << std::endl;
+                    // Adding the SDD to the list of neighbours
+                    if (_nSDD > 1 && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoordsOfTargetCell.first) == _neighbourSDDVector.end())
+                        _neighbourSDDVector.push_back(SDDandCoordsOfTargetCell.first);
                 }
             }
 
@@ -564,14 +510,7 @@ unsigned int Domain::getUid(std::pair<int, int> coordsOnDomain) const {
     return _coordsToUid.at(coordsOnDomain);
 }
 
-void Domain::updateBoundaryCells(std::string quantityName,
-        bool changeNeumannToOpposite) {
-
-    _sdd->updateDirichletCells(quantityName);
-    _sdd->updateNeumannCells(quantityName, changeNeumannToOpposite);
-}
-
-void Domain::updateOverlapCells(std::string qtyName) {
+void Domain::updateOverlapCells(const std::string& qtyName) {
     _sdd->updateOverlapCells(std::vector<std::string>(1, qtyName));
 }
 
@@ -594,7 +533,7 @@ void Domain::printState(std::string quantityName) {
 
 void Domain::buildThreads() {
 
-    _sdd->initThreadPool(_nThreads);
+    _sdd->initThreadPool(_nThreads, _nCommonSDS);
 }
 
 void Domain::setSDDInfo(unsigned int BL_X, unsigned int BL_Y,

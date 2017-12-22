@@ -8,6 +8,7 @@ import argparse
 
 import script.build_case as build_case
 import script.sdd as sdd
+from script.launcher import get_case_path
 
 parser = argparse.ArgumentParser(description="Build and Split case", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
@@ -24,23 +25,28 @@ case_name = args.c
 #nSDD = [(1,1),(2, 2),(4, 4)]
 #nSDD = [(1,1),(2, 2)]
 
-SDD_powersOfTwo = [0, 1, 2, 3, 4, 5, 6]
+SDD_powersOfTwo = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
 nSDD = []
 for p in SDD_powersOfTwo:
     # Different SDD splits
-    for i in range(p+1):
-		nSDD.append((2**i, 2**(p-i)))
+    for i in range(int(p//2 + 1)):
+        nSDD.append((2**i, 2**(p-i)))
+
+nSDD = [(1, 1), (8, 8), (4,16), (5, 25) ,(10, 25)]
 
 this_path = os.path.split(os.path.abspath(__file__))[0]
 
 # Get case names from all directories in case/project_name/
-project_path = os.path.join("cases", project_name)
-case_path = os.path.join(project_path, case_name)
-full_domain_path, qty_name_list = build_case.build_case(this_path, project_path, project_name, case_name)
+case_path = get_case_path(project_name, case_name)
+init_path = os.path.join(case_path, "init")
+
+# Build case
+qty_name_list = build_case.build_case(case_path, init_path)
 
 for (nSDD_X, nSDD_Y) in nSDD:
 	print("Splitting into " + str((nSDD_X, nSDD_Y)))
-	sdd.split_case(full_domain_path, nSDD_X, nSDD_Y, qty_name_list)
+	sdd.split_case(init_path, nSDD_X, nSDD_Y, qty_name_list)
 
 
 

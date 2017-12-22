@@ -56,11 +56,11 @@ class Engine:
             cwd = os.path.join(config.workspace, 'source'))
         p.wait()
 
-    def run(self, input_path, output_path, mpi_nprocs = 0, ncores = 1):
+    def run(self, input_path, output_path, nnodes =1, mpi_nprocs = 0, ncores = 1, run_option = []):
         cmd = config.mpi_RUN.split(' ')
         if mpi_nprocs > 0:
             if self._gdb:
-                cmd = [config.mpi_RUN, '-n', str(mpi_nprocs), 'xterm', '-e', 'gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path]
+                cmd = [config.mpi_RUN, '-n', str(mpi_nprocs), 'xterm', '-e', 'gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path] + run_option
                 print(' '.join(cmd))
                 subprocess.check_call(cmd)
             elif self._valgrind:
@@ -74,7 +74,7 @@ class Engine:
                 #vcmd = ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
                 #vcmd = ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
                 #vcmd = ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
-                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores)] + vcmd + [self._binary_path, '-i', input_path, '-o', output_path]
+                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores)] + vcmd + [self._binary_path, '-i', input_path, '-o', output_path] + run_option
                 print(' '.join(cmd))
                 subprocess.check_call(cmd)
             else:
@@ -82,8 +82,7 @@ class Engine:
                 # to add environment variable visible in this process + all children:
                 os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
                 '''
-                #cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path]
-                cmd = cmd + ['-n', str(mpi_nprocs), self._binary_path, '-i', input_path, '-o', output_path]
+                cmd = cmd + ['-n', str(mpi_nprocs), self._binary_path, '-i', input_path, '-o', output_path] + run_option
                 print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:

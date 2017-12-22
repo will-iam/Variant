@@ -161,7 +161,7 @@ def chargeEstimate(data, resource):
         if point not in machinePointTimeDict[machine].keys():
             machinePointTimeDict[machine][point] = []
 
-        a = np.log(element["maxComputeSum"])
+        a = np.log(element["minComputeSum"])
         allTime.append(a)
         timeByPointDict[point].append(a)
         pointMachineTimeDict[point][machine].append(a)
@@ -183,6 +183,7 @@ def chargeEstimate(data, resource):
             meanTc, stdTc = stats.norm.fit(timeList)
             expectTimeDict[point][machine] = (meanTc, stdTc, len(timeList))
             ktOut = stats.kstest(sample, 'norm', args=(meanTc, stdTc))
+
             print('\n\tkstest output for the Normal distribution')
             print('\tD = ' + str(ktOut[0]))
             print('\tP-value = ' + str(ktOut[1]))
@@ -225,15 +226,17 @@ def chargeEstimate(data, resource):
             print('\tD = ' + str(ktOut[0]))
             print('\tP-value = ' + str(ktOut[1]))
 
-
+            '''
+            '''
             # Trace l'histogramme
             fig = plt.figure(0, figsize=(9, 6))
             ax = fig.add_subplot(111)
             ax.hist(sample, bins=25, alpha=0.3, color='k', normed= True)
-            x = np.linspace(np.min(sample)*0.996, np.max(sample)*1.004, 500)
+            x = np.linspace(np.min(sample) - 2. * stdTc, np.max(sample) + 2. * stdTc, 100)
             normal_dist = stats.norm(meanTc, stdTc)
             normal_pdf = normal_dist.pdf(x)
             ax.plot(x, normal_pdf, 'k--', label="%s with %s point(s)" % (machine, len(timeList)))
+            plt.title('log(Time) on point: %sx%sx%s' % (point[0], point[1], point[2]))
             plt.legend()
             plt.show()
             '''
@@ -243,11 +246,12 @@ def chargeEstimate(data, resource):
         fig = plt.figure(0, figsize=(9, 6))
         ax = fig.add_subplot(111)
         ax.hist(timeByPointDict[point], bins=25, alpha=0.3, normed= True)
-        x = np.linspace(np.min(timeByPointDict[point])*0.996, np.max(timeByPointDict[point])*1.004, 500)
+        x = np.linspace(np.min(timeByPointDict[point]), np.max(timeByPointDict[point]), 100)
         for machine, normal in expectTimeDict[point].items():
             normal_dist = stats.norm(normal[0], normal[1])
             normal_pdf = normal_dist.pdf(x)
             ax.plot(x, normal_pdf, '--', label="%s with %s point(s)" % (machine, normal[2]))
+        plt.title('log(Time) on point: %sx%sx%s' % (point[0], point[1], point[2]))
         plt.legend()
         plt.show()
         '''
@@ -262,24 +266,24 @@ def chargeEstimate(data, resource):
             print("\t%s %s" % (machine, t))
         print("\tmean of expectation(s) = %s" % (np.mean([np.exp(v[0]) for v in machineExpectDict.values()])))
 
-    mean = np.mean(allExpectTime)
-    print("Mean of all expectation values: ", mean)
+    print("Mean of all expectation values: ", np.mean(allExpectTime))
 
-    '''
     # Normal of all points.
     sample = np.array(allTime)
     meanTc, stdTc = stats.norm.fit(sample)
     fig = plt.figure(0, figsize=(9, 6))
     ax = fig.add_subplot(111)
-    ax.hist(sample, bins=100, alpha=0.3, normed= True)
-    x = np.linspace(meanTc - 2*stdTc, meanTc + 2*stdTc, 500)
+    binNumber = int(1. + 10./3.*np.log(len(sample)))
+    ax.hist(sample, bins=binNumber, alpha=0.3, normed= True)
+    x = np.linspace(meanTc - 2*stdTc, meanTc + 2*stdTc, 150)
     normal_dist = stats.norm(meanTc, stdTc)
     normal_pdf = normal_dist.pdf(x)
     ax.plot(x, normal_pdf, 'r--', label="full sample %s point(s)" % (len(allTime)))
     plt.legend()
     plt.show()
+
     print "Expectations of points all together:", np.exp(meanTc)
-    '''
+
     return np.exp(meanTc) * resource
 
 
@@ -298,7 +302,7 @@ def greeksEstimate(data, resource):
 
             coord = p['point']
             if coord[0] * coord[1] * coord[2] != resource:
-                print("Erreur dans la récupération des données")
+                print("greeksEstimate: erreur dans la récupération des données.")
                 sys.exit(1)
 
             if coord[0] == 1 and coord[1] == 1:
@@ -404,10 +408,7 @@ def greeksEstimate(data, resource):
 
     ### fig ###
     fig = plt.figure(0, figsize=(9, 6))
-
     boxDist = {}
-
-
     # Trace la courbe en fonction de i
     ax = fig.add_subplot(111)
     #ax = fig.add_subplot(211)
@@ -444,7 +445,7 @@ def greeksEstimate(data, resource):
         #y = [np.exp(Best[0]) * np.power(h, Best[1] + Best[2]) * np.power(i / h, Best[2]) for i in x]
         #ax.plot(x, y, "-", label="total neighbour: " + str(h))
 
-    #ax.boxplot(boxDist.values(), positions=boxDist.keys())
+    ax.boxplot(boxDist.values(), positions=boxDist.keys())
 
     plt.xlabel('max interface size')
     plt.legend()
@@ -533,7 +534,7 @@ def greeksEstimate(data, resource):
 
 # Définition du cas d'étude
 filterDict = {'nSizeX' : 512, 'nSizeY' : 512}
-resource = 8
+resource = 64
 data = parser.getData(filterDict)
 if not len(data):
     print("Aucune données.")

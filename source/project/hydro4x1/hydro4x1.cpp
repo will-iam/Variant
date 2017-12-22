@@ -74,7 +74,7 @@ int Hydro4x1::init() {
             int i = coords.first;
             int j = coords.second;
 
-            if (rho.get(0, i, j) != 0) {
+            if (rho.get(0, i, j) != 0.) {
                 _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
                 _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
             }
@@ -88,6 +88,8 @@ int Hydro4x1::init() {
     _domain->addEquation("source", std::bind(&Hydro4x1::source, this,
                                    std::placeholders::_1, std::placeholders::_2));
 
+    _domain->addEquation("updateBoundary", std::bind(&Hydro4x1::updateBoundary, this,
+                                   std::placeholders::_1, std::placeholders::_2));
     return 0;
 }
 
@@ -112,8 +114,6 @@ int Hydro4x1::start() {
         _timerComputation.begin();
 
         ++_nIterations;
-        std::fill(_SDS_uxmax.begin(), _SDS_uxmax.end(), 0);
-        std::fill(_SDS_uymax.begin(), _SDS_uymax.end(), 0);
 
         // Compute next dt
         computeDT();
@@ -124,12 +124,9 @@ int Hydro4x1::start() {
    	    _timerComputation.begin();
 
         // update BoundaryCells
-        _domain->updateBoundaryCells("rho");
-        _domain->updateBoundaryCells("rhou_x", true);
-        _domain->updateBoundaryCells("rhou_y", true);
-        _domain->updateBoundaryCells("rhoe");
+        _domain->execEquation("updateBoundary");
 
-        // Start works and wait for ending
+        // Start works on this equation
         _domain->execEquation("advection");
         _domain->switchQuantityPrevNext("rho");
         _domain->switchQuantityPrevNext("rhou_x");
@@ -142,11 +139,9 @@ int Hydro4x1::start() {
    	    _timerComputation.begin();
 
         // update BoundaryCells
-        _domain->updateBoundaryCells("rho");
-        _domain->updateBoundaryCells("rhou_x", true);
-        _domain->updateBoundaryCells("rhou_y", true);
-        _domain->updateBoundaryCells("rhoe");
+        _domain->execEquation("updateBoundary");
 
+        // Start works on this equation
         _domain->execEquation("source");
         _domain->switchQuantityPrevNext("rhou_x");
         _domain->switchQuantityPrevNext("rhou_y");
@@ -185,82 +180,84 @@ void Hydro4x1::advection(const SDShared& sds, const std::map< std::string, Quant
     Quantity<real>& rhou_y = *quantityMap.at("rhou_y");
     Quantity<real>& rhoe = *quantityMap.at("rhoe");
 
-    for (auto coords: sds) {
+    for (const auto& coords: sds) {
 
-        int i = coords.first;
-        int j = coords.second;
+        const int i = coords.first;
+        const int j = coords.second;
+        
+        // Get values from quantity.
+        unsigned int k_bottom = sds.convert(i, j - 1);
+        unsigned int k_top = sds.convert(i, j + 1);
+        unsigned int k_center = sds.convert(i, j);
+        unsigned int k_left(k_center - 1);
+        unsigned int k_right(k_center + 1);
+
+        real rho_left = rho.get0(k_left);
+        real rho_center = rho.get0(k_center);
+        real rho_right = rho.get0(k_right);
+        real rho_top = rho.get0(k_top);
+        real rho_bottom = rho.get0(k_bottom);
+
+        real rhou_x_left = rhou_x.get0(k_left);
+        real rhou_x_center = rhou_x.get0(k_center);
+        real rhou_x_right = rhou_x.get0(k_right);
+        real rhou_x_top = rhou_x.get0(k_top);
+        real rhou_x_bottom = rhou_x.get0(k_bottom);
+
+        real rhou_y_left = rhou_y.get0(k_left);
+        real rhou_y_center = rhou_y.get0(k_center);
+        real rhou_y_right = rhou_y.get0(k_right);
+        real rhou_y_top = rhou_y.get0(k_top);
+        real rhou_y_bottom = rhou_y.get0(k_bottom);
+
+        real rhoe_left = rhoe.get0(k_left);
+        real rhoe_center = rhoe.get0(k_center);
+        real rhoe_right = rhoe.get0(k_right);
+        real rhoe_top = rhoe.get0(k_top);
+        real rhoe_bottom = rhoe.get0(k_bottom);
 
         // Computing velocity on nodes
-        real uxCellLeft = (rho.get(0, i - 1, j) == 0) ? 0 :
-            rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
-        real uxCellCenter = (rho.get(0, i, j) == 0) ? 0 :
-            rhou_x.get(0, i, j) / rho.get(0, i, j);
-        real uxCellRight = (rho.get(0, i + 1, j) == 0) ? 0 :
-            rhou_x.get(0, i + 1, j) / rho.get(0, i + 1, j);
+        real uxCellLeft = (rho_left == 0.) ? 0. : rhou_x_left / rho_left;
+        real uxCellCenter = (rho_center == 0.) ? 0. : rhou_x_center / rho_center;
+        real uxCellRight = (rho_right == 0.) ? 0. : rhou_x_right / rho_right;
         real uLeft = 0.5 * (uxCellLeft + uxCellCenter);
         real uRight = 0.5 * (uxCellRight + uxCellCenter);
 
-        real uyCellBottom = (rho.get(0, i, j - 1) == 0) ? 0 :
-            rhou_y.get(0, i , j - 1) / rho.get(0, i, j - 1);
-        real uyCellCenter = (rho.get(0, i, j) == 0) ? 0 :
-            rhou_y.get(0, i, j) / rho.get(0, i, j);
-        real uyCellTop = (rho.get(0, i, j + 1) == 0) ? 0 :
-            rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
+        real uyCellBottom = (rho_bottom == 0.) ? 0. : rhou_y_bottom / rho_bottom;
+        real uyCellCenter = (rho_center == 0.) ? 0. : rhou_y_center / rho_center;
+        real uyCellTop = (rho_top == 0.) ? 0. : rhou_y_top / rho_top;
         real uBottom = 0.5 * (uyCellBottom + uyCellCenter);
         real uTop = 0.5 * (uyCellTop + uyCellCenter);
 
         // Computing fluxes for all three quantities
-        real rho_fluxLeft = uLeft * ((uLeft > 0) ? rho.get(0, i - 1, j)
-                : rho.get(0, i, j));
-        real rho_fluxRight = uRight * ((uRight < 0) ? rho.get(0, i + 1, j)
-                : rho.get(0, i, j));
-        real rho_fluxBottom = uBottom * ((uBottom > 0) ? rho.get(0, i, j - 1) :
-                rho.get(0, i, j));
-        real rho_fluxTop = uTop * ((uTop < 0) ? rho.get(0, i, j + 1) :
-                rho.get(0, i, j));
+        real rho_fluxLeft = uLeft * ((uLeft > 0.) ? rho_left : rho_center);
+        real rho_fluxRight = uRight * ((uRight < 0.) ? rho_right : rho_center);
+        real rho_fluxBottom = uBottom * ((uBottom > 0.) ? rho_bottom : rho_center);
+        real rho_fluxTop = uTop * ((uTop < 0.) ? rho_top : rho_center);
 
-        real rhou_x_fluxLeft = uLeft * ((uLeft > 0) ? rhou_x.get(0, i - 1, j)
-                : rhou_x.get(0, i, j));
-        real rhou_x_fluxRight = uRight * ((uRight < 0) ? rhou_x.get(0, i + 1, j)
-                : rhou_x.get(0, i, j));
-        real rhou_x_fluxBottom = uBottom * ((uBottom > 0) ? rhou_x.get(0, i, j - 1) :
-                rhou_x.get(0, i, j));
-        real rhou_x_fluxTop = uTop * ((uTop < 0) ? rhou_x.get(0, i, j + 1) :
-                rhou_x.get(0, i, j));
+        real rhou_x_fluxLeft = uLeft * ((uLeft > 0.) ? rhou_x_left : rhou_x_center);
+        real rhou_x_fluxRight = uRight * ((uRight < 0.) ? rhou_x_right : rhou_x_center);
+        real rhou_x_fluxBottom = uBottom * ((uBottom > 0.) ? rhou_x_bottom : rhou_x_center);
+        real rhou_x_fluxTop = uTop * ((uTop < 0.) ? rhou_x_top : rhou_x_center);
 
-        real rhou_y_fluxLeft = uLeft * ((uLeft > 0) ? rhou_y.get(0, i - 1, j)
-                : rhou_y.get(0, i, j));
-        real rhou_y_fluxRight = uRight * ((uRight < 0) ? rhou_y.get(0, i + 1, j)
-                : rhou_y.get(0, i, j));
-        real rhou_y_fluxBottom = uBottom * ((uBottom > 0) ? rhou_y.get(0, i, j - 1) :
-                rhou_y.get(0, i, j));
-        real rhou_y_fluxTop = uTop * ((uTop < 0) ? rhou_y.get(0, i, j + 1) :
-                rhou_y.get(0, i, j));
+        real rhou_y_fluxLeft = uLeft * ((uLeft > 0.) ? rhou_y_left : rhou_y_center);
+        real rhou_y_fluxRight = uRight * ((uRight < 0.) ? rhou_y_right : rhou_y_center);
+        real rhou_y_fluxBottom = uBottom * ((uBottom > 0.) ? rhou_y_bottom : rhou_y_center);
+        real rhou_y_fluxTop = uTop * ((uTop < 0.) ? rhou_y_top : rhou_y_center);
 
-        real rhoe_fluxLeft = uLeft * ((uLeft > 0) ? rhoe.get(0, i - 1, j)
-                : rhoe.get(0, i, j));
-        real rhoe_fluxRight = uRight * ((uRight < 0) ? rhoe.get(0, i + 1, j)
-                : rhoe.get(0, i, j));
-        real rhoe_fluxBottom = uBottom * ((uBottom > 0) ? rhoe.get(0, i, j - 1) :
-                rhoe.get(0, i, j));
-        real rhoe_fluxTop = uTop * ((uTop < 0) ? rhoe.get(0, i, j + 1) :
-                rhoe.get(0, i, j));
+        real rhoe_fluxLeft = uLeft * ((uLeft > 0.) ? rhoe_left : rhoe_center);
+        real rhoe_fluxRight = uRight * ((uRight < 0.) ? rhoe_right : rhoe_center);
+        real rhoe_fluxBottom = uBottom * ((uBottom > 0.) ? rhoe_bottom : rhoe_center);
+        real rhoe_fluxTop = uTop * ((uTop < 0.) ? rhoe_top : rhoe_center);
 
-        //std::cout << "Flux differences " << rho_fluxRight - rho_fluxLeft << " ; " << rho_fluxTop - rho_fluxBottom << std::endl;
-        //std::cout << "Speeds on centers " << uxCellCenter << " " << uyCellCenter << std::endl;
+        // std::cout << "Flux differences " << rho_fluxRight - rho_fluxLeft << " ; " << rho_fluxTop - rho_fluxBottom << std::endl;
+        // std::cout << "Speeds on centers " << uxCellCenter << " " << uyCellCenter << std::endl;
 
-        rho.set(rho.get(0, i, j)
-                - _dt * ((rho_fluxRight - rho_fluxLeft) / _dx + (rho_fluxTop - rho_fluxBottom) / _dy),
-                1, i, j);
-        rhou_x.set(rhou_x.get(0, i, j)
-                - _dt * ((rhou_x_fluxRight - rhou_x_fluxLeft) / _dx + (rhou_x_fluxTop - rhou_x_fluxBottom) / _dy),
-                1, i, j);
-        rhou_y.set(rhou_y.get(0, i, j)
-                - _dt * ((rhou_y_fluxRight - rhou_y_fluxLeft) / _dx + (rhou_y_fluxTop - rhou_y_fluxBottom) / _dy),
-                1, i, j);
-        rhoe.set(rhoe.get(0, i, j)
-                - _dt * ((rhoe_fluxRight - rhoe_fluxLeft) / _dx + (rhoe_fluxTop - rhoe_fluxBottom) / _dy),
-                1, i, j);
+        rho.set1(rho_center - _dt * ((rho_fluxRight - rho_fluxLeft) / _dx + (rho_fluxTop - rho_fluxBottom) / _dy), k_center);
+        rhou_x.set1(rhou_x_center - _dt * ((rhou_x_fluxRight - rhou_x_fluxLeft) / _dx + (rhou_x_fluxTop - rhou_x_fluxBottom) / _dy), k_center);
+        rhou_y.set1(rhou_y_center - _dt * ((rhou_y_fluxRight - rhou_y_fluxLeft) / _dx + (rhou_y_fluxTop - rhou_y_fluxBottom) / _dy), k_center);
+        rhoe.set1(rhoe_center - _dt * ((rhoe_fluxRight - rhoe_fluxLeft) / _dx + (rhoe_fluxTop - rhoe_fluxBottom) / _dy), k_center);
+
         /*
         std::cout << i << " ; " << j << std::endl;
         std::cout << "Values of rho " << rho.get(1, i, j) << std::endl;
@@ -277,50 +274,77 @@ void Hydro4x1::source(const SDShared& sds, const std::map< std::string, Quantity
     Quantity<real>& rhou_y = *quantityMap.at("rhou_y");
     Quantity<real>& rhoe = *quantityMap.at("rhoe");
 
-    for (auto coords: sds) {
+    real sdsUxMax(0.), sdsUyMax(0.);
+    for (const auto& coords: sds) {
 
-        int i = coords.first;
-        int j = coords.second;
+        const int i = coords.first;
+        const int j = coords.second;
+
+        // Get values from quantity.
+        unsigned int k_bottom = sds.convert(i, j - 1);
+        unsigned int k_top = sds.convert(i, j + 1);
+        unsigned int k_center = sds.convert(i, j);
+        unsigned int k_left(k_center - 1);
+        unsigned int k_right(k_center + 1);
+
+        real rho_left = rho.get0(k_left);
+        real rho_center = rho.get0(k_center);
+        real rho_right = rho.get0(k_right);
+        real rho_bottom = rho.get0(k_bottom);
+        real rho_top = rho.get0(k_top);
+
+        real rhoe_center = rhoe.get0(k_center);
 
         // Quantity of motion source term
-        real PLeft = (_gamma - 1) * rhoe.get(0, i - 1, j);
-        real PRight = (_gamma - 1) * rhoe.get(0, i + 1, j);
-        real PBottom = (_gamma - 1) * rhoe.get(0, i, j - 1);
-        real PTop = (_gamma - 1) * rhoe.get(0, i, j + 1);
+        real PLeft = (_gamma - 1) * rhoe.get0(k_left);
+        real PRight = (_gamma - 1) * rhoe.get0(k_right);
+        real PBottom = (_gamma - 1) * rhoe.get0(k_bottom);
+        real PTop = (_gamma - 1) * rhoe.get0(k_top);
 
-        rhou_x.set(rhou_x.get(0, i, j)
-                - _dt * (PRight - PLeft) / (2 * _dx),
-                1, i, j);
-        rhou_y.set(rhou_y.get(0, i, j)
-                - _dt * (PTop - PBottom) / (2 * _dy),
-                1, i, j);
+        real rhou_x1 = rhou_x.get(0, i, j) - _dt * (PRight - PLeft) / (2 * _dx);
+        rhou_x.set1(rhou_x1, k_center);
+
+        real rhou_y1 = rhou_y.get(0, i, j) - _dt * (PTop - PBottom) / (2 * _dy);
+        rhou_y.set1(rhou_y1, k_center);
 
         // Energy source term
-        real PCenter = (_gamma - 1) * rhoe.get(0, i, j);
+        real PCenter = (_gamma - 1) * rhoe_center;
 
-        real uxCellLeft = (rho.get(0, i - 1, j) == 0) ? 0 :
-            rhou_x.get(0, i - 1, j) / rho.get(0, i - 1, j);
-        real uxCellRight = (rho.get(0, i + 1, j) == 0) ? 0 :
-            rhou_x.get(0, i + 1, j) / rho.get(0, i + 1, j);
+        real uxCellLeft = (rho_left == 0.) ? 0. : rhou_x.get0(k_left) / rho_left;
 
-        real uyCellBottom = (rho.get(0, i, j - 1) == 0) ? 0 :
-            rhou_y.get(0, i , j - 1) / rho.get(0, i, j - 1);
-        real uyCellTop = (rho.get(0, i, j + 1) == 0) ? 0 :
-            rhou_y.get(0, i, j + 1) / rho.get(0, i, j + 1);
+        real uxCellRight = (rho_right == 0.) ? 0. : rhou_x.get0(k_right) / rho_right;
 
-        rhoe.set(rhoe.get(0, i, j)
-                - _dt * PCenter * ((uxCellRight - uxCellLeft) / (2 * _dx)
-                                 + (uyCellTop - uyCellBottom) / (2 * _dy)),
-                1, i, j);
+        real uyCellBottom = (rho_bottom == 0.) ? 0. : rhou_y.get0(k_bottom) / rho_bottom;
 
-        // Updating umax
-        if (rho.get(0, i, j) != 0) {
-            _SDS_uxmax[sds.getId()] = std::max(_SDS_uxmax[sds.getId()], std::abs(rhou_x.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
-            _SDS_uymax[sds.getId()] = std::max(_SDS_uymax[sds.getId()], std::abs(rhou_y.get(1, i, j) / rho.get(0, i, j)) + std::abs(sqrt(_gamma * (_gamma - 1) * rhoe.get(0, i, j) / rho.get(0, i, j))));
+        real uyCellTop = (rho_top == 0.) ? 0. : rhou_y.get0(k_top) / rho_top;
+
+        rhoe.set1(rhoe_center - _dt * PCenter * ((uxCellRight - uxCellLeft) / (2 * _dx) + (uyCellTop - uyCellBottom) / (2 * _dy)), k_center);
+
+        // Updating umax and uymax
+        if (rho_center != 0.) {
+            // real plus = std::abs(sqrt(_gamma * PCenter / rho0ij));
+            real plus = std::abs(sqrt(_gamma * (_gamma - 1) * rhoe_center / rho_center));
+            real uxMax = std::abs(rhou_x1 / rho_center) + plus;
+            if (sdsUxMax < uxMax)
+                sdsUxMax = uxMax;
+
+            real uyMax = std::abs(rhou_y1 / rho_center) + plus;
+            if (sdsUyMax < uyMax)
+                sdsUyMax = uyMax;
         }
     }
+
+    _SDS_uxmax[sds.getId()] = sdsUxMax;
+    _SDS_uymax[sds.getId()] = sdsUyMax;
 }
 
+void Hydro4x1::updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
+    // update BoundaryCells
+    sds.updateBoundaryCells(quantityMap.at("rho"));
+    sds.updateBoundaryCells(quantityMap.at("rhou_x"), true);
+    sds.updateBoundaryCells(quantityMap.at("rhou_y"), true);
+    sds.updateBoundaryCells(quantityMap.at("rhoe"));
+}
 
 void Hydro4x1::writeState() {
 
@@ -329,10 +353,13 @@ void Hydro4x1::writeState() {
 
 void Hydro4x1::writeState(std::string directory) {
 
-    IO::writeQuantity(directory, "rho", *_domain);
-    IO::writeQuantity(directory, "rhou_x", *_domain);
-    IO::writeQuantity(directory, "rhou_y", *_domain);
-    IO::writeQuantity(directory, "rhoe", *_domain);
+    if (_dryFlag == 0) {
+        IO::writeQuantity(directory, "rho", *_domain);
+        IO::writeQuantity(directory, "rhou_x", *_domain);
+        IO::writeQuantity(directory, "rhou_y", *_domain);
+        IO::writeQuantity(directory, "rhoe", *_domain);
+    }
+
     IO::writeVariantInfo(directory, *_domain);
     IO::writeSDDTime(directory, *_domain, "compute", _timerComputation.getSteadyTimeDeque());
     IO::writeSDDTime(directory, *_domain, "iteration", _timerIteration.getSteadyTimeDeque());

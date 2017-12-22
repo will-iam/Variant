@@ -11,6 +11,7 @@ from collections import *
 from shutil import rmtree
 from script.launcher import launch_test, case_exist
 import script.io as io
+import datetime
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
@@ -22,21 +23,22 @@ perf_attrnames = [t[0] for t in perf_dtypes]
 vi_dtypes = [('nSizeX', 'int'), ('nSizeY', 'int'), ('nSDD', 'int'), ('nSDD_X', 'int'), ('nSDD_Y', 'int'),
               ('nNeighbourSDD', 'int'), ('nPhysicalCells', 'int'),
               ('nOverlapCells', 'int'), ('nBoundaryCells', 'int'),
-              ('nSDS', 'int'), ('SDSgeom', 'S10'), ('nThreads', 'int'),
+              ('nSDS', 'int'), ('SDSgeom', 'S10'), ('nThreads', 'int'), ('nCommonSDS', 'int'),
               ('thread_iteration_type', 'S10'), ('SoA_or_AoS', 'S10')]
 vi_attrnames = [t[0] for t in vi_dtypes]
 
 parser = argparse.ArgumentParser(description="Performance measures", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
-parser.add_argument("--case", type = str, help = "Case to test", required=True)
+parser.add_argument("-c", type = str, help = "Case to test", required=True)
 parser.add_argument("--machine", type = str, help = "Hostname of the test", default='unknown')
-parser.add_argument("--max_thread_number", type = int, help = "Max. number of threads", default=1)
-parser.add_argument("--max_proc_number", type = int, help = "Max. number of procs", default=1)
+parser.add_argument("--core_per_node", type = int, help = "Number of procs per node", default=1)
+parser.add_argument("--max_core_number", type = int, help = "Max. number of procs", default=1)
 parser.add_argument("--nocompile", action='store_true', default=False, help = "Never compiles project before calling it")
 parser.add_argument("--clean-compile", action='store_true', default=False, help = "Clean SCons compilation file")
 parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
 parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
 parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging tool")
+parser.add_argument("--test", action='store_true', default=False, help = "Show test to be run")
 args = parser.parse_args()
 
 
@@ -141,7 +143,8 @@ def runTestBattery(engineOptionDict, testBattery):
     for cn, testList in testBattery.items():
 	    # Init results dir
         io.make_sure_path_exists(os.path.join(config.results_dir, project_name, cn))
-        results_path = os.path.join(config.results_dir, project_name, cn, 'results_data.csv')
+        restultTag = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+        results_path = os.path.join(config.results_dir, project_name, cn, 'data-' + restultTag + '.csv')
 
         # Launch tests and compare results
         print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + project_name + '/' + cn)

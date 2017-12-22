@@ -186,7 +186,9 @@ class SDDistributed {
      *
      * @param domain parent domain of the SDD
      */
-    void buildRecvMap(const Domain& domain);
+    void buildRecvMap(const Domain& domain,
+        std::map< std::pair<int, int>, real >& dirichletCellMap,
+        std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap);
 
     /*!
      * @brief Adds physical quantity (and thus data) used
@@ -205,8 +207,13 @@ class SDDistributed {
      * @param geomType geometry type of subdomain (see
      * the Geometry class for possible values)
      */
-    void buildAllSDS(unsigned int nSDS,
-            std::string geomType);
+    void buildAllSDS(unsigned int nSDS, std::string geomType);
+
+    /*! 
+    * @brief Dispatch the boundary cells among the sds.
+    */
+    void dispatchBoundaryCell(const std::map< std::pair<int, int>, real >& dirichletCellMap,
+        const std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap);
 
     /*!
      * @brief Updates overlap cells by communicating through MPI with other SDDs
@@ -214,29 +221,6 @@ class SDDistributed {
      * @param qtiesToUpdate list of str. names of quantities to update
      */
     void updateOverlapCells(const std::vector<std::string>& qtiesToUpdate);
-
-    /*!
-     * @brief Updates Neumann boundary cells of SDD according to values
-     * stored in memory.
-     *
-     * This does not require communication with other SDDs
-     * as long as overlap cells were update before.
-     *
-     * @param quantityName str. name of quantity to update
-     * @param changeToOpposite change to opposite value of reference
-     * according to value. This depends on the boundary and is useful for
-     * quantities traditionnally defined on edges.
-     */
-    void updateNeumannCells(std::string quantityName,
-            bool changeToOpposite = false);
-
-    /*!
-     * @brief Updates Dirichlet boundary cells of SDD according to values stored
-     * in memory.
-     *
-     * @param quantityName str. name of quantity to update
-     */
-    void updateDirichletCells(std::string quantityName);
 
     /*!
      * @brief Adds an equation to the stack of equations to be computed by
@@ -256,8 +240,9 @@ class SDDistributed {
      * @brief Builds thread pool given an amount of threads to build.
      *
      * @param nThreads number of threads to build
+     * @param nCommonSDS number of work to share among the threads
      */
-    void initThreadPool(unsigned int nThreads);
+    void initThreadPool(unsigned int nThreads, unsigned int nCommonSDS);
 
   private:
 
@@ -274,7 +259,7 @@ class SDDistributed {
     /*!
      * array of all subdomains of the SDD
      */
-    std::vector<SDShared> _SDSList;
+    std::vector<SDShared> _SDSVector;
 
     /*!
      * tool specific to a subdomain to convert 2D coordinates
@@ -310,21 +295,6 @@ class SDDistributed {
      * geometry tool to build SDSs
      */
     Geometry _geometry;
-
-    /*!
-     * mapping between coords of cells on which are
-     * set Dirichlet boundary conditions, and the
-     * values of the BC
-     */
-    std::map< std::pair<int, int>, real >
-            _dirichletCellMap;
-
-    /*!
-     * mapping between coords of cells on which are set
-     * Neumann boundary conditions, and the associated
-     * cells
-     */
-    std::map< std::pair<int, int>, std::pair<int, int> > _neumannCellMap;
 
     /*!
      * thread pool for executing equation on SDS in parallel

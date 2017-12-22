@@ -5,6 +5,7 @@ import __future__
 import os
 import sys
 import socket
+import numpy as np
 from shutil import copyfile, copytree, rmtree
 from timeit import default_timer as timer
 
@@ -21,7 +22,13 @@ COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
 def get_ref_name():
-    return os.path.join('ref' + str(sys.version_info[0]), socket.gethostname())
+    #return os.path.join('ref' + str(sys.version_info[0]), socket.gethostname())
+    #return os.path.join('ref' + str(sys.version_info[0]))
+
+    # cmd = [config.mpi_CC, '--version']
+    # res = subprocess.check_call(cmd)
+     
+    return 'ref'
 
 def get_case_path(project_name, case_name):
     return os.path.join(config.cases_dir, project_name, case_name)
@@ -74,7 +81,7 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
     input_path = sdd.split_case(init_path, 1, 1, qty_name_list)
 
     # Add exec options
-    io.write_exec_options(input_path, 1, 1, 1, 1, 'line', 1, 1)
+    io.write_exec_options(input_path, 1, 1, 1, 1, 'line', 1, 0, 1)
 
     # Copying exec_options and scheme_info in input path too
     copyfile(os.path.join(init_path, 'scheme_info.dat'), os.path.join(input_path, 'scheme_info.dat'))
@@ -88,7 +95,7 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
     engine = compiler.Engine(engineOptionDict)
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    engine.run(input_path, ref_path, 1, 1)
+    engine.run(input_path, ref_path, 1, 1, 1)
 
     # Merge back
     io.make_sure_path_exists(ref_path)
@@ -107,7 +114,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
     #Define paths
     project_name = engineOptionDict['project_name']
     case_path = get_case_path(project_name, case_name)
-    init_path = os.path.join(case_path, get_ref_name(), "init")
+    init_path = os.path.join(case_path, "init")
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
@@ -122,7 +129,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
     input_path = sdd.split_case(init_path, nSDD_X, nSDD_Y, qty_name_list)
 
     # Add exec options
-    io.write_exec_options(input_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], test['nCoresPerSDD'])
+    io.write_exec_options(input_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], test['nCommonSDS'], test['nCoresPerSDD'])
 
     # Copying exec_options and scheme_info in input path too
     copyfile(os.path.join(init_path, 'scheme_info.dat'), os.path.join(input_path, 'scheme_info.dat'))
@@ -135,10 +142,12 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
 
     # Compile (if needed) engine and call it
     print(COLOR_BLUE + "Compiling engine" + COLOR_ENDC)
-    engine = compiler.Engine(engineOptionDict)
+    engine = compiler.Engine(engineOptionDict, engineOptionDict['must_compile'])
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    engine.run(input_path, output_path, nSDD_X * nSDD_Y, test['nCoresPerSDD'])
+    run_option = [] if compare_with_ref == True else ['--dry']
+    
+    engine.run(input_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
     end = timer()
 
     # Now, look for differences, if any.

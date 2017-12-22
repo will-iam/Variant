@@ -10,7 +10,7 @@ T = 0.5
 CFL = 0.5
 
 gamma = 1.4
-BCtype = 'N'
+BCtype = 'P'
 BClayer = 1
 
 quantityList = ['rho', 'rhou_x', 'rhou_y', 'rhoe']

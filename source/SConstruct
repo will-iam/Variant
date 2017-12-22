@@ -49,10 +49,13 @@ if not (std in ['c++98', 'c++0x', 'c++11', 'c++14']):
 print '**** Compiling with '+ compiler +' in ' + mymode + ' mode for ' + project + ' ...'
 
 env = Environment()
-
+env['ENV'] = os.environ
 env['ENV']['PATH'] = os.environ['PATH']
 if 'LD_LIBRARY_PATH' in os.environ:
 	env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
+
+if 'LM_LICENSE_FILE' in os.environ:
+    env['ENV']['LM_LICENSE_FILE'] = os.environ['LM_LICENSE_FILE']
 
 #print 'First', env.Dump()
 
@@ -81,12 +84,12 @@ if compiler == 'clang':
 	print 'We compile with Clang compiler'
 
 if compiler == 'intel':
-	env['CC'] = config.intel_CC
-	env['CXX'] = config.intel_CXX
-	mylinkflags.append('-pthread')
+    env['CC'] = config.intel_CC
+    env['CXX'] = config.intel_CXX
+    mylinkflags.append('-pthread')
 
-	# And... needed with intel too!
-	print 'We compile with Intel compiler'
+    # And... needed with intel too!
+    print 'We compile with Intel compiler'
 
 if compiler == 'mpi':
 	env['CC'] = config.mpi_CC
@@ -110,7 +113,7 @@ if mymode == 'profile':
 	#mylinkflags.append('-pg')
 
 if mymode == 'release':
-	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native']
+	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native', '-g']
 
 if mymode == 'debug':
    	#mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']

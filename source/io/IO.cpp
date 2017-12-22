@@ -100,11 +100,13 @@ int IO::loadExecOptions(std::string directory, Domain& domain) {
     unsigned int nSDS = std::stoi(tmpStr);
     std::getline(ifs, tmpStr, ' ');
     std::string SDSgeom = tmpStr;
-    std::getline(ifs, tmpStr);
+    std::getline(ifs, tmpStr, ' ');
     unsigned int nThreads = std::stoi(tmpStr);
+    std::getline(ifs, tmpStr, ' ');
+    unsigned int nCommonSDS = std::stoi(tmpStr);
     ifs.close();
 
-    domain.setOptions(nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads);
+    domain.setOptions(nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads, nCommonSDS);
 
     return 0;
 }
@@ -252,7 +254,7 @@ int IO::writeVariantInfo(std::string directory, const Domain& domain) {
     ofs << domain.getSizeX() << " " << domain.getSizeY() << std::endl;
     ofs << domain.getNumberSDD() << " " << domain.getNumberSDD_X() << " " << domain.getNumberSDD_Y() << std::endl;
     ofs << domain.getNumberNeighbourSDDs() << " " << domain.getNumberPhysicalCells() << " " << domain.getNumberOverlapCells() << " " << domain.getNumberBoundaryCells() << std::endl;
-    ofs << domain.getNumberSDS() << " " << domain.getSDSGeometry() << " " << domain.getNumberThreads() << std::endl;
+    ofs << domain.getNumberSDS() << " " << domain.getSDSGeometry() << " " << domain.getNumberThreads() << " " << domain.getNumberCommonSDS() << std::endl;
     ofs << "free_stack" << " " << "SoA" << std::endl;
     ofs.close();
     return 0;

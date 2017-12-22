@@ -27,10 +27,11 @@ int Engine::main(int argc, char** argv) {
     char outputpath[ stringsize ];
     bool initfileSet = false;
     bool outputpathSet = false;
-    int testFlag = 0;
-
+    _testFlag = 0;
+    _dryFlag = 0;
     struct option long_options[] = {
-        {"test", 0, &testFlag, true},
+        {"test", 0, &_testFlag, true},
+        {"dry", 0, &_dryFlag, true},
         {NULL, 0, NULL, 0}
     };
 
@@ -41,10 +42,10 @@ int Engine::main(int argc, char** argv) {
         switch(flag){
 
             case 0:
-                printf ("option %s", long_options[option_index].name);
-                if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
+                //printf ("option %s", long_options[option_index].name);
+                //if (optarg)
+                //    printf (" with arg %s", optarg);
+                //printf ("\n");
                 break;
 
             case 'i':
@@ -88,8 +89,12 @@ int Engine::main(int argc, char** argv) {
             return EXIT_FAILURE;
         }
 
-        if (testFlag != 0){
-            cout << "Test Flag is on." << endl;
+        if (_testFlag != 0){
+            cout << "Test flag is on." << endl;
+        }
+
+        if (_dryFlag != 0){
+            cout << "Dry flag is on." << endl;
         }
     }
 

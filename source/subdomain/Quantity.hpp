@@ -88,6 +88,11 @@ template<typename T> class Quantity:public QuantityInterface {
 
     int currentPrev() const;
 
+    
+    const T& get0(unsigned int pos) const;
+    const T& get1(unsigned int pos) const;
+    void set1(T value, unsigned int pos);
+
   private:
 
     /*!
@@ -117,16 +122,14 @@ template<typename T> class Quantity:public QuantityInterface {
     std::vector<T> _dataRight;
 
     /*!
-     * reference to the coordinates converter
-     * owned by the SDD
+     * Copy of coordinates converter owned by the SDD
      */
-    const CoordConverter & _coordConverter;
+    CoordConverter _coordConverter;
 };
 
 template<typename T>
 Quantity<T>::Quantity(unsigned int size,
-        const CoordConverter & coordConverter):_size(size),
-    _coordConverter(coordConverter)
+        const CoordConverter & coordConverter):_size(size), _coordConverter(coordConverter)
 {
     _dataLeft.resize(_size);
     _dataRight.resize(_size);
@@ -151,61 +154,33 @@ template<typename T>
 const T& Quantity<T>::get(unsigned int n, int coordX, int coordY) const
 {
     unsigned int i = _coordConverter.convert(coordX, coordY);
-    /*
-    // Debugging
-#ifndef NDEBUG
-    if (i >= _prev->size()) {
-        std::cout << i << " ; " << _prev->size() << std::endl;
-    }
-#endif
-    */
-    return (n == 0) ? (*_prev).at(i) : (*_next).at(i);
+    return (n == 0) ? (*_prev)[i] : (*_next)[i];
 }
-
-/*
-template<typename T> const T& Quantity<T>::get(unsigned int n,
-        int coordX, int coordY, const SDShared & sds) const
-{
-    unsigned int i = sds.getMemIndex(coordX, coordY);
-    if (i >= _prev->size()) {
-        std::cout << i << " ; " << _prev->size() << std::endl;
-    }
-    return (n == 0) ? (*_prev).at(i) : (*_next).at(i);
-}
-*/
 
 template<typename T> void Quantity<T>::set(T value,
         unsigned int n, int coordX, int coordY) {
 
     unsigned int i = _coordConverter.convert(coordX, coordY);
-    if (i >= _prev->size()) {
-        std::cout << i << " ; " << _prev->size() << std::endl;
-    }
-    if (n == 0) {
+
+    if (n == 0)
         (*_prev)[i] = value;
-    }
-    else {
+    else
         (*_next)[i] = value;
-    }
 }
 
-/*
-template<typename T> void Quantity<T>::set(T value,
-        unsigned int n, int coordX, int coordY,
-        const SDShared& sds) {
-
-    unsigned int i = sds.getMemIndex(coordX, coordY);
-    if (i >= _prev->size()) {
-        std::cout << i << " ; " << _prev->size() << std::endl;
-    }
-    if (n == 0) {
-        (*_prev)[i] = value;
-    }
-    else {
-        (*_next)[i] = value;
-    }
+template<typename T>
+const T& Quantity<T>::get0(unsigned int pos) const {
+    return (*_prev)[pos];
 }
-*/
 
+template<typename T>
+const T& Quantity<T>::get1(unsigned int pos) const {
+    return (*_next)[pos];
+}
+
+template<typename T>
+void Quantity<T>::set1(T value, unsigned int pos) {
+    (*_next)[pos] = value;
+}
 
 #endif

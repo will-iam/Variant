@@ -61,6 +61,8 @@ class Engine {
   protected:
     std::string _initpath;
     std::string _outputpath;
+    int _testFlag;
+    int _dryFlag;
 
     real _T;
     real _CFL;

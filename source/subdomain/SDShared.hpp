@@ -31,22 +31,6 @@ class SDShared: public std::vector< std::pair<int,int> > {
   public:
 
     /*!
-     * @brief Constructor (rectangle-shaped SDS)
-     *
-     * @param bottomLeft_X : X-coord of the bottom-left corner
-     * @param bottomLeft_Y : Y-coord of the bottom-left corner
-     * @param sizeX : width of the SDS
-     * @param sizeY : height of the SDS
-     * @param coordConverter : reference coordConverter
-     * of which the SDS will own a copy (should be the
-     * coordConverter of the parent SDS)
-     */
-    SDShared(unsigned int bottomLeft_X, unsigned int bottomLeft_Y,
-             unsigned int sizeX, unsigned int sizeY,
-             const CoordConverter & coordConverter,
-             unsigned int id);
-
-    /*!
      * @brief Copy constructor based on vector of coords
      */
     SDShared(const std::vector< std::pair<int, int> >& coords,
@@ -54,23 +38,11 @@ class SDShared: public std::vector< std::pair<int,int> > {
             unsigned int index);
 
     /*!
-     * @brief Gets memory index corresponding to given
-     * 2D coordinates. Calls the convert method of the
-     * coord converter of the SDS.
-     *
-     * @param i : X-coord
-     * @param j : Y-coord
-     *
-     * @return corresponding memory index
-     */
-    unsigned int getMemIndex(int i, int j) const;
-
-    /*!
      * @brief Returns SDS id
      *
      * @return id of SDS
      */
-    unsigned int getId() const;
+    inline unsigned int getId() const { return _id; }
 
     /*!
      * exec equation on SDS
@@ -79,6 +51,53 @@ class SDShared: public std::vector< std::pair<int,int> > {
     void execEquation(eqType& eqFunc,
             const std::map< std::string, Quantity<real>* >& quantityMap);
 
+    /*!
+     * @brief updates boundary of all SDDs according to their
+     * values on reference cells on other SDDs, for a given quantity.
+     *
+     * /!\ This has to be called AFTER updating overlap cells, since boundary        // Updating umax for computation of the next dt
+        _umax = std::max(_umax, std::abs(ux.get(0, i, j)));
+        _umax = std::max(_umax, std::abs(uy.get(0, i, j)));
+
+     * cells may be updated with values on overlap cells.
+     * The boolean parameter is optional and can be used for some physical
+     * quantities that require the Neumann boundary condition to be opposite.
+     *
+     * @param quantityName name of quantity to update
+     * @param changeNeumannToOpposite if true, this changes the value into its
+     * opposite on cells that have Neumann BC.
+     */
+    void updateBoundaryCells(Quantity<real>* quantity, bool changeNeumannToOpposite = false) const;
+
+    /*!
+     * @brief Updates Neumann boundary cells of SDD according to values
+     * stored in memory.
+     *
+     * This does not require communication with other SDDs
+     * as long as overlap cells were update before.
+     *
+     * @param quantityName str. name of quantity to update
+     * @param changeToOpposite change to opposite value of reference
+     * according to value. This depends on the boundary and is useful for
+     * quantities traditionnally defined on edges.
+     */
+    void updateNeumannCells(Quantity<real>* quantity, bool changeToOpposite = false) const;
+
+    /*!
+     * @brief Updates Dirichlet boundary cells of SDD according to values stored
+     * in memory.
+     *
+     * @param quantityName str. name of quantity to update
+     */
+    void updateDirichletCells(Quantity<real>* quantity) const;
+
+
+    void addDirichletCell(std::pair < std::pair<int, int>, real > d);
+    void addNeumannCell(std::pair< std::pair<int, int>, std::pair<int, int> > n);
+
+    size_t getNumberBoundaryCells() const { return _neumannCellMap.size() + _dirichletCellMap.size(); }
+
+    inline unsigned int convert(int coordX, int coordY) const {return _coordConverter.convert(coordX, coordY);}
   private:
 
     /*!
@@ -87,6 +106,21 @@ class SDShared: public std::vector< std::pair<int,int> > {
      */
     CoordConverter _coordConverter;
     unsigned int _id;
+
+    /*!
+     * mapping between coords of cells on which are
+     * set Dirichlet boundary conditions, and the
+     * values of the BC
+     */
+    std::map< std::pair<int, int>, real > _dirichletCellMap;
+
+    /*!
+     * mapping between coords of cells on which are set
+     * Neumann boundary conditions, and the associated
+     * cells
+     */
+    std::map< std::pair<int, int>, std::pair<int, int> > _neumannCellMap;
+
 
 };
 
