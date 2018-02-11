@@ -24,8 +24,7 @@ Geometry::Geometry(int bottomLeftX, int bottomLeftY,
 }
 
 std::vector< std::vector< std::pair<int, int> > >
-Geometry::buildGeometry(unsigned int nShapes,
-        std::string geomType) {
+Geometry::buildGeometry(unsigned int nShapes, std::string geomType) {
 
     nShapes = std::min<unsigned int>(nShapes, _sizeX * _sizeY);
 
@@ -33,80 +32,76 @@ Geometry::buildGeometry(unsigned int nShapes,
     geometry.reserve(nShapes);
 
     if(geomType == RANDOM) {
+        // Building whole rectangle and shuffling it
+        // to get random coords
+        unsigned int shapeSize = (_sizeX * _sizeY) / nShapes;
+        std::vector<std::pair <int, int> >
+            allRect = buildRectangle(_bottomLeftX, _bottomLeftY,
+                    _sizeX, _sizeY);
+        std::random_shuffle(allRect.begin(), allRect.end());
 
-            // Building whole rectangle and shuffling it
-            // to get random coords
-            unsigned int shapeSize = (_sizeX * _sizeY) / nShapes;
-            std::vector<std::pair <int, int> >
-                allRect = buildRectangle(_bottomLeftX, _bottomLeftY,
-                        _sizeX, _sizeY);
-            std::random_shuffle(allRect.begin(), allRect.end());
-
-            std::vector< std::pair<int, int> > randomShape;
-            for (unsigned int i = 0; i < nShapes - 1; i++) {
-                for (unsigned int j = 0; j < shapeSize; j++) {
-                    randomShape.push_back(allRect.back());
-                    allRect.pop_back();
-                }
-                geometry.push_back(randomShape);
-                randomShape.clear();
-            }
-            // For the last line, we push it all the way
-            int i = 0;
-            for (std::vector< std::pair<int, int> >::reverse_iterator
-                    it = allRect.rbegin(); it != allRect.rend(); ++it) {
-                randomShape.push_back(*it);
-                ++i;
+        std::vector< std::pair<int, int> > randomShape;
+        for (unsigned int i = 0; i < nShapes - 1; i++) {
+            for (unsigned int j = 0; j < shapeSize; j++) {
+                randomShape.push_back(allRect.back());
+                allRect.pop_back();
             }
             geometry.push_back(randomShape);
+            randomShape.clear();
+        }
+        // For the last line, we push it all the way
+        int i = 0;
+        for (std::vector< std::pair<int, int> >::reverse_iterator
+                it = allRect.rbegin(); it != allRect.rend(); ++it) {
+            randomShape.push_back(*it);
+            ++i;
+        }
+        geometry.push_back(randomShape);
 
-            int totalSize = 0;
-            for (unsigned int i = 0; i < geometry.size(); i++) {
-                totalSize += geometry[i].size();
-            }
-    }
+        int totalSize = 0;
+        for (unsigned int i = 0; i < geometry.size(); i++) {
+            totalSize += geometry[i].size();
+        }
+    } else {
+        // build lines
 
-    else {
+        // In order to have balance between shapes, we
+        // build lines of shape :
+        //      Ncells = L * n + (L - 1) * m
+        // With n + m = nShapes
+        // Which gives
+        //      Ncells = nShapes * (L - 1) + n
+        unsigned int L = _sizeX * _sizeY / nShapes + 1;
+        unsigned int n = _sizeX * _sizeY % nShapes;
+        unsigned int m = nShapes - n;
+        int firstX = _bottomLeftX;
+        int firstY = _bottomLeftY;
 
-            // build lines
-
-            // In order to have balance between shapes, we
-            // build lines of shape :
-            //      Ncells = L * n + (L - 1) * m
-            // With n + m = nShapes
-            // Which gives
-            //      Ncells = nShapes * (L - 1) + n
-            unsigned int L = _sizeX * _sizeY / nShapes + 1;
-            unsigned int n = _sizeX * _sizeY % nShapes;
-            unsigned int m = nShapes - n;
-            int firstX = _bottomLeftX;
-            int firstY = _bottomLeftY;
-
-            // First n lines : length L
-            for (unsigned int i = 0; i < n; i++) {
-                geometry.push_back(buildLine(firstX, firstY, L));
-                // Determine next firstX and firstY
-                for (unsigned int k = 0; k < L; k++) {
-                    firstX++;
-                    if (firstX > _topRightX) {
-                        firstX = _bottomLeftX;
-                        firstY++;
-                    }
+        // First n lines : length L
+        for (unsigned int i = 0; i < n; i++) {
+            geometry.push_back(buildLine(firstX, firstY, L));
+            // Determine next firstX and firstY
+            for (unsigned int k = 0; k < L; k++) {
+                firstX++;
+                if (firstX > _topRightX) {
+                    firstX = _bottomLeftX;
+                    firstY++;
                 }
             }
+        }
 
-            // Last m lines : length L - 1
-            for (unsigned int i = 0; i < m; i++) {
-                geometry.push_back(buildLine(firstX, firstY, L - 1));
-                // Determine next firstX and firstY
-                for (unsigned int k = 0; k < L - 1; k++) {
-                    firstX++;
-                    if (firstX > _topRightX) {
-                        firstX = _bottomLeftX;
-                        firstY++;
-                    }
+        // Last m lines : length L - 1
+        for (unsigned int i = 0; i < m; i++) {
+            geometry.push_back(buildLine(firstX, firstY, L - 1));
+            // Determine next firstX and firstY
+            for (unsigned int k = 0; k < L - 1; k++) {
+                firstX++;
+                if (firstX > _topRightX) {
+                    firstX = _bottomLeftX;
+                    firstY++;
                 }
             }
+        }
     }
 
     return geometry;
@@ -134,7 +129,7 @@ Geometry::buildLine(int firstX, int firstY, unsigned int length) {
         return line;
     int i = firstX;
     int j = firstY;
-    length = std::min<unsigned int>(_topRightX - firstX + _sizeX * (_topRightY - firstY) + 1, length); 
+    length = std::min<unsigned int>(_topRightX - firstX + _sizeX * (_topRightY - firstY) + 1, length);
     for (unsigned int k = 0; k < length; k++) {
         line.push_back(std::pair<int, int>(i, j));
         i++;

@@ -1,4 +1,4 @@
-#include "hydro4x1.hpp"
+#include "hydro2dAoS4x1.hpp"
 #include "IO.hpp"
 
 #include <ios>
@@ -7,17 +7,17 @@
 #include <fstream>
 #include <string>
 
-Hydro4x1::Hydro4x1():
+Hydro2dAoS4x1::Hydro2dAoS4x1():
     Engine() {
 
 }
 
-Hydro4x1::~Hydro4x1() {
+Hydro2dAoS4x1::~Hydro2dAoS4x1() {
 
     delete _domain;
 }
 
-int Hydro4x1::init() {
+int Hydro2dAoS4x1::init() {
 
     // Init domain
     _domain = new Domain();
@@ -87,17 +87,17 @@ int Hydro4x1::init() {
 
     // Init tasks pool
     _domain->buildThreads();
-    _domain->addEquation("advection", std::bind(&Hydro4x1::advection, this,
+    _domain->addEquation("advection", std::bind(&Hydro2dAoS4x1::advection, this,
                                    std::placeholders::_1, std::placeholders::_2));
-    _domain->addEquation("source", std::bind(&Hydro4x1::source, this,
+    _domain->addEquation("source", std::bind(&Hydro2dAoS4x1::source, this,
                                    std::placeholders::_1, std::placeholders::_2));
 
-    _domain->addEquation("updateBoundary", std::bind(&Hydro4x1::updateBoundary, this,
+    _domain->addEquation("updateBoundary", std::bind(&Hydro2dAoS4x1::updateBoundary, this,
                                    std::placeholders::_1, std::placeholders::_2));
     return 0;
 }
 
-int Hydro4x1::start() {
+int Hydro2dAoS4x1::start() {
 
     int iPrint = 0;
     _nIterations = 0;
@@ -164,12 +164,12 @@ int Hydro4x1::start() {
     return 0;
 }
 
-int Hydro4x1::finalize() {
+int Hydro2dAoS4x1::finalize() {
     writeState();
     return 0;
 }
 
-void Hydro4x1::computeDT() {
+void Hydro2dAoS4x1::computeDT() {
     // Updating according to CFL and max velocity
     _dt = _CFL / (_Domain_uxmax / _dx + _Domain_uymax / _dy);
 
@@ -177,7 +177,7 @@ void Hydro4x1::computeDT() {
     _dt = std::min(_dt, _T - _t);
 }
 
-void Hydro4x1::advection(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap) {
+void Hydro2dAoS4x1::advection(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap) {
 
     Quantity<real>& rho = *quantityMap.at("rho");
     Quantity<real>& rhou_x = *quantityMap.at("rhou_x");
@@ -271,7 +271,7 @@ void Hydro4x1::advection(const SDShared& sds, const std::map< std::string, Quant
     }
 }
 
-void Hydro4x1::source(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
+void Hydro2dAoS4x1::source(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
 
     Quantity<real>& rho = *quantityMap.at("rho");
     Quantity<real>& rhou_x = *quantityMap.at("rhou_x");
@@ -342,7 +342,7 @@ void Hydro4x1::source(const SDShared& sds, const std::map< std::string, Quantity
     _SDS_uymax[sds.getId()] = sdsUyMax;
 }
 
-void Hydro4x1::updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
+void Hydro2dAoS4x1::updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
     // update BoundaryCells
     sds.updateBoundaryCells(quantityMap.at("rho"));
     sds.updateBoundaryCells(quantityMap.at("rhou_x"), true);
@@ -350,12 +350,12 @@ void Hydro4x1::updateBoundary(const SDShared& sds, const std::map< std::string, 
     sds.updateBoundaryCells(quantityMap.at("rhoe"));
 }
 
-void Hydro4x1::writeState() {
+void Hydro2dAoS4x1::writeState() {
 
     writeState(_outputpath);
 }
 
-void Hydro4x1::writeState(std::string directory) {
+void Hydro2dAoS4x1::writeState(std::string directory) {
 
     if (_dryFlag == 0) {
         IO::writeQuantity(directory, "rho", *_domain);

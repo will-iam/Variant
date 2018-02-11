@@ -2,13 +2,13 @@
 #define COORDCONVERTER_HPP
 
 /*!
- * @file 
+ * @file
  * @brief Defines class for the converter
  * 2D-coordinates -> memory index
  */
 
 /*!
- * @brief Converts 2D-coordinates to memory index for 
+ * @brief Converts 2D-coordinates to memory index for
  * given SDD size
  *
  * The data on the SDD is stored as a one-dimensional
@@ -16,6 +16,7 @@
  */
 class CoordConverter {
   public:
+    CoordConverter() = default;
 
     /*!
      * @brief Constructor

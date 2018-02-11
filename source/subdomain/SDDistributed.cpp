@@ -26,8 +26,7 @@ SDDistributed::~SDDistributed() {
     delete[] _requestArray;
     delete[] _statusArray;
 
-    for (auto it =
-         _quantityMap.begin(); it != _quantityMap.end(); ++it)
+    for (auto it = _quantityMap.begin(); it != _quantityMap.end(); ++it)
         delete(it->second);
 }
 
@@ -82,7 +81,7 @@ void SDDistributed::dispatchBoundaryCell(const std::map< std::pair<int, int>, re
     if (_SDSVector.empty())
         exitfail("You must initialize the SDS list before splitting the boundary cell");
 
-    // This is a uniform ditribution of the cells, the boundary cells in each sds does not correspond the geometric position of the cell.    
+    // This is a uniform ditribution of the cells, the boundary cells in each sds does not correspond the geometric position of the cell.
     size_t s = neumannCellMap.size() / _SDSVector.size();
     size_t counter = 0;
     size_t cursor = 0;
@@ -142,7 +141,7 @@ Quantity<real>* SDDistributed::getQuantity(std::string name) {
     return _quantityMap[name];
 }
 
-void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUpdate) {
+void SDDistributed::updateOverlapCells() {
 
     // Clear and reserve here
     for (auto& toSDD: _recvSendBuffer) {
@@ -153,11 +152,9 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
     // Copy data to send in the buffer.
     for (auto const& it: _MPISend_map) {
         unsigned int SDDid = it.first.first;
-        for (const auto& qtyName: qtiesToUpdate) {
-            const Quantity<real>& qty = *_quantityMap[qtyName];
-            std::pair<int, int> coordsHere = it.second;
-            _recvSendBuffer[SDDid].second.push_back(qty.get(0, coordsHere.first, coordsHere.second));
-        }
+        std::pair<int, int> coordsHere = it.second;
+        std::vector<real> tmp(_data.getVector(0, coordsHere.first, coordsHere.second));
+        _recvSendBuffer[SDDid].second.insert(_recvSendBuffer[SDDid].second.end(), tmp.begin(), tmp.end());
     }
 
     size_t i = 0;
@@ -186,19 +183,17 @@ void SDDistributed::updateOverlapCells(const std::vector<std::string>& qtiesToUp
         std::pair<int, int> coordsHere = it.first;
         unsigned int SDDid = it.second.first;
         if (_id == SDDid) {
+            throw;
+            /*
             for (auto const& qtyName: qtiesToUpdate) {
                 Quantity<real>& qty = *_quantityMap[qtyName];
                 std::pair<int, int> coordsThere(it.second.second);
                 qty.set(qty.get(0, coordsThere.first, coordsThere.second), 0, coordsHere.first, coordsHere.second);
-            }
+            }*/
         }
         else {
             auto& v(_recvSendBuffer[SDDid].first);
-            for (auto const& qtyName: qtiesToUpdate) {
-                Quantity<real>& qty = *_quantityMap[qtyName];
-                qty.set(v[bufIndices[SDDid]], 0, coordsHere.first, coordsHere.second);
-                ++bufIndices[SDDid];
-            }
+            bufIndices[SDDid] = _data.set(bufIndices[SDDid], v, 0, coordsHere.first, coordsHere.second);
         }
     }
 }

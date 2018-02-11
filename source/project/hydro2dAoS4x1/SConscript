@@ -1,5 +1,5 @@
 Import('localenv')
-localenv.Append(CXXFLAGS=['-DQUANTITY_SoA'])
+localenv.Append(CXXFLAGS=['-DQUANTITY_AoS'])
 
 localenv = localenv.Clone()
 

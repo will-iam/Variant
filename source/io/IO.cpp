@@ -111,13 +111,10 @@ int IO::loadExecOptions(std::string directory, Domain& domain) {
     return 0;
 }
 
-int IO::loadQuantity(std::string directory,
-        std::string quantityName, Domain& domain, bool constant) {
+int IO::loadQuantity(std::string directory, std::string quantityName, Domain& domain) {
 
 
     SDDistributed& sdd = domain.getSDD();
-
-    domain.addQuantity(quantityName, constant);
 
     std::ostringstream oss;
     oss << sdd.getId();
@@ -255,7 +252,16 @@ int IO::writeVariantInfo(std::string directory, const Domain& domain) {
     ofs << domain.getNumberSDD() << " " << domain.getNumberSDD_X() << " " << domain.getNumberSDD_Y() << std::endl;
     ofs << domain.getNumberNeighbourSDDs() << " " << domain.getNumberPhysicalCells() << " " << domain.getNumberOverlapCells() << " " << domain.getNumberBoundaryCells() << std::endl;
     ofs << domain.getNumberSDS() << " " << domain.getSDSGeometry() << " " << domain.getNumberThreads() << " " << domain.getNumberCommonSDS() << std::endl;
-    ofs << "free_stack" << " " << "SoA" << std::endl;
+    ofs << "free_stack" << " ";
+    #ifdef QUANTITY_SoA
+    ofs << "SoA";
+    #endif
+
+    #ifdef QUANTITY_AoS
+    ofs << "AoS";
+    #endif
+
+    ofs << std::endl;
     ofs.close();
     return 0;
 }

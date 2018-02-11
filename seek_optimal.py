@@ -347,13 +347,13 @@ def commonSDS(caseSizeXY):
 
 def explore(caseSizeXY, square = False):
     minSdd = int(np.log2(nTotalCores // nCoresPerNode))
-    maxSdd = int(np.log2(nTotalCores))
+    maxSdd = int(np.log2(nTotalCores)) + 1
 
     testBattery = {}
     # Defining case directory
     cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
     for ratio in ratioThreadsCores:
-        for p in range(maxSdd-2, maxSdd + 1):
+        for p in range(minSdd, maxSdd + 1):
             # Different SDD splits, nSDD = 2**p
             initP = 0
             if square == True:

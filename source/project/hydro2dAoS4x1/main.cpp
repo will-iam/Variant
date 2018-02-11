@@ -1,7 +1,7 @@
-#include "transportUpwind.hpp"
+#include "hydro2dAoS4x1.hpp"
 
 int main(int argc, char **argv)
 {
-    TransportUpwind scheme;
+    Hydro2dAoS4x1 scheme;
     return scheme.main(argc, argv);
 }
