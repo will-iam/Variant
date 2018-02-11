@@ -82,7 +82,7 @@ class Engine:
                 # to add environment variable visible in this process + all children:
                 os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
                 '''
-                cmd = cmd + ['--hostfile', 'hostfile', '-np', str(mpi_nprocs), self._binary_path, '-i', input_path, '-o', output_path] + run_option
+                cmd = cmd + ['-n', str(mpi_nprocs), self._binary_path, '-i', input_path, '-o', output_path] + run_option
                 print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:

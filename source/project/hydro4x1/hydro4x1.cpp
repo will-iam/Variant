@@ -44,10 +44,6 @@ int Hydro4x1::init() {
     // Initial time
     _t = 0;
 
-    // Add quantities to domain.
-    std::list<std::string> qList = {"rho", "rhou_x", "rhou_y", "rhoe"};
-    _domain->addQuantity(qList);
-
     // Loading initial values
     IO::loadQuantity(_initpath, "rho", *_domain);
     IO::loadQuantity(_initpath, "rhou_x", *_domain);
@@ -188,7 +184,7 @@ void Hydro4x1::advection(const SDShared& sds, const std::map< std::string, Quant
 
         const int i = coords.first;
         const int j = coords.second;
-
+        
         // Get values from quantity.
         unsigned int k_bottom = sds.convert(i, j - 1);
         unsigned int k_top = sds.convert(i, j + 1);

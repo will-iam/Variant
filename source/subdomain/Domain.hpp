@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <list>
 #include <array>
 #include <mpi.h>
 
@@ -191,15 +190,7 @@ class Domain {
      *
      * @param name of new quantity
      */
-    void addQuantity(std::string quantityName);
-
-    /*!
-     * @brief Adds new quantity to be managed by the scheme.
-     *
-     * @param list of new quantity names
-     */
-    void addQuantity(std::list<std::string>& quantityList);
-
+    void addQuantity(std::string quantityName, bool constant = false);
     /*!
      * @brief Adds function that resolves a new equation on a SDS to be computed
      * for each iteration by the domain.
@@ -339,6 +330,9 @@ class Domain {
     int _SDD_BL_Y;
     unsigned int _SDD_Nx;
     unsigned int _SDD_Ny;
+
+    std::vector<std::string> _nonCstQties;
+
 };
 
 /*!

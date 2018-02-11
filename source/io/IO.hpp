@@ -12,11 +12,14 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <list>
 
 #include "Domain.hpp"
 #include "SDDistributed.hpp"
 #include "engine.hpp"
+
+void stor(std::string tmpStr, float& target);
+void stor(std::string tmpStr, double& target);
+void stor(std::string tmpStr, long double& target);
 
 /*!
  * @brief Namespace containing all input/output tools
@@ -84,7 +87,8 @@ namespace IO {
      */
     int loadQuantity(std::string directory,
             std::string quantityName,
-            Domain& domain);
+            Domain& domain,
+            bool constant = false);
 
     /*!
      * @brief Loads boundary conditions

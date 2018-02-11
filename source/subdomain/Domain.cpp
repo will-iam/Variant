@@ -87,11 +87,15 @@ void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, rea
     _SDD_coordsToBC[coordsOnSDD] = std::pair<char, real>(BCtype, value);
 }
 
-void Domain::addQuantity(std::list<std::string>& quantityList) {
-    _sdd->addQuantity(quantityList);
+void Domain::addQuantity(std::string quantityName, bool constant) {
+
+    if (!constant)
+        _nonCstQties.push_back(quantityName);
+    _sdd->addQuantity<real>(quantityName);
 }
 
 void Domain::addEquation(std::string eqName, eqType eqFunc) {
+
     _sdd->addEquation(eqName, eqFunc);
 }
 
@@ -506,8 +510,13 @@ unsigned int Domain::getUid(std::pair<int, int> coordsOnDomain) const {
     return _coordsToUid.at(coordsOnDomain);
 }
 
+void Domain::updateOverlapCells(const std::string& qtyName) {
+    _sdd->updateOverlapCells(std::vector<std::string>(1, qtyName));
+}
+
 void Domain::updateOverlapCells() {
-    _sdd->updateOverlapCells();
+    // For each SDD...
+    _sdd->updateOverlapCells(_nonCstQties);
 }
 
 void Domain::printState(std::string quantityName) {

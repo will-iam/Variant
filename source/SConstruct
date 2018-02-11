@@ -10,17 +10,17 @@ print 'Currently running on', os.name, 	platform.system(), "started from", curre
 #get the mode flag from the command line
 workspace = ARGUMENTS.get('workspace', '')
 
-mymode = ARGUMENTS.get('mode', 'debug')  # Holds current mode, default to 'debug' if the user didn't specify
+mymode = ARGUMENTS.get('mode', 'debug')   #holds current mode, default to 'debug' if the user didn't specify
 
-project = ARGUMENTS.get('project', '')  # Holds current project to compiler
+project = ARGUMENTS.get('project', '')   #holds current project to compiler
 
-compiler = ARGUMENTS.get('compiler', 'intel')  # Holds the current compiler to use
+compiler = ARGUMENTS.get('compiler', 'intel') #holds the current compiler to use
 
-lib = ARGUMENTS.get('lib', 'linux')  # Holds the current library to use
+lib = ARGUMENTS.get('lib', 'linux') #holds the current library to use
 
-precision = ARGUMENTS.get('precision', 'double')  # Computing digit precision
+precision = ARGUMENTS.get('precision', 'double') #computing digit precision
 
-std = ARGUMENTS.get('std', 'c++11')  # C++ standard
+std = ARGUMENTS.get('std', 'c++11') # C++ standard
 
 #check if the user has been naughty: only path must exist
 if not os.path.exists(workspace):
@@ -120,6 +120,13 @@ if mymode == 'debug':
    	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
 	if platform.system() == 'Linux':
 		mycflags = mycflags + ['-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
+
+# Set the library path
+#if lib == 'linux':
+#	env.Append(LIBPATH = [ currentPath + '/common/lib/linux'])
+
+#if lib == 'macos':
+#	env.Append(LIBPATH = [currentPath + '/common/lib/mac'])
 
 # Computing precision
 if precision == 'double':

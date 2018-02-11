@@ -194,12 +194,10 @@ class SDDistributed {
      * @brief Adds physical quantity (and thus data) used
      * in the scheme.
      *
-     * @param quantityList list of names of the quantity to add, used as reference when getting
+     * @param name name of the quantity to add, used as reference when getting
      * and setting a value, or when getting the whole quantity data
      */
-    void addQuantity(std::list<std::string>& quantityList) {
-        _data.init(quantityList, (_sizeX + 2 * _boundaryThickness) * (_sizeY + 2 * _boundaryThickness), _coordConverter);
-    }
+    template<typename T> void addQuantity(std::string name);
 
     /*!
      * @brief Build subdomains on shared memory based on
@@ -211,7 +209,7 @@ class SDDistributed {
      */
     void buildAllSDS(unsigned int nSDS, std::string geomType);
 
-    /*!
+    /*! 
     * @brief Dispatch the boundary cells among the sds.
     */
     void dispatchBoundaryCell(const std::map< std::pair<int, int>, real >& dirichletCellMap,
@@ -222,7 +220,7 @@ class SDDistributed {
      *
      * @param qtiesToUpdate list of str. names of quantities to update
      */
-    void updateOverlapCells();
+    void updateOverlapCells(const std::vector<std::string>& qtiesToUpdate);
 
     /*!
      * @brief Adds an equation to the stack of equations to be computed by
@@ -255,6 +253,7 @@ class SDDistributed {
      * with their names
      * storing pointers for allocation at any time
      */
+    //std::map<std::string, QuantityInterface*> _quantityMap;
     std::map< std::string, Quantity<real>* > _quantityMap;
 
     /*!
@@ -327,11 +326,11 @@ class SDDistributed {
     std::unordered_map<int, std::pair< std::vector<real>, std::vector<real> > > _recvSendBuffer;
     MPI_Request* _requestArray;
     MPI_Status* _statusArray;
-
-    /*!
-        All discretized quantities in one place. The numerico-physical state or physico-numerical state. It's finally here.
-    */
-    Quantity<real> _data;
 };
+
+template<typename T> void SDDistributed::addQuantity(std::string name) {
+
+    _quantityMap[name] = new Quantity<T>((_sizeX + 2 * _boundaryThickness) * (_sizeY + 2 * _boundaryThickness), _coordConverter);
+}
 
 #endif

@@ -1,6 +1,4 @@
 Import('localenv')
-localenv.Append(CXXFLAGS=['-DQUANTITY_SoA'])
-
 localenv = localenv.Clone()
 
 #Specialize environment
