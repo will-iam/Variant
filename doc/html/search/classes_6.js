@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['quantity',['Quantity',['../classQuantity.html',1,'']]],
-  ['quantity_3c_20real_20_3e',['Quantity&lt; real &gt;',['../classQuantity.html',1,'']]],
-  ['quantityinterface',['QuantityInterface',['../classQuantityInterface.html',1,'']]]
+  ['sddistributed',['SDDistributed',['../classSDDistributed.html',1,'']]],
+  ['sdshared',['SDShared',['../classSDShared.html',1,'']]]
 ];

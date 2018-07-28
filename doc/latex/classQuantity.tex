@@ -9,33 +9,33 @@ Physical quantity used in numerical schemes.
 
 {\ttfamily \#include $<$Quantity.\+hpp$>$}
 
-Inheritance diagram for Quantity$<$ T $>$\+:\begin{figure}[H]
-\begin{center}
-\leavevmode
-\includegraphics[height=2.000000cm]{classQuantity}
-\end{center}
-\end{figure}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classQuantity_ab07b278cfe453e82756684b1730efc95}{Quantity} (unsigned int size, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
+\mbox{\hyperlink{classQuantity_ab07b278cfe453e82756684b1730efc95}{Quantity}} (unsigned int size, const \mbox{\hyperlink{classCoordConverter}{Coord\+Converter}} \&coord\+Converter)
 \begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
-const T \& \hyperlink{classQuantity_ac89252c633f43297f2df6fd6291c94b4}{get} (unsigned int n, int coordX, int coordY) const
+const T \& \mbox{\hyperlink{classQuantity_ac89252c633f43297f2df6fd6291c94b4}{get}} (unsigned int n, int coordX, int coordY) const
 \begin{DoxyCompactList}\small\item\em Returns desired data available for reading and writing using the S\+DD\textquotesingle{}s coord converter. \end{DoxyCompactList}\item 
-void \hyperlink{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}{set} (T value, unsigned int n, int coordX, int coordY)
-\begin{DoxyCompactList}\small\item\em Returns desired data available for reading and writing using a specific S\+DS\textquotesingle{}s coord converter (see class \hyperlink{classSDShared}{S\+D\+Shared}) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}{set}} (T value, unsigned int n, int coordX, int coordY)
+\begin{DoxyCompactList}\small\item\em Returns desired data available for reading and writing using a specific S\+DS\textquotesingle{}s coord converter (see class \mbox{\hyperlink{classSDShared}{S\+D\+Shared}}) \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}\label{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}} 
-void \hyperlink{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}{switch\+Prev\+Next} ()
+void \mbox{\hyperlink{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}{switch\+Prev\+Next}} ()
 \begin{DoxyCompactList}\small\item\em To be called when an iteration is done to switch between arrays of data. \end{DoxyCompactList}\item 
-\hyperlink{classQuantity_ab07b278cfe453e82756684b1730efc95}{Quantity} (unsigned int size, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
-\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
-const T \& \hyperlink{classQuantity_afca0ff888e70a2916ffad26e1709f9ea}{get} (unsigned int n, int coordX, int coordY) const
-\begin{DoxyCompactList}\small\item\em Returns desired data available for reading and writing using the S\+DD\textquotesingle{}s coord converter. \end{DoxyCompactList}\item 
-void \hyperlink{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}{set} (T value, unsigned int n, int coordX, int coordY)
-\begin{DoxyCompactList}\small\item\em Returns desired data available for reading and writing using a specific S\+DS\textquotesingle{}s coord converter (see class \hyperlink{classSDShared}{S\+D\+Shared}) \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}\label{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}} 
-void \hyperlink{classQuantity_af0799b7702ab9c7724399a6d76a41ea9}{switch\+Prev\+Next} ()
-\begin{DoxyCompactList}\small\item\em To be called when an iteration is done to switch between arrays of data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\Hypertarget{classQuantity_a0695a0b97d36ea8c39538f6156f0a878}\label{classQuantity_a0695a0b97d36ea8c39538f6156f0a878}} 
+int {\bfseries current\+Prev} () const
+\item 
+\mbox{\Hypertarget{classQuantity_ad02771a40d16a4c293af97a4fd523d57}\label{classQuantity_ad02771a40d16a4c293af97a4fd523d57}} 
+const T \& {\bfseries get0} (size\+\_\+t pos) const
+\item 
+\mbox{\Hypertarget{classQuantity_aae08f6fa99d0b180586f0bc3b7a79682}\label{classQuantity_aae08f6fa99d0b180586f0bc3b7a79682}} 
+const T \& {\bfseries get1} (size\+\_\+t pos) const
+\item 
+\mbox{\Hypertarget{classQuantity_a0c6e6842590a156a1d79dacc0b5400bf}\label{classQuantity_a0c6e6842590a156a1d79dacc0b5400bf}} 
+void {\bfseries set0} (T value, size\+\_\+t pos)
+\item 
+\mbox{\Hypertarget{classQuantity_aefb1880eb7f32e0ec0fb05430032168b}\label{classQuantity_aefb1880eb7f32e0ec0fb05430032168b}} 
+void {\bfseries set1} (T value, size\+\_\+t pos)
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -50,27 +50,9 @@ Templated class defining a physical quantity of a certain size to be defined on 
 \mbox{\Hypertarget{classQuantity_ab07b278cfe453e82756684b1730efc95}\label{classQuantity_ab07b278cfe453e82756684b1730efc95}} 
 \index{Quantity@{Quantity}!Quantity@{Quantity}}
 \index{Quantity@{Quantity}!Quantity@{Quantity}}
-\subsubsection{\texorpdfstring{Quantity()}{Quantity()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{Quantity()}{Quantity()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-\hyperlink{classQuantity}{Quantity}$<$ T $>$\+::\hyperlink{classQuantity}{Quantity} (\begin{DoxyParamCaption}\item[{unsigned int}]{size,  }\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
-
-
-
-Constructor. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em size} & \+: size of the created array \\
-\hline
-{\em coord\+Converter} & \+: tool linking coordinates of a cell/node to the corresponding memory index \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classQuantity_ab07b278cfe453e82756684b1730efc95}\label{classQuantity_ab07b278cfe453e82756684b1730efc95}} 
-\index{Quantity@{Quantity}!Quantity@{Quantity}}
-\index{Quantity@{Quantity}!Quantity@{Quantity}}
-\subsubsection{\texorpdfstring{Quantity()}{Quantity()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename T$>$ \\
-\hyperlink{classQuantity}{Quantity}$<$ T $>$\+::\hyperlink{classQuantity}{Quantity} (\begin{DoxyParamCaption}\item[{unsigned int}]{size,  }\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
+\mbox{\hyperlink{classQuantity}{Quantity}}$<$ T $>$\+::\mbox{\hyperlink{classQuantity}{Quantity}} (\begin{DoxyParamCaption}\item[{unsigned int}]{size,  }\item[{const \mbox{\hyperlink{classCoordConverter}{Coord\+Converter}} \&}]{coord\+Converter }\end{DoxyParamCaption})}
 
 
 
@@ -89,32 +71,9 @@ Constructor.
 \mbox{\Hypertarget{classQuantity_ac89252c633f43297f2df6fd6291c94b4}\label{classQuantity_ac89252c633f43297f2df6fd6291c94b4}} 
 \index{Quantity@{Quantity}!get@{get}}
 \index{get@{get}!Quantity@{Quantity}}
-\subsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{get()}{get()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-const T \& \hyperlink{classQuantity}{Quantity}$<$ T $>$\+::get (\begin{DoxyParamCaption}\item[{unsigned int}]{n,  }\item[{int}]{coordX,  }\item[{int}]{coordY }\end{DoxyParamCaption}) const}
-
-
-
-Returns desired data available for reading and writing using the S\+DD\textquotesingle{}s coord converter. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em n} & \+: returns current data if n == 0, next data if n == 1 \\
-\hline
-{\em coordX} & \+: X-\/axis coordinate on domain \\
-\hline
-{\em coordY} & \+: Y-\/axis coordinate on domain\\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-reference to the desired data 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classQuantity_afca0ff888e70a2916ffad26e1709f9ea}\label{classQuantity_afca0ff888e70a2916ffad26e1709f9ea}} 
-\index{Quantity@{Quantity}!get@{get}}
-\index{get@{get}!Quantity@{Quantity}}
-\subsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename T$>$ \\
-const T\& \hyperlink{classQuantity}{Quantity}$<$ T $>$\+::get (\begin{DoxyParamCaption}\item[{unsigned int}]{n,  }\item[{int}]{coordX,  }\item[{int}]{coordY }\end{DoxyParamCaption}) const}
+const T \& \mbox{\hyperlink{classQuantity}{Quantity}}$<$ T $>$\+::get (\begin{DoxyParamCaption}\item[{unsigned int}]{n,  }\item[{int}]{coordX,  }\item[{int}]{coordY }\end{DoxyParamCaption}) const}
 
 
 
@@ -135,36 +94,13 @@ reference to the desired data
 \mbox{\Hypertarget{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}\label{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}} 
 \index{Quantity@{Quantity}!set@{set}}
 \index{set@{set}!Quantity@{Quantity}}
-\subsubsection{\texorpdfstring{set()}{set()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{set()}{set()}}
 {\footnotesize\ttfamily template$<$typename T$>$ \\
-void \hyperlink{classQuantity}{Quantity}$<$ T $>$\+::set (\begin{DoxyParamCaption}\item[{T}]{value,  }\item[{unsigned int}]{n,  }\item[{int}]{coordX,  }\item[{int}]{coordY }\end{DoxyParamCaption})}
+void \mbox{\hyperlink{classQuantity}{Quantity}}$<$ T $>$\+::set (\begin{DoxyParamCaption}\item[{T}]{value,  }\item[{unsigned int}]{n,  }\item[{int}]{coordX,  }\item[{int}]{coordY }\end{DoxyParamCaption})}
 
 
 
-Returns desired data available for reading and writing using a specific S\+DS\textquotesingle{}s coord converter (see class \hyperlink{classSDShared}{S\+D\+Shared}) 
-
-
-\begin{DoxyParams}{Parameters}
-{\em n} & \+: returns previous data if n == 0, next data if n == 1 \\
-\hline
-{\em coordX} & \+: X-\/axis coordinate on domain \\
-\hline
-{\em coordY} & \+: Y-\/axis coordinate on domain\\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-reference to the desired data 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}\label{classQuantity_a10c68498d1dfe59535a6f07c0627c8d4}} 
-\index{Quantity@{Quantity}!set@{set}}
-\index{set@{set}!Quantity@{Quantity}}
-\subsubsection{\texorpdfstring{set()}{set()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily template$<$typename T$>$ \\
-void \hyperlink{classQuantity}{Quantity}$<$ T $>$\+::set (\begin{DoxyParamCaption}\item[{T}]{value,  }\item[{unsigned int}]{n,  }\item[{int}]{coordX,  }\item[{int}]{coordY }\end{DoxyParamCaption})}
-
-
-
-Returns desired data available for reading and writing using a specific S\+DS\textquotesingle{}s coord converter (see class \hyperlink{classSDShared}{S\+D\+Shared}) 
+Returns desired data available for reading and writing using a specific S\+DS\textquotesingle{}s coord converter (see class \mbox{\hyperlink{classSDShared}{S\+D\+Shared}}) 
 
 
 \begin{DoxyParams}{Parameters}
@@ -182,4 +118,4 @@ reference to the desired data
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-source/subdomain/\hyperlink{source_2subdomain_2Quantity_8hpp}{Quantity.\+hpp}\end{DoxyCompactItemize}
+source/subdomain/\mbox{\hyperlink{Quantity_8hpp}{Quantity.\+hpp}}\end{DoxyCompactItemize}

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['domain',['Domain',['../classDomain.html',1,'']]],
-  ['donorcell',['DonorCell',['../classDonorCell.html',1,'']]]
+  ['domain',['Domain',['../classDomain.html',1,'']]]
 ];

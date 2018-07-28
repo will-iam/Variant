@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['domain',['Domain',['../classDomain.html',1,'Domain'],['../classDomain.html#a6adccae537e53d4fde2b70f875e6b8d0',1,'Domain::Domain()'],['../classDomain.html#a6adccae537e53d4fde2b70f875e6b8d0',1,'Domain::Domain()']]],
-  ['domain_2ehpp',['Domain.hpp',['../source_2subdomain_2Domain_8hpp.html',1,'(Global Namespace)'],['../Variant_2source_2subdomain_2Domain_8hpp.html',1,'(Global Namespace)']]],
-  ['donorcell',['DonorCell',['../classDonorCell.html',1,'']]]
+  ['dispatchboundarycell',['dispatchBoundaryCell',['../classSDDistributed.html#aa7301877492714e144dc056b133d0a54',1,'SDDistributed']]],
+  ['dispatchoverlapcell',['dispatchOverlapCell',['../classSDDistributed.html#a4cd7f5aea74376a9a40604459bcc9630',1,'SDDistributed']]],
+  ['domain',['Domain',['../classDomain.html',1,'Domain'],['../classDomain.html#a6adccae537e53d4fde2b70f875e6b8d0',1,'Domain::Domain()']]],
+  ['domain_2ehpp',['Domain.hpp',['../Domain_8hpp.html',1,'']]]
 ];

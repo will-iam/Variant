@@ -18,25 +18,45 @@ Inheritance diagram for S\+D\+Shared\+:\begin{figure}[H]
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}{S\+D\+Shared} (unsigned int bottom\+Left\+\_\+X, unsigned int bottom\+Left\+\_\+Y, unsigned int sizeX, unsigned int sizeY, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
-\begin{DoxyCompactList}\small\item\em Constructor (rectangle-\/shaped S\+DS) \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classSDShared_afc8718fef97226eed215c34e1b453503}\label{classSDShared_afc8718fef97226eed215c34e1b453503}} 
-\hyperlink{classSDShared_afc8718fef97226eed215c34e1b453503}{S\+D\+Shared} (const std\+::vector$<$ std\+::pair$<$ int, int $>$ $>$ \&coords, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter, unsigned int index)
+\mbox{\hyperlink{classSDShared_afc8718fef97226eed215c34e1b453503}{S\+D\+Shared}} (const std\+::vector$<$ std\+::pair$<$ int, int $>$ $>$ \&coords, const \mbox{\hyperlink{classCoordConverter}{Coord\+Converter}} \&coord\+Converter, unsigned int index)
 \begin{DoxyCompactList}\small\item\em Copy constructor based on vector of coords. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}{get\+Mem\+Index} (int i, int j) const
-\begin{DoxyCompactList}\small\item\em Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}{get\+Id} () const
+unsigned int \mbox{\hyperlink{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}{get\+Id}} () const
 \begin{DoxyCompactList}\small\item\em Returns S\+DS id. \end{DoxyCompactList}\item 
-void \hyperlink{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}{exec\+Equation} (eq\+Type eq\+Func, const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
+void \mbox{\hyperlink{classSDShared_a0ba4c821b3ee742a27d72d5401602d22}{exec\+Equation}} (eq\+Type \&eq\+Func, const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
 \item 
-\hyperlink{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}{S\+D\+Shared} (unsigned int bottom\+Left\+\_\+X, unsigned int bottom\+Left\+\_\+Y, unsigned int sizeX, unsigned int sizeY, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
-\begin{DoxyCompactList}\small\item\em Constructor (rectangle-\/shaped S\+DS) \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}\label{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}} 
-\hyperlink{classSDShared_a144fb5b0439010b5ba9db386a5b1c636}{S\+D\+Shared} (const std\+::vector$<$ std\+::pair$<$ int, int $>$ $>$ \&coords, const \hyperlink{classCoordConverter}{Coord\+Converter} \&coord\+Converter)
-\begin{DoxyCompactList}\small\item\em Copy constructor based on vector of coords. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}{get\+Mem\+Index} (int i, int j) const
-\begin{DoxyCompactList}\small\item\em Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. \end{DoxyCompactList}\item 
-void \hyperlink{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}{exec\+Equation} (eq\+Type eq\+Func, const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
+void \mbox{\hyperlink{classSDShared_ae07fd636017e1a465d537a2f21b1ef96}{update\+Boundary\+Cells}} (\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$quantity, bool change\+Neumann\+To\+Opposite=false) const
+\begin{DoxyCompactList}\small\item\em updates boundary of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSDShared_aadaccd75a835ca8436c223c56a791c89}{update\+Neumann\+Cells}} (\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$quantity, bool change\+To\+Opposite=false) const
+\begin{DoxyCompactList}\small\item\em Updates Neumann boundary cells of S\+DD according to values stored in memory. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classSDShared_a0c83e8c7a830c2febcfc944f57fe158b}{update\+Dirichlet\+Cells}} (\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$quantity) const
+\begin{DoxyCompactList}\small\item\em Updates Dirichlet boundary cells of S\+DD according to values stored in memory. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSDShared_aa670f9d64ac7c03f9964ee0caa26f74c}\label{classSDShared_aa670f9d64ac7c03f9964ee0caa26f74c}} 
+void {\bfseries add\+Dirichlet\+Cell} (std\+::pair$<$ std\+::pair$<$ int, int $>$, real $>$ d)
+\item 
+\mbox{\Hypertarget{classSDShared_a5e5af3b277896ecbbca23d5df0c23b97}\label{classSDShared_a5e5af3b277896ecbbca23d5df0c23b97}} 
+void {\bfseries add\+Neumann\+Cell} (std\+::pair$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, int $>$ $>$ n)
+\item 
+\mbox{\Hypertarget{classSDShared_a3bab738ad8c008e621b40505f3db145c}\label{classSDShared_a3bab738ad8c008e621b40505f3db145c}} 
+size\+\_\+t {\bfseries get\+Number\+Boundary\+Cells} () const
+\item 
+\mbox{\Hypertarget{classSDShared_a8a7b516e808d3a4781f94d9a50763e2c}\label{classSDShared_a8a7b516e808d3a4781f94d9a50763e2c}} 
+unsigned int {\bfseries convert} (int coordX, int coordY) const
+\item 
+\mbox{\Hypertarget{classSDShared_a7f6a437419391d952839262b57e29161}\label{classSDShared_a7f6a437419391d952839262b57e29161}} 
+void {\bfseries set\+Buffer\+Pos} (unsigned int sdd\+Id, size\+\_\+t pos)
+\item 
+\mbox{\Hypertarget{classSDShared_aa1b518a2b0779864a5156dde19dd4911}\label{classSDShared_aa1b518a2b0779864a5156dde19dd4911}} 
+size\+\_\+t {\bfseries get\+Overlap\+Cell\+Number} (unsigned int sdd\+Id) const
+\item 
+\mbox{\Hypertarget{classSDShared_a5f7996970b7ce7a65b5fdf224ee8f6f3}\label{classSDShared_a5f7996970b7ce7a65b5fdf224ee8f6f3}} 
+void {\bfseries add\+Overlap\+Cell} (unsigned int sdd\+Id, size\+\_\+t send\+Index, size\+\_\+t recv\+Index)
+\item 
+\mbox{\Hypertarget{classSDShared_a304e9ff7e7a4b612ad75b3770bfc634b}\label{classSDShared_a304e9ff7e7a4b612ad75b3770bfc634b}} 
+void {\bfseries copy\+Overlap\+Cell\+In} (const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&quantity\+Map, const std\+::unordered\+\_\+map$<$ unsigned int, real $\ast$ $>$ \&buffer) const
+\item 
+\mbox{\Hypertarget{classSDShared_a3038fcccd20d251e4fbe98e31b89faf6}\label{classSDShared_a3038fcccd20d251e4fbe98e31b89faf6}} 
+void {\bfseries copy\+Overlap\+Cell\+From} (const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&quantity\+Map, const std\+::unordered\+\_\+map$<$ unsigned int, real $\ast$ $>$ \&buffer) const
 \end{DoxyCompactItemize}
 
 
@@ -45,73 +65,18 @@ Subdomain on shared memory (S\+DS)
 
 Defines a subdomain on shared memory. Since the data is stored as one block on the S\+DD, a S\+DS is only an array of 2\+D-\/coordinates referencing to cells of the S\+DD. 
 
-\subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}\label{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}} 
-\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
-\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
-\subsubsection{\texorpdfstring{S\+D\+Shared()}{SDShared()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily S\+D\+Shared\+::\+S\+D\+Shared (\begin{DoxyParamCaption}\item[{unsigned int}]{bottom\+Left\+\_\+X,  }\item[{unsigned int}]{bottom\+Left\+\_\+Y,  }\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
-
-
-
-Constructor (rectangle-\/shaped S\+DS) 
-
-
-\begin{DoxyParams}{Parameters}
-{\em bottom\+Left\+\_\+X} & \+: X-\/coord of the bottom-\/left corner \\
-\hline
-{\em bottom\+Left\+\_\+Y} & \+: Y-\/coord of the bottom-\/left corner \\
-\hline
-{\em size\+X } & width of the S\+DS \\
-\hline
-{\em size\+Y } & height of the S\+DS \\
-\hline
-{\em coord\+Converter} & \+: reference coord\+Converter of which the S\+DS will own a copy (should be the coord\+Converter of the parent S\+DS) \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}\label{classSDShared_a51004922c9fbb3f46dd5533dd95a3c12}} 
-\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
-\index{S\+D\+Shared@{S\+D\+Shared}!S\+D\+Shared@{S\+D\+Shared}}
-\subsubsection{\texorpdfstring{S\+D\+Shared()}{SDShared()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily S\+D\+Shared\+::\+S\+D\+Shared (\begin{DoxyParamCaption}\item[{unsigned int}]{bottom\+Left\+\_\+X,  }\item[{unsigned int}]{bottom\+Left\+\_\+Y,  }\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{const \hyperlink{classCoordConverter}{Coord\+Converter} \&}]{coord\+Converter }\end{DoxyParamCaption})}
-
-
-
-Constructor (rectangle-\/shaped S\+DS) 
-
-
-\begin{DoxyParams}{Parameters}
-{\em bottom\+Left\+\_\+X} & \+: X-\/coord of the bottom-\/left corner \\
-\hline
-{\em bottom\+Left\+\_\+Y} & \+: Y-\/coord of the bottom-\/left corner \\
-\hline
-{\em size\+X } & width of the S\+DS \\
-\hline
-{\em size\+Y } & height of the S\+DS \\
-\hline
-{\em coord\+Converter} & \+: reference coord\+Converter of which the S\+DS will own a copy (should be the coord\+Converter of the parent S\+DS) \\
-\hline
-\end{DoxyParams}
-
-
 \subsection{Member Function Documentation}
-\mbox{\Hypertarget{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}\label{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}} 
+\mbox{\Hypertarget{classSDShared_a0ba4c821b3ee742a27d72d5401602d22}\label{classSDShared_a0ba4c821b3ee742a27d72d5401602d22}} 
 \index{S\+D\+Shared@{S\+D\+Shared}!exec\+Equation@{exec\+Equation}}
 \index{exec\+Equation@{exec\+Equation}!S\+D\+Shared@{S\+D\+Shared}}
-\subsubsection{\texorpdfstring{exec\+Equation()}{execEquation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily void S\+D\+Shared\+::exec\+Equation (\begin{DoxyParamCaption}\item[{eq\+Type}]{eq\+Func,  }\item[{const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&}]{quantity\+Map }\end{DoxyParamCaption})}
-
-exec equation on S\+DS to be added as thread task \mbox{\Hypertarget{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}\label{classSDShared_afc27ac7db0bcb8177f54bb5a682606c1}} 
-\index{S\+D\+Shared@{S\+D\+Shared}!exec\+Equation@{exec\+Equation}}
-\index{exec\+Equation@{exec\+Equation}!S\+D\+Shared@{S\+D\+Shared}}
-\subsubsection{\texorpdfstring{exec\+Equation()}{execEquation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily void S\+D\+Shared\+::exec\+Equation (\begin{DoxyParamCaption}\item[{eq\+Type}]{eq\+Func,  }\item[{const std\+::map$<$ std\+::string, \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ $>$ \&}]{quantity\+Map }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{exec\+Equation()}{execEquation()}}
+{\footnotesize\ttfamily void S\+D\+Shared\+::exec\+Equation (\begin{DoxyParamCaption}\item[{eq\+Type \&}]{eq\+Func,  }\item[{const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&}]{quantity\+Map }\end{DoxyParamCaption})}
 
 exec equation on S\+DS to be added as thread task \mbox{\Hypertarget{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}\label{classSDShared_ab3a51f6ef83b411b8839a7953af5257d}} 
 \index{S\+D\+Shared@{S\+D\+Shared}!get\+Id@{get\+Id}}
 \index{get\+Id@{get\+Id}!S\+D\+Shared@{S\+D\+Shared}}
 \subsubsection{\texorpdfstring{get\+Id()}{getId()}}
-{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -120,49 +85,65 @@ Returns S\+DS id.
 \begin{DoxyReturn}{Returns}
 id of S\+DS 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}\label{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}} 
-\index{S\+D\+Shared@{S\+D\+Shared}!get\+Mem\+Index@{get\+Mem\+Index}}
-\index{get\+Mem\+Index@{get\+Mem\+Index}!S\+D\+Shared@{S\+D\+Shared}}
-\subsubsection{\texorpdfstring{get\+Mem\+Index()}{getMemIndex()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Mem\+Index (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption}) const}
+\mbox{\Hypertarget{classSDShared_ae07fd636017e1a465d537a2f21b1ef96}\label{classSDShared_ae07fd636017e1a465d537a2f21b1ef96}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!update\+Boundary\+Cells@{update\+Boundary\+Cells}}
+\index{update\+Boundary\+Cells@{update\+Boundary\+Cells}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{update\+Boundary\+Cells()}{updateBoundaryCells()}}
+{\footnotesize\ttfamily void S\+D\+Shared\+::update\+Boundary\+Cells (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$}]{quantity,  }\item[{bool}]{change\+Neumann\+To\+Opposite = {\ttfamily false} }\end{DoxyParamCaption}) const}
 
 
 
-Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. 
+updates boundary of all S\+D\+Ds according to their values on reference cells on other S\+D\+Ds, for a given quantity. 
 
+/!\textbackslash{} This has to be called A\+F\+T\+ER updating overlap cells, since boundary ~\newline
+ \+\_\+umax = std\+::max(\+\_\+umax, std\+::abs(uy.\+get(0, i, j)));
 
-\begin{DoxyParams}{Parameters}
-{\em i} & \+: X-\/coord \\
-\hline
-{\em j} & \+: Y-\/coord\\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-corresponding memory index 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}\label{classSDShared_a2418c837fb19a0997ca61e4b8bd65597}} 
-\index{S\+D\+Shared@{S\+D\+Shared}!get\+Mem\+Index@{get\+Mem\+Index}}
-\index{get\+Mem\+Index@{get\+Mem\+Index}!S\+D\+Shared@{S\+D\+Shared}}
-\subsubsection{\texorpdfstring{get\+Mem\+Index()}{getMemIndex()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily unsigned int S\+D\+Shared\+::get\+Mem\+Index (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption}) const}
-
-
-
-Gets memory index corresponding to given 2D coordinates. Calls the convert method of the coord converter of the S\+DS. 
+cells may be updated with values on overlap cells. The boolean parameter is optional and can be used for some physical quantities that require the Neumann boundary condition to be opposite.
 
 
 \begin{DoxyParams}{Parameters}
-{\em i} & \+: X-\/coord \\
+{\em quantity\+Name} & name of quantity to update \\
 \hline
-{\em j} & \+: Y-\/coord\\
+{\em change\+Neumann\+To\+Opposite} & if true, this changes the value into its opposite on cells that have Neumann BC. \\
 \hline
 \end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-corresponding memory index 
-\end{DoxyReturn}
+\mbox{\Hypertarget{classSDShared_a0c83e8c7a830c2febcfc944f57fe158b}\label{classSDShared_a0c83e8c7a830c2febcfc944f57fe158b}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!update\+Dirichlet\+Cells@{update\+Dirichlet\+Cells}}
+\index{update\+Dirichlet\+Cells@{update\+Dirichlet\+Cells}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{update\+Dirichlet\+Cells()}{updateDirichletCells()}}
+{\footnotesize\ttfamily void S\+D\+Shared\+::update\+Dirichlet\+Cells (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$}]{quantity }\end{DoxyParamCaption}) const}
+
+
+
+Updates Dirichlet boundary cells of S\+DD according to values stored in memory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & str. name of quantity to update \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classSDShared_aadaccd75a835ca8436c223c56a791c89}\label{classSDShared_aadaccd75a835ca8436c223c56a791c89}} 
+\index{S\+D\+Shared@{S\+D\+Shared}!update\+Neumann\+Cells@{update\+Neumann\+Cells}}
+\index{update\+Neumann\+Cells@{update\+Neumann\+Cells}!S\+D\+Shared@{S\+D\+Shared}}
+\subsubsection{\texorpdfstring{update\+Neumann\+Cells()}{updateNeumannCells()}}
+{\footnotesize\ttfamily void S\+D\+Shared\+::update\+Neumann\+Cells (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$}]{quantity,  }\item[{bool}]{change\+To\+Opposite = {\ttfamily false} }\end{DoxyParamCaption}) const}
+
+
+
+Updates Neumann boundary cells of S\+DD according to values stored in memory. 
+
+This does not require communication with other S\+D\+Ds as long as overlap cells were update before.
+
+
+\begin{DoxyParams}{Parameters}
+{\em quantity\+Name} & str. name of quantity to update \\
+\hline
+{\em change\+To\+Opposite} & change to opposite value of reference according to value. This depends on the boundary and is useful for quantities traditionnally defined on edges. \\
+\hline
+\end{DoxyParams}
 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-source/subdomain/\hyperlink{source_2subdomain_2SDShared_8hpp}{S\+D\+Shared.\+hpp}\item 
+source/subdomain/\mbox{\hyperlink{SDShared_8hpp}{S\+D\+Shared.\+hpp}}\item 
 source/subdomain/S\+D\+Shared.\+cpp\end{DoxyCompactItemize}

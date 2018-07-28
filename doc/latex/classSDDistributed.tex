@@ -12,23 +12,23 @@ Subdomain on distributed memory (S\+DD)
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{classSDDistributed_a4ba8b15a2b28fcbf04d3665075918510}{S\+D\+Distributed} (unsigned int sizeX, unsigned int sizeY, int B\+L\+\_\+X, int B\+L\+\_\+Y, unsigned int boundary\+Thickness, unsigned int id, unsigned int n\+S\+DD)
+\mbox{\hyperlink{classSDDistributed_a07332d418da104a969360c6c671feef4}{S\+D\+Distributed}} (unsigned int sizeX, unsigned int sizeY, int B\+L\+\_\+X, int B\+L\+\_\+Y, unsigned int boundary\+Thickness, unsigned int neighbour\+Hood, unsigned int id, unsigned int n\+S\+DD)
 \begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classSDDistributed_a1af9779279416a7bd519747e3b029124}\label{classSDDistributed_a1af9779279416a7bd519747e3b029124}} 
-\hyperlink{classSDDistributed_a1af9779279416a7bd519747e3b029124}{$\sim$\+S\+D\+Distributed} ()
+\mbox{\hyperlink{classSDDistributed_a1af9779279416a7bd519747e3b029124}{$\sim$\+S\+D\+Distributed}} ()
 \begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}\label{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}} 
-std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \hyperlink{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}{get\+Boundary\+Map} ()
+std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \mbox{\hyperlink{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}{get\+Boundary\+Map}} ()
 \begin{DoxyCompactList}\small\item\em Returns map between coords on S\+DD and \char`\"{}real cell\char`\"{} on neighbour S\+DD / boundary side. \end{DoxyCompactList}\item 
-\hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ \hyperlink{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}{get\+Quantity} (std\+::string name)
+\mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ \mbox{\hyperlink{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}{get\+Quantity}} (std\+::string name)
 \begin{DoxyCompactList}\small\item\em Gets physical quantity previously added with method add\+Quantity. \end{DoxyCompactList}\item 
-const std\+::vector$<$ \hyperlink{classSDShared}{S\+D\+Shared} $>$ \& \hyperlink{classSDDistributed_a9afba0607b6012a0e446b95251559f5d}{get\+S\+DS} () const
+const std\+::vector$<$ \mbox{\hyperlink{classSDShared}{S\+D\+Shared}} $>$ \& \mbox{\hyperlink{classSDDistributed_a9afba0607b6012a0e446b95251559f5d}{get\+S\+DS}} () const
 \begin{DoxyCompactList}\small\item\em Gets all S\+DS on S\+DD for a read-\/only access. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}{get\+SizeX} () const
+unsigned int \mbox{\hyperlink{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}{get\+SizeX}} () const
 \begin{DoxyCompactList}\small\item\em Gets width of S\+DD, excluding boundary thickness. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}{get\+SizeY} () const
+unsigned int \mbox{\hyperlink{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}{get\+SizeY}} () const
 \begin{DoxyCompactList}\small\item\em Gets height of S\+DD, excluding boundary thickness. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDDistributed_a0ab71d942dca319b739390055942a96a}{get\+Id} () const
+unsigned int \mbox{\hyperlink{classSDDistributed_a0ab71d942dca319b739390055942a96a}{get\+Id}} () const
 \begin{DoxyCompactList}\small\item\em Gets unique id of S\+DD. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classSDDistributed_a8a7bf55ebead74e2c234fe21ebc02475}\label{classSDDistributed_a8a7bf55ebead74e2c234fe21ebc02475}} 
 unsigned int {\bfseries get\+Number\+Neighbour\+S\+D\+Ds} () const
@@ -39,88 +39,61 @@ unsigned int {\bfseries get\+Number\+Overlap\+Cells} () const
 \mbox{\Hypertarget{classSDDistributed_ad8247f4958820ef02d97e22059ee7f94}\label{classSDDistributed_ad8247f4958820ef02d97e22059ee7f94}} 
 unsigned int {\bfseries get\+Number\+Boundary\+Cells} () const
 \item 
-const std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \& \hyperlink{classSDDistributed_a5ca6adae6bc3b93f937a633f8813fed0}{get\+Overlap\+Cell\+Map} () const
+const std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \& \mbox{\hyperlink{classSDDistributed_a2a2e744edad326561e3555a352ce4a0a}{get\+Overlap\+Cell\+Map}} () const
 \begin{DoxyCompactList}\small\item\em Returns mapping between overlap cells and corresponding \char`\"{}real cells\char`\"{} on other S\+D\+Ds. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_ae9d8db949ba9da0a95407e1066df17b9}{set\+Value} (std\+::string quantity\+Name, int coordX, int coordY, real value)
+void \mbox{\hyperlink{classSDDistributed_ae9d8db949ba9da0a95407e1066df17b9}{set\+Value}} (std\+::string quantity\+Name, int coordX, int coordY, real value)
 \begin{DoxyCompactList}\small\item\em Manually set the value on a coordinate, without having to get the quantity. \end{DoxyCompactList}\item 
-real \hyperlink{classSDDistributed_a1db6a1bf2f8781b9e4b12be99b4bf9c4}{get\+Value} (std\+::string quantity\+Name, int coordX, int coordY) const
+real \mbox{\hyperlink{classSDDistributed_a1db6a1bf2f8781b9e4b12be99b4bf9c4}{get\+Value}} (std\+::string quantity\+Name, int coordX, int coordY) const
 \begin{DoxyCompactList}\small\item\em Manually set the value on a coordinate, without having to get the quantity. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_ae7695b6c9096e7a2f9c5fc16174aaae9}{build\+Send\+Map} (const \hyperlink{classDomain}{Domain} \&domain)
+void \mbox{\hyperlink{classSDDistributed_a32d97f1dcac80c2f61124460149fb0fb}{build\+Send\+Map}} ()
 \begin{DoxyCompactList}\small\item\em Builds map of cells to send from this S\+DD to other S\+D\+Ds. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_af819b64d742bec7dee4fd0fab43aa6e5}{build\+Recv\+Map} (const \hyperlink{classDomain}{Domain} \&domain)
+void \mbox{\hyperlink{classSDDistributed_a55650dabf89c711ac07e5795e1b87b17}{build\+Recv\+Map}} (const \mbox{\hyperlink{classDomain}{Domain}} \&domain, std\+::map$<$ std\+::pair$<$ int, int $>$, real $>$ \&dirichlet\+Cell\+Map, std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, int $>$ $>$ \&neumann\+Cell\+Map)
 \begin{DoxyCompactList}\small\item\em Builds map between coords on S\+DD and \char`\"{}real cell\char`\"{} on neighbour S\+DD / boundary side. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\void \hyperlink{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}{add\+Quantity} (std\+::string name)
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}{add\+Quantity}} (std\+::string name)
 \begin{DoxyCompactList}\small\item\em Adds physical quantity (and thus data) used in the scheme. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}{build\+All\+S\+DS} (unsigned int n\+S\+DS, std\+::string geom\+Type)
+void \mbox{\hyperlink{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}{build\+All\+S\+DS}} (unsigned int n\+S\+DS, std\+::string geom\+Type)
 \begin{DoxyCompactList}\small\item\em Build subdomains on shared memory based on geometry type. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a467f8c05c2cf7728828ec9d0c617e667}{update\+Overlap\+Cells} (const std\+::vector$<$ std\+::string $>$ \&qties\+To\+Update)
+\mbox{\Hypertarget{classSDDistributed_aa7301877492714e144dc056b133d0a54}\label{classSDDistributed_aa7301877492714e144dc056b133d0a54}} 
+void \mbox{\hyperlink{classSDDistributed_aa7301877492714e144dc056b133d0a54}{dispatch\+Boundary\+Cell}} (const std\+::map$<$ std\+::pair$<$ int, int $>$, real $>$ \&dirichlet\+Cell\+Map, const std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, int $>$ $>$ \&neumann\+Cell\+Map)
+\begin{DoxyCompactList}\small\item\em Dispatch the boundary cells among the sds. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSDDistributed_a4cd7f5aea74376a9a40604459bcc9630}\label{classSDDistributed_a4cd7f5aea74376a9a40604459bcc9630}} 
+void \mbox{\hyperlink{classSDDistributed_a4cd7f5aea74376a9a40604459bcc9630}{dispatch\+Overlap\+Cell}} ()
+\begin{DoxyCompactList}\small\item\em Dispatch the overlap cells among the sds. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classSDDistributed_afd7366e358e454a2fe2eae2b2c870cf1}\label{classSDDistributed_afd7366e358e454a2fe2eae2b2c870cf1}} 
+void \mbox{\hyperlink{classSDDistributed_afd7366e358e454a2fe2eae2b2c870cf1}{update\+Overlap\+Cells}} ()
 \begin{DoxyCompactList}\small\item\em Updates overlap cells by communicating through M\+PI with other S\+D\+Ds. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}{update\+Neumann\+Cells} (std\+::string quantity\+Name, bool change\+To\+Opposite=false)
-\begin{DoxyCompactList}\small\item\em Updates Neumann boundary cells of S\+DD according to values stored in memory. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}{update\+Dirichlet\+Cells} (std\+::string quantity\+Name)
-\begin{DoxyCompactList}\small\item\em Updates Dirichlet boundary cells of S\+DD according to values stored in memory. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a0974e2cce9bfcddfd0acccd1105d980f}{add\+Equation} (std\+::string eq\+Name, eq\+Type eq\+Func)
+\mbox{\Hypertarget{classSDDistributed_a7a3029d43d4961a3ef5c2144e1f28b8f}\label{classSDDistributed_a7a3029d43d4961a3ef5c2144e1f28b8f}} 
+void {\bfseries copy\+Overlap\+Cell} ()
+\item 
+\mbox{\Hypertarget{classSDDistributed_ae58e58e9240e953bc78d94af62d12723}\label{classSDDistributed_ae58e58e9240e953bc78d94af62d12723}} 
+void {\bfseries send\+Overlap\+Cell} ()
+\item 
+\mbox{\Hypertarget{classSDDistributed_a97f1d4d864845aab5cf910eccf2e0e62}\label{classSDDistributed_a97f1d4d864845aab5cf910eccf2e0e62}} 
+void {\bfseries wait\+Overlap\+Cell} ()
+\item 
+\mbox{\Hypertarget{classSDDistributed_aac3708e2ca754bdb3ea192cae5341d84}\label{classSDDistributed_aac3708e2ca754bdb3ea192cae5341d84}} 
+void {\bfseries parse\+Overlap\+Cell} ()
+\item 
+void \mbox{\hyperlink{classSDDistributed_a0974e2cce9bfcddfd0acccd1105d980f}{add\+Equation}} (std\+::string eq\+Name, eq\+Type eq\+Func)
 \begin{DoxyCompactList}\small\item\em Adds an equation to the stack of equations to be computed by the scheme. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classSDDistributed_a00a539076c306457a4dd1aef2c4f2039}\label{classSDDistributed_a00a539076c306457a4dd1aef2c4f2039}} 
-void \hyperlink{classSDDistributed_a00a539076c306457a4dd1aef2c4f2039}{exec\+Equation} (std\+::string eq\+Name)
+void \mbox{\hyperlink{classSDDistributed_a00a539076c306457a4dd1aef2c4f2039}{exec\+Equation}} (std\+::string eq\+Name)
 \begin{DoxyCompactList}\small\item\em Computes equation in the order they were added to the task stack. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}{init\+Thread\+Pool} (unsigned int n\+Threads)
-\begin{DoxyCompactList}\small\item\em Builds thread pool given an amount of threads to build. \end{DoxyCompactList}\item 
-\hyperlink{classSDDistributed_a49ef3cd6d1409cc71d3800fd0fca2f28}{S\+D\+Distributed} (unsigned int sizeX, unsigned int sizeY, unsigned int boundary\+Thickness, unsigned int id)
-\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSDDistributed_a1af9779279416a7bd519747e3b029124}\label{classSDDistributed_a1af9779279416a7bd519747e3b029124}} 
-\hyperlink{classSDDistributed_a1af9779279416a7bd519747e3b029124}{$\sim$\+S\+D\+Distributed} ()
-\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSDDistributed_a995e6fad585afbf4158ea0b323eafc76}\label{classSDDistributed_a995e6fad585afbf4158ea0b323eafc76}} 
-void \hyperlink{classSDDistributed_a995e6fad585afbf4158ea0b323eafc76}{build\+Boundary\+Map} (const \hyperlink{classDomain}{Domain} \&domain)
-\begin{DoxyCompactList}\small\item\em Builds map between coords on S\+DD and \char`\"{}real cell\char`\"{} on neighbour S\+DD / boundary side. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}\label{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}} 
-std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \hyperlink{classSDDistributed_a3617b83f6f2a6368b1f17c938d921e0a}{get\+Boundary\+Map} ()
-\begin{DoxyCompactList}\small\item\em Returns map between coords on S\+DD and \char`\"{}real cell\char`\"{} on neighbour S\+DD / boundary side. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\void \hyperlink{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}{add\+Quantity} (std\+::string name)
-\begin{DoxyCompactList}\small\item\em Adds physical quantity (and thus data) used in the scheme. \end{DoxyCompactList}\item 
-\hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ \hyperlink{classSDDistributed_ade2c34b9bd189f3fb7409fc8dddd55ee}{get\+Quantity} (std\+::string name)
-\begin{DoxyCompactList}\small\item\em Gets physical quantity previously added with method add\+Quantity. \end{DoxyCompactList}\item 
-void \hyperlink{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}{build\+All\+S\+DS} (unsigned int n\+S\+DS, std\+::string geom\+Type)
-\begin{DoxyCompactList}\small\item\em Build subdomains on shared memory based on geometry type. \end{DoxyCompactList}\item 
-const std\+::vector$<$ \hyperlink{classSDShared}{S\+D\+Shared} $>$ \& \hyperlink{classSDDistributed_a2bbdfc4e93476c4ee8cc0b55682a7a5b}{get\+S\+DS} () const
-\begin{DoxyCompactList}\small\item\em Gets all S\+DS on S\+DD for a read-\/only access. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}{get\+SizeX} () const
-\begin{DoxyCompactList}\small\item\em Gets width of S\+DD. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}{get\+SizeY} () const
-\begin{DoxyCompactList}\small\item\em Gets height of S\+DD. \end{DoxyCompactList}\item 
-unsigned int \hyperlink{classSDDistributed_a0ab71d942dca319b739390055942a96a}{get\+Id} () const
-\begin{DoxyCompactList}\small\item\em Gets unique id of S\+DD. \end{DoxyCompactList}\item 
-const std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \& \hyperlink{classSDDistributed_a2a2e744edad326561e3555a352ce4a0a}{get\+Overlap\+Cell\+Map} () const
-\begin{DoxyCompactList}\small\item\em Returns mapping between overlap cells and corresponding \char`\"{}real cells\char`\"{} on other S\+D\+Ds. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}\label{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}} 
-void {\bfseries update\+Neumann\+Cells} (std\+::string quantity\+Name, bool change\+To\+Opposite=false)
-\item 
-\mbox{\Hypertarget{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}\label{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}} 
-void {\bfseries update\+Dirichlet\+Cells} (std\+::string quantity\+Name)
-\item 
-\mbox{\Hypertarget{classSDDistributed_a4c8dc37fa1d0991f0b883563df329518}\label{classSDDistributed_a4c8dc37fa1d0991f0b883563df329518}} 
-void {\bfseries add\+Equation} (eq\+Type eq\+Func)
-\item 
-\mbox{\Hypertarget{classSDDistributed_a083335cd910b0818fb0990873b4e1f87}\label{classSDDistributed_a083335cd910b0818fb0990873b4e1f87}} 
-void {\bfseries exec\+Equation} ()
-\item 
-\mbox{\Hypertarget{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}\label{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}} 
-void {\bfseries init\+Thread\+Pool} (unsigned int n\+Threads)
-\end{DoxyCompactItemize}
+void \mbox{\hyperlink{classSDDistributed_a64669d8f5e7b0d660fbe3b5407d46d46}{init\+Thread\+Pool}} (unsigned int n\+Threads, unsigned int n\+Common\+S\+DS)
+\begin{DoxyCompactList}\small\item\em Builds thread pool given an amount of threads to build. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 Subdomain on distributed memory (S\+DD) 
 
-Defines a subdomain on distributed memory. It represents a part of a domain available as a single block of memory, hence its definition as a rectangle. It will then be sliced on geometric subdomains on this block of shared memory (\hyperlink{classSDShared}{S\+D\+Shared}). 
+Defines a subdomain on distributed memory. It represents a part of a domain available as a single block of memory, hence its definition as a rectangle. It will then be sliced on geometric subdomains on this block of shared memory (\mbox{\hyperlink{classSDShared}{S\+D\+Shared}}). 
 
 \subsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classSDDistributed_a4ba8b15a2b28fcbf04d3665075918510}\label{classSDDistributed_a4ba8b15a2b28fcbf04d3665075918510}} 
+\mbox{\Hypertarget{classSDDistributed_a07332d418da104a969360c6c671feef4}\label{classSDDistributed_a07332d418da104a969360c6c671feef4}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!S\+D\+Distributed@{S\+D\+Distributed}}
 \index{S\+D\+Distributed@{S\+D\+Distributed}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{S\+D\+Distributed()}{SDDistributed()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily S\+D\+Distributed\+::\+S\+D\+Distributed (\begin{DoxyParamCaption}\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{int}]{B\+L\+\_\+X,  }\item[{int}]{B\+L\+\_\+Y,  }\item[{unsigned int}]{boundary\+Thickness,  }\item[{unsigned int}]{id,  }\item[{unsigned int}]{n\+S\+DD }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{S\+D\+Distributed()}{SDDistributed()}}
+{\footnotesize\ttfamily S\+D\+Distributed\+::\+S\+D\+Distributed (\begin{DoxyParamCaption}\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{int}]{B\+L\+\_\+X,  }\item[{int}]{B\+L\+\_\+Y,  }\item[{unsigned int}]{boundary\+Thickness,  }\item[{unsigned int}]{neighbour\+Hood,  }\item[{unsigned int}]{id,  }\item[{unsigned int}]{n\+S\+DD }\end{DoxyParamCaption})}
 
 
 
@@ -131,23 +104,6 @@ Constructor.
 {\em sizeX} & number of cells of subdomain on the X-\/axis \\
 \hline
 {\em sizeY} & number of cells of subdomain on the Y-\/axis \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a49ef3cd6d1409cc71d3800fd0fca2f28}\label{classSDDistributed_a49ef3cd6d1409cc71d3800fd0fca2f28}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!S\+D\+Distributed@{S\+D\+Distributed}}
-\index{S\+D\+Distributed@{S\+D\+Distributed}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{S\+D\+Distributed()}{SDDistributed()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily S\+D\+Distributed\+::\+S\+D\+Distributed (\begin{DoxyParamCaption}\item[{unsigned int}]{sizeX,  }\item[{unsigned int}]{sizeY,  }\item[{unsigned int}]{boundary\+Thickness,  }\item[{unsigned int}]{id }\end{DoxyParamCaption})}
-
-
-
-Constructor. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em sizeX} & \+: number of cells of subdomain on the X-\/axis \\
-\hline
-{\em sizeY} & \+: number of cells of subdomain on the Y-\/axis \\
 \hline
 \end{DoxyParams}
 
@@ -171,23 +127,7 @@ Adds an equation to the stack of equations to be computed by the scheme.
 \mbox{\Hypertarget{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}\label{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!add\+Quantity@{add\+Quantity}}
 \index{add\+Quantity@{add\+Quantity}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{add\+Quantity()}{addQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily template$<$typename T $>$ \\
-void S\+D\+Distributed\+::add\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{name }\end{DoxyParamCaption})}
-
-
-
-Adds physical quantity (and thus data) used in the scheme. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em name} & \+: name of the quantity to add \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}\label{classSDDistributed_a82b5a390e964051d1952c683b4fa5f05}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!add\+Quantity@{add\+Quantity}}
-\index{add\+Quantity@{add\+Quantity}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{add\+Quantity()}{addQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\subsubsection{\texorpdfstring{add\+Quantity()}{addQuantity()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 void S\+D\+Distributed\+::add\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{name }\end{DoxyParamCaption})}
 
@@ -203,24 +143,7 @@ Adds physical quantity (and thus data) used in the scheme.
 \mbox{\Hypertarget{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}\label{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!build\+All\+S\+DS@{build\+All\+S\+DS}}
 \index{build\+All\+S\+DS@{build\+All\+S\+DS}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{build\+All\+S\+D\+S()}{buildAllSDS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::build\+All\+S\+DS (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+S\+DS,  }\item[{std\+::string}]{geom\+Type }\end{DoxyParamCaption})}
-
-
-
-Build subdomains on shared memory based on geometry type. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em n\+S\+DS} & \+: number of subdomains to be built \\
-\hline
-{\em geom\+Type} & \+: geometry type of subdomain (see the \hyperlink{classGeometry}{Geometry} class for possible values) \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}\label{classSDDistributed_a3dbacea02c2d4f36310c81f87f90fe5a}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!build\+All\+S\+DS@{build\+All\+S\+DS}}
-\index{build\+All\+S\+DS@{build\+All\+S\+DS}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{build\+All\+S\+D\+S()}{buildAllSDS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\subsubsection{\texorpdfstring{build\+All\+S\+D\+S()}{buildAllSDS()}}
 {\footnotesize\ttfamily void S\+D\+Distributed\+::build\+All\+S\+DS (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+S\+DS,  }\item[{std\+::string}]{geom\+Type }\end{DoxyParamCaption})}
 
 
@@ -231,14 +154,14 @@ Build subdomains on shared memory based on geometry type.
 \begin{DoxyParams}{Parameters}
 {\em n\+S\+DS} & number of subdomains to be built \\
 \hline
-{\em geom\+Type} & geometry type of subdomain (see the \hyperlink{classGeometry}{Geometry} class for possible values) \\
+{\em geom\+Type} & geometry type of subdomain (see the \mbox{\hyperlink{classGeometry}{Geometry}} class for possible values) \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_af819b64d742bec7dee4fd0fab43aa6e5}\label{classSDDistributed_af819b64d742bec7dee4fd0fab43aa6e5}} 
+Shuffling S\+DS List \mbox{\Hypertarget{classSDDistributed_a55650dabf89c711ac07e5795e1b87b17}\label{classSDDistributed_a55650dabf89c711ac07e5795e1b87b17}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!build\+Recv\+Map@{build\+Recv\+Map}}
 \index{build\+Recv\+Map@{build\+Recv\+Map}!S\+D\+Distributed@{S\+D\+Distributed}}
 \subsubsection{\texorpdfstring{build\+Recv\+Map()}{buildRecvMap()}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::build\+Recv\+Map (\begin{DoxyParamCaption}\item[{const \hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void S\+D\+Distributed\+::build\+Recv\+Map (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classDomain}{Domain}} \&}]{domain,  }\item[{std\+::map$<$ std\+::pair$<$ int, int $>$, real $>$ \&}]{dirichlet\+Cell\+Map,  }\item[{std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, int $>$ $>$ \&}]{neumann\+Cell\+Map }\end{DoxyParamCaption})}
 
 
 
@@ -249,11 +172,11 @@ Builds map between coords on S\+DD and \char`\"{}real cell\char`\"{} on neighbou
 {\em domain} & parent domain of the S\+DD \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_ae7695b6c9096e7a2f9c5fc16174aaae9}\label{classSDDistributed_ae7695b6c9096e7a2f9c5fc16174aaae9}} 
+\mbox{\Hypertarget{classSDDistributed_a32d97f1dcac80c2f61124460149fb0fb}\label{classSDDistributed_a32d97f1dcac80c2f61124460149fb0fb}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!build\+Send\+Map@{build\+Send\+Map}}
 \index{build\+Send\+Map@{build\+Send\+Map}!S\+D\+Distributed@{S\+D\+Distributed}}
 \subsubsection{\texorpdfstring{build\+Send\+Map()}{buildSendMap()}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::build\+Send\+Map (\begin{DoxyParamCaption}\item[{const \hyperlink{classDomain}{Domain} \&}]{domain }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void S\+D\+Distributed\+::build\+Send\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
 
@@ -267,20 +190,7 @@ Builds map of cells to send from this S\+DD to other S\+D\+Ds.
 \mbox{\Hypertarget{classSDDistributed_a0ab71d942dca319b739390055942a96a}\label{classSDDistributed_a0ab71d942dca319b739390055942a96a}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!get\+Id@{get\+Id}}
 \index{get\+Id@{get\+Id}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Id()}{getId()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily unsigned int S\+D\+Distributed\+::get\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-
-
-Gets unique id of S\+DD. 
-
-\begin{DoxyReturn}{Returns}
-id of S\+DD 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classSDDistributed_a0ab71d942dca319b739390055942a96a}\label{classSDDistributed_a0ab71d942dca319b739390055942a96a}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!get\+Id@{get\+Id}}
-\index{get\+Id@{get\+Id}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Id()}{getId()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\subsubsection{\texorpdfstring{get\+Id()}{getId()}}
 {\footnotesize\ttfamily unsigned int S\+D\+Distributed\+::get\+Id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
@@ -293,43 +203,18 @@ id of S\+DD
 \mbox{\Hypertarget{classSDDistributed_a2a2e744edad326561e3555a352ce4a0a}\label{classSDDistributed_a2a2e744edad326561e3555a352ce4a0a}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!get\+Overlap\+Cell\+Map@{get\+Overlap\+Cell\+Map}}
 \index{get\+Overlap\+Cell\+Map@{get\+Overlap\+Cell\+Map}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Overlap\+Cell\+Map()}{getOverlapCellMap()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+\subsubsection{\texorpdfstring{get\+Overlap\+Cell\+Map()}{getOverlapCellMap()}}
 {\footnotesize\ttfamily const std\+::map$<$ std\+::pair$<$int, int$>$, std\+::pair$<$ int, std\+::pair$<$int, int$>$ $>$ $>$\& S\+D\+Distributed\+::get\+Overlap\+Cell\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
 Returns mapping between overlap cells and corresponding \char`\"{}real cells\char`\"{} on other S\+D\+Ds. 
 
-Used by the domain to communicate between S\+D\+Ds when updating overlap cells \mbox{\Hypertarget{classSDDistributed_a5ca6adae6bc3b93f937a633f8813fed0}\label{classSDDistributed_a5ca6adae6bc3b93f937a633f8813fed0}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!get\+Overlap\+Cell\+Map@{get\+Overlap\+Cell\+Map}}
-\index{get\+Overlap\+Cell\+Map@{get\+Overlap\+Cell\+Map}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Overlap\+Cell\+Map()}{getOverlapCellMap()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const std\+::map$<$ std\+::pair$<$ int, int $>$, std\+::pair$<$ int, std\+::pair$<$ int, int $>$ $>$ $>$ \& S\+D\+Distributed\+::get\+Overlap\+Cell\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-
-
-Returns mapping between overlap cells and corresponding \char`\"{}real cells\char`\"{} on other S\+D\+Ds. 
-
-Used by the domain to communicate between S\+D\+Ds when updating overlap cells \mbox{\Hypertarget{classSDDistributed_ade2c34b9bd189f3fb7409fc8dddd55ee}\label{classSDDistributed_ade2c34b9bd189f3fb7409fc8dddd55ee}} 
+Used by the domain to communicate between S\+D\+Ds when updating overlap cells \mbox{\Hypertarget{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}\label{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!get\+Quantity@{get\+Quantity}}
 \index{get\+Quantity@{get\+Quantity}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Quantity()}{getQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily \hyperlink{classQuantity}{Quantity}$<$real$>$$\ast$ S\+D\+Distributed\+::get\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{name }\end{DoxyParamCaption})}
-
-
-
-Gets physical quantity previously added with method add\+Quantity. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em name} & \+: name of the quantity to get \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}\label{classSDDistributed_a14f296606ff1afa1e4878fa6c4928afc}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!get\+Quantity@{get\+Quantity}}
-\index{get\+Quantity@{get\+Quantity}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Quantity()}{getQuantity()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily \hyperlink{classQuantity}{Quantity}$<$ real $>$ $\ast$ S\+D\+Distributed\+::get\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{name }\end{DoxyParamCaption})}
+\subsubsection{\texorpdfstring{get\+Quantity()}{getQuantity()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ S\+D\+Distributed\+::get\+Quantity (\begin{DoxyParamCaption}\item[{std\+::string}]{name }\end{DoxyParamCaption})}
 
 
 
@@ -340,24 +225,11 @@ Gets physical quantity previously added with method add\+Quantity.
 {\em name} & name of the quantity to get \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a2bbdfc4e93476c4ee8cc0b55682a7a5b}\label{classSDDistributed_a2bbdfc4e93476c4ee8cc0b55682a7a5b}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!get\+S\+DS@{get\+S\+DS}}
-\index{get\+S\+DS@{get\+S\+DS}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+S\+D\+S()}{getSDS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily const std\+::vector$<$\hyperlink{classSDShared}{S\+D\+Shared}$>$\& S\+D\+Distributed\+::get\+S\+DS (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-
-
-Gets all S\+DS on S\+DD for a read-\/only access. 
-
-\begin{DoxyReturn}{Returns}
-const reference to the array of all subdomains on S\+DD 
-\end{DoxyReturn}
 \mbox{\Hypertarget{classSDDistributed_a9afba0607b6012a0e446b95251559f5d}\label{classSDDistributed_a9afba0607b6012a0e446b95251559f5d}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!get\+S\+DS@{get\+S\+DS}}
 \index{get\+S\+DS@{get\+S\+DS}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+S\+D\+S()}{getSDS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily const std\+::vector$<$ \hyperlink{classSDShared}{S\+D\+Shared} $>$ \& S\+D\+Distributed\+::get\+S\+DS (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+\subsubsection{\texorpdfstring{get\+S\+D\+S()}{getSDS()}}
+{\footnotesize\ttfamily const std\+::vector$<$ \mbox{\hyperlink{classSDShared}{S\+D\+Shared}} $>$ \& S\+D\+Distributed\+::get\+S\+DS (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
 
@@ -369,20 +241,7 @@ const reference to the array of all subdomains on S\+DD
 \mbox{\Hypertarget{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}\label{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!get\+SizeX@{get\+SizeX}}
 \index{get\+SizeX@{get\+SizeX}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Size\+X()}{getSizeX()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily unsigned int S\+D\+Distributed\+::get\+SizeX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-
-
-Gets width of S\+DD. 
-
-\begin{DoxyReturn}{Returns}
-width of S\+DD 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}\label{classSDDistributed_a567b9535558271515166ce7ebd3f6c29}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!get\+SizeX@{get\+SizeX}}
-\index{get\+SizeX@{get\+SizeX}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Size\+X()}{getSizeX()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\subsubsection{\texorpdfstring{get\+Size\+X()}{getSizeX()}}
 {\footnotesize\ttfamily unsigned int S\+D\+Distributed\+::get\+SizeX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
@@ -395,20 +254,7 @@ width of S\+DD
 \mbox{\Hypertarget{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}\label{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!get\+SizeY@{get\+SizeY}}
 \index{get\+SizeY@{get\+SizeY}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Size\+Y()}{getSizeY()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily unsigned int S\+D\+Distributed\+::get\+SizeY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
-
-
-
-Gets height of S\+DD. 
-
-\begin{DoxyReturn}{Returns}
-height of S\+DD 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}\label{classSDDistributed_a9bf0049f4c95513b4d9c9a9bac0f6eb4}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!get\+SizeY@{get\+SizeY}}
-\index{get\+SizeY@{get\+SizeY}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{get\+Size\+Y()}{getSizeY()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+\subsubsection{\texorpdfstring{get\+Size\+Y()}{getSizeY()}}
 {\footnotesize\ttfamily unsigned int S\+D\+Distributed\+::get\+SizeY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
 
 
@@ -439,11 +285,11 @@ Manually set the value on a coordinate, without having to get the quantity.
 {\em value} & value to set on the desired cell for the desired quantity \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}\label{classSDDistributed_a75660cf18d7248ac64e86ab457061b91}} 
+\mbox{\Hypertarget{classSDDistributed_a64669d8f5e7b0d660fbe3b5407d46d46}\label{classSDDistributed_a64669d8f5e7b0d660fbe3b5407d46d46}} 
 \index{S\+D\+Distributed@{S\+D\+Distributed}!init\+Thread\+Pool@{init\+Thread\+Pool}}
 \index{init\+Thread\+Pool@{init\+Thread\+Pool}!S\+D\+Distributed@{S\+D\+Distributed}}
 \subsubsection{\texorpdfstring{init\+Thread\+Pool()}{initThreadPool()}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::init\+Thread\+Pool (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+Threads }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void S\+D\+Distributed\+::init\+Thread\+Pool (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+Threads,  }\item[{unsigned int}]{n\+Common\+S\+DS }\end{DoxyParamCaption})}
 
 
 
@@ -452,6 +298,8 @@ Builds thread pool given an amount of threads to build.
 
 \begin{DoxyParams}{Parameters}
 {\em n\+Threads} & number of threads to build \\
+\hline
+{\em n\+Common\+S\+DS} & number of work to share among the threads \\
 \hline
 \end{DoxyParams}
 \mbox{\Hypertarget{classSDDistributed_ae9d8db949ba9da0a95407e1066df17b9}\label{classSDDistributed_ae9d8db949ba9da0a95407e1066df17b9}} 
@@ -475,59 +323,10 @@ Manually set the value on a coordinate, without having to get the quantity.
 {\em value} & value to set on the desired cell for the desired quantity \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}\label{classSDDistributed_a0eaa89db3fd4b663d887de8dcf9f65af}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!update\+Dirichlet\+Cells@{update\+Dirichlet\+Cells}}
-\index{update\+Dirichlet\+Cells@{update\+Dirichlet\+Cells}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{update\+Dirichlet\+Cells()}{updateDirichletCells()}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::update\+Dirichlet\+Cells (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name }\end{DoxyParamCaption})}
-
-
-
-Updates Dirichlet boundary cells of S\+DD according to values stored in memory. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em quantity\+Name} & str. name of quantity to update \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}\label{classSDDistributed_a492c6799b5b1f79481a2ee6e50979a18}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!update\+Neumann\+Cells@{update\+Neumann\+Cells}}
-\index{update\+Neumann\+Cells@{update\+Neumann\+Cells}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{update\+Neumann\+Cells()}{updateNeumannCells()}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::update\+Neumann\+Cells (\begin{DoxyParamCaption}\item[{std\+::string}]{quantity\+Name,  }\item[{bool}]{change\+To\+Opposite = {\ttfamily false} }\end{DoxyParamCaption})}
-
-
-
-Updates Neumann boundary cells of S\+DD according to values stored in memory. 
-
-This does not require communication with other S\+D\+Ds as long as overlap cells were update before.
-
-
-\begin{DoxyParams}{Parameters}
-{\em quantity\+Name} & str. name of quantity to update \\
-\hline
-{\em change\+To\+Opposite} & change to opposite value of reference according to value. This depends on the boundary and is useful for quantities traditionnally defined on edges. \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classSDDistributed_a467f8c05c2cf7728828ec9d0c617e667}\label{classSDDistributed_a467f8c05c2cf7728828ec9d0c617e667}} 
-\index{S\+D\+Distributed@{S\+D\+Distributed}!update\+Overlap\+Cells@{update\+Overlap\+Cells}}
-\index{update\+Overlap\+Cells@{update\+Overlap\+Cells}!S\+D\+Distributed@{S\+D\+Distributed}}
-\subsubsection{\texorpdfstring{update\+Overlap\+Cells()}{updateOverlapCells()}}
-{\footnotesize\ttfamily void S\+D\+Distributed\+::update\+Overlap\+Cells (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{qties\+To\+Update }\end{DoxyParamCaption})}
-
-
-
-Updates overlap cells by communicating through M\+PI with other S\+D\+Ds. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em qties\+To\+Update} & list of str. names of quantities to update \\
-\hline
-\end{DoxyParams}
 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
-source/subdomain/\hyperlink{source_2subdomain_2SDDistributed_8hpp}{S\+D\+Distributed.\+hpp}\item 
+source/subdomain/\mbox{\hyperlink{SDDistributed_8hpp}{S\+D\+Distributed.\+hpp}}\item 
 source/subdomain/Domain.\+cpp\item 
 source/subdomain/S\+D\+Distributed.\+cpp\end{DoxyCompactItemize}

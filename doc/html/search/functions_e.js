@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['updateboundarycells',['updateBoundaryCells',['../classDomain.html#af169473470489edc4235399887c10da0',1,'Domain::updateBoundaryCells(std::string quantityName, bool changeNeumannToOpposite=false)'],['../classDomain.html#af169473470489edc4235399887c10da0',1,'Domain::updateBoundaryCells(std::string quantityName, bool changeNeumannToOpposite=false)']]],
-  ['updatedirichletcells',['updateDirichletCells',['../classSDDistributed.html#a0eaa89db3fd4b663d887de8dcf9f65af',1,'SDDistributed']]],
-  ['updateneumanncells',['updateNeumannCells',['../classSDDistributed.html#a492c6799b5b1f79481a2ee6e50979a18',1,'SDDistributed']]],
-  ['updateoverlapcells',['updateOverlapCells',['../classDomain.html#a4411f8eb6c118c84f16d62a411b4432a',1,'Domain::updateOverlapCells()'],['../classSDDistributed.html#a467f8c05c2cf7728828ec9d0c617e667',1,'SDDistributed::updateOverlapCells()'],['../classDomain.html#abcd8aa2529907b8022e41e45c85f5144',1,'Domain::updateOverlapCells()']]]
+  ['writequantity',['writeQuantity',['../namespaceIO.html#a98f43edfc02e8c62ca9f005a9994ab69',1,'IO']]],
+  ['writestate',['writeState',['../classHydro4x1.html#a3c0c4f4b9f96e257ec011173caaf7142',1,'Hydro4x1::writeState(std::string directory)'],['../classHydro4x1.html#a776a3b1a53cca37f09e7bb883fa004b3',1,'Hydro4x1::writeState()'],['../classHydro4x2.html#a9c39291599196f2e3ff57bd416488edb',1,'Hydro4x2::writeState(std::string directory)'],['../classHydro4x2.html#ab1e5cb653e1f2bfc2965b80581bb0b86',1,'Hydro4x2::writeState()'],['../classHydro8x1.html#a475ddb381ec164a5adf8f2acc0b2802e',1,'Hydro8x1::writeState(std::string directory)'],['../classHydro8x1.html#a37b7863b77dd7569e20c1c24aad3a36d',1,'Hydro8x1::writeState()']]]
 ];

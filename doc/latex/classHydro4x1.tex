@@ -1,0 +1,86 @@
+\hypertarget{classHydro4x1}{}\section{Hydro4x1 Class Reference}
+\label{classHydro4x1}\index{Hydro4x1@{Hydro4x1}}
+
+
+Donor-\/cell scheme for the Euler hydrodynamics equations.  
+
+
+
+
+{\ttfamily \#include $<$hydro4x1.\+hpp$>$}
+
+Inheritance diagram for Hydro4x1\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classHydro4x1}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classHydro4x1_a9338034ca8db609008d30df744477b8a}\label{classHydro4x1_a9338034ca8db609008d30df744477b8a}} 
+\mbox{\hyperlink{classHydro4x1_a9338034ca8db609008d30df744477b8a}{Hydro4x1}} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classHydro4x1_a13eab6c177e1e83a4f6528cb64e15374}\label{classHydro4x1_a13eab6c177e1e83a4f6528cb64e15374}} 
+\mbox{\hyperlink{classHydro4x1_a13eab6c177e1e83a4f6528cb64e15374}{$\sim$\+Hydro4x1}} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classHydro4x1_a3c0c4f4b9f96e257ec011173caaf7142}{write\+State}} (std\+::string directory)
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to a text file. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classHydro4x1_a776a3b1a53cca37f09e7bb883fa004b3}{write\+State}} ()
+\begin{DoxyCompactList}\small\item\em Writes solution at given time to the output file. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classHydro4x1_a92400c7b09a487d0a91d003fb903bf01}{advection}} (const \mbox{\hyperlink{classSDShared}{S\+D\+Shared}} \&sds, const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
+\begin{DoxyCompactList}\small\item\em Solves mass/transport equation on given subdomain. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classHydro4x1_a02eea87f23013a5d8f292ee1e5a877f3}\label{classHydro4x1_a02eea87f23013a5d8f292ee1e5a877f3}} 
+void {\bfseries source} (const \mbox{\hyperlink{classSDShared}{S\+D\+Shared}} \&sds, const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&quantity\+Map)
+\item 
+\mbox{\Hypertarget{classHydro4x1_af909fbf65e4146d136712e8c5e23bb74}\label{classHydro4x1_af909fbf65e4146d136712e8c5e23bb74}} 
+void {\bfseries update\+Boundary} (const \mbox{\hyperlink{classSDShared}{S\+D\+Shared}} \&sds, const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$$>$ \&quantity\+Map)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Donor-\/cell scheme for the Euler hydrodynamics equations. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classHydro4x1_a92400c7b09a487d0a91d003fb903bf01}\label{classHydro4x1_a92400c7b09a487d0a91d003fb903bf01}} 
+\index{Hydro4x1@{Hydro4x1}!advection@{advection}}
+\index{advection@{advection}!Hydro4x1@{Hydro4x1}}
+\subsubsection{\texorpdfstring{advection()}{advection()}}
+{\footnotesize\ttfamily void Hydro4x1\+::advection (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classSDShared}{S\+D\+Shared}} \&}]{sds,  }\item[{const std\+::map$<$ std\+::string, \mbox{\hyperlink{classQuantity}{Quantity}}$<$ real $>$ $\ast$ $>$ \&}]{quantity\+Map }\end{DoxyParamCaption})}
+
+
+
+Solves mass/transport equation on given subdomain. 
+
+This function computes one iteration in time of the transport equation on a given subdomain on shared memory. Solving on a \char`\"{}small\char`\"{} portion of the global domain such as a S\+DS leaves control to the user on how the computations are done (parallel threads, geometrical shape of the computed domain, etc.) \mbox{\Hypertarget{classHydro4x1_a3c0c4f4b9f96e257ec011173caaf7142}\label{classHydro4x1_a3c0c4f4b9f96e257ec011173caaf7142}} 
+\index{Hydro4x1@{Hydro4x1}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Hydro4x1@{Hydro4x1}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Hydro4x1\+::write\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{directory }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to a text file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & folder path where output files will be written \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classHydro4x1_a776a3b1a53cca37f09e7bb883fa004b3}\label{classHydro4x1_a776a3b1a53cca37f09e7bb883fa004b3}} 
+\index{Hydro4x1@{Hydro4x1}!write\+State@{write\+State}}
+\index{write\+State@{write\+State}!Hydro4x1@{Hydro4x1}}
+\subsubsection{\texorpdfstring{write\+State()}{writeState()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Hydro4x1\+::write\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Writes solution at given time to the output file. 
+
+Call right after iteration of the scheme without parameter to write current state 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+source/project/hydro4x1/\mbox{\hyperlink{hydro4x1_8hpp}{hydro4x1.\+hpp}}\item 
+source/project/hydro4x1/hydro4x1.\+cpp\end{DoxyCompactItemize}
