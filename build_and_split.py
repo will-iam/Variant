@@ -9,6 +9,7 @@ import argparse
 import script.build_case as build_case
 import script.sdd as sdd
 from script.launcher import get_case_path
+from timeit import default_timer as timer
 
 parser = argparse.ArgumentParser(description="Build and Split case", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
@@ -33,7 +34,9 @@ for p in SDD_powersOfTwo:
     for i in range(int(p//2 + 1)):
         nSDD.append((2**i, 2**(p-i)))
 
-nSDD = [(1, 1), (8, 8), (4,16), (5, 25) ,(10, 25)]
+nSDD = [(2, 2), (2, 4), (4, 4), (4, 8), (8, 8), (8, 16), (16, 16), (16, 32)]
+#nSDD = [(16, 32), (32, 32), (32, 64)]
+nSDD = [(1, 1)]
 
 this_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -42,7 +45,10 @@ case_path = get_case_path(project_name, case_name)
 init_path = os.path.join(case_path, "init")
 
 # Build case
+start = timer()
 qty_name_list = build_case.build_case(case_path, init_path)
+end = timer()
+print("Build case %s in %s second(s)" % (case_path, int((end - start))))
 
 for (nSDD_X, nSDD_Y) in nSDD:
 	print("Splitting into " + str((nSDD_X, nSDD_Y)))
