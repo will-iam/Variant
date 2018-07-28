@@ -3,5 +3,6 @@
 int main(int argc, char **argv)
 {
     Hydro4x1 scheme;
-    return scheme.main(argc, argv);
+    int r = scheme.main(argc, argv);
+    return r;
 }

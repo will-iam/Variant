@@ -17,7 +17,7 @@ def make_sure_path_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
-def read_quantity(input_dir, quantity_name, dtype = 'decimal'):
+def read_converter(input_dir, uid_to_coords):
     with open(os.path.join(input_dir, 'domain.dat'), 'r') as domain_f:
         # Reading mesh info on the first line
         # Read dx and dy in first line
@@ -30,29 +30,27 @@ def read_quantity(input_dir, quantity_name, dtype = 'decimal'):
         dx = lx / Nx
         dy = ly / Ny
 
-        uid_to_coords = dict()
         for line in domain_f:
             line_list = line.split()
             if line_list:
-                uid_to_coords[line_list[0]] = (int(line_list[1]), int(line_list[2]))
+                uid_to_coords[int(line_list[0])] = (int(line_list[1]), int(line_list[2]))
 
-    data = None
-    if dtype == 'decimal':
-        data = np.zeros((Nx, Ny), dtype = np.dtype(Decimal))
-    elif dtype == 'str':
-        data = np.zeros((Nx, Ny), dtype = object)
+    return Nx, Ny, dx, dy
 
-    with open(os.path.join(input_dir, quantity_name + '.dat'), 'r') as quantity_f:
-        for line in quantity_f:
-            line_list = line.split(' ')
-            coords = uid_to_coords[line_list[0]]
-            if dtype == 'decimal':
-                value = Decimal(line_list[1])
-            elif dtype == 'str':
-                value = line_list[1]
-            data[coords[0]][coords[1]] = value
 
-    return dx, dy, data
+def read_quantity(data, input_dir, uid_to_coords, quantity_name):
+    
+#    with open(os.path.join(input_dir, quantity_name + '.dat'), 'r') as quantity_f:
+#        for line in quantity_f:
+#            line_list = line.split(' ')
+#            coords = uid_to_coords[int(line_list[0])]
+#            value = Decimal(line_list[1])
+#            data[coords[0]][coords[1]] = value
+
+    quantity = np.loadtxt(os.path.join(input_dir, quantity_name + '.dat'))
+    for i, v in quantity:
+        coords = uid_to_coords[int(i)]
+        data[coords[0]][coords[1]] = v
 
 def read_exec_options(input_dir):
     with open(os.path.join(output_dir, 'exec_options.dat'), 'r') as f:
@@ -138,9 +136,12 @@ def write_quantity(output_dir, quant_name, uid_to_val):
     #    import pdb; pdb.set_trace()
     #"{:16.16g}".format(val)
 
-    with open(os.path.join(output_dir, quant_name + '.dat'), 'w+') as f:
-        for uid, val in uid_to_val.items():
-            f.write(str(uid) + " " + "{:16.16g}".format(val) + "\n")
+    #with open(os.path.join(output_dir, quant_name + '.dat'), 'w+') as f:
+    #    for uid, val in uid_to_val:
+    #        f.write(str(uid) + " " + "{:16.16g}".format(val) + "\n")
+
+    x = np.arange(len(uid_to_val))
+    np.savetxt(os.path.join(output_dir, quant_name + '.dat'), np.c_[x, uid_to_val], fmt='%d\t%16.16g')
 
 def write_scheme_info(output_dir, T, CFL):
     with open(os.path.join(output_dir, 'scheme_info.dat'), 'w+') as f:
@@ -188,14 +189,3 @@ def read_perf_info(data_dir, nSDD):
         iterationTime[i] = np.loadtxt(os.path.join(data_dir, 'sdd' + str(i), 'timer-iteration.dat'))
 
     return {'computeTime': computeTime, 'iterationTime': iterationTime}
-
-def write_quantity_names(output_dir, qty_names):
-    with open(os.path.join(output_dir, 'quantities.dat'), 'w') as f:
-        f.write(' '.join(qty_names) + '\n')
-
-def read_quantity_names(input_dir):
-    with open(os.path.join(input_dir, 'quantities.dat'), 'r') as f:
-        qty_names = f.readline().split()
-
-    return qty_names
-

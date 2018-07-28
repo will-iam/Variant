@@ -111,19 +111,19 @@ int IO::loadExecOptions(std::string directory, Domain& domain) {
     return 0;
 }
 
-int IO::loadQuantity(std::string directory,
-        std::string quantityName, Domain& domain, bool constant) {
-
-
+int IO::loadQuantity(std::string directory, std::string quantityName, Domain& domain) {
     SDDistributed& sdd = domain.getSDD();
-
-    domain.addQuantity(quantityName, constant);
+    domain.addQuantity(quantityName);
 
     std::ostringstream oss;
     oss << sdd.getId();
 
-    std::ifstream ifs(directory + "/sdd" + oss.str() + "/" + quantityName + ".dat",
-                      std::ios::in);
+    std::ifstream ifs(directory + "/sdd" + oss.str() + "/" + quantityName + ".dat", std::ios::in);
+
+    // If the file does not exist, SDD quantity will be initialized to 0.
+    if (!ifs.is_open())
+        return 0;
+    
     std::string tmpStr;
 
     for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
@@ -167,9 +167,6 @@ int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
         domain.addBoundaryCoords(std::pair<int, int>(iCoord, jCoord), BCtype, value);
     }
     ifs.close();
-
-    // Build domain boundary map between SDDs before leaving
-    domain.buildBoundaryMap();
 
     return 0;
 }

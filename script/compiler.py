@@ -60,7 +60,8 @@ class Engine:
         cmd = config.mpi_RUN.split(' ')
         if mpi_nprocs > 0:
             if self._gdb:
-                cmd = [config.mpi_RUN, '-n', str(mpi_nprocs), 'xterm', '-e', 'gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path] + run_option
+                #cmd = cmd + ['-n', str(mpi_nprocs), 'xterm', '-e', 'gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path] + run_option
+                cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path] + run_option
                 print(' '.join(cmd))
                 subprocess.check_call(cmd)
             elif self._valgrind:
@@ -82,7 +83,12 @@ class Engine:
                 # to add environment variable visible in this process + all children:
                 os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
                 '''
-                cmd = cmd + ['-n', str(mpi_nprocs), self._binary_path, '-i', input_path, '-o', output_path] + run_option
+                # KnL options
+                # '-m', 'block:block'
+                # '-m', 'block:cyclic'
+                # '-m', 'block:fcyclic'
+                cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-m', 'block:cyclic', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path] + run_option
+                #cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path] + run_option
                 print(' '.join(cmd))
                 subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
         else:

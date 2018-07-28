@@ -33,37 +33,36 @@ Geometry::buildGeometry(unsigned int nShapes,
     geometry.reserve(nShapes);
 
     if(geomType == RANDOM) {
+        // Building whole rectangle and shuffling it
+        // to get random coords
+        unsigned int shapeSize = (_sizeX * _sizeY) / nShapes;
+        std::vector<std::pair <int, int> >
+            allRect = buildRectangle(_bottomLeftX, _bottomLeftY,
+                    _sizeX, _sizeY);
+        std::random_shuffle(allRect.begin(), allRect.end());
 
-            // Building whole rectangle and shuffling it
-            // to get random coords
-            unsigned int shapeSize = (_sizeX * _sizeY) / nShapes;
-            std::vector<std::pair <int, int> >
-                allRect = buildRectangle(_bottomLeftX, _bottomLeftY,
-                        _sizeX, _sizeY);
-            std::random_shuffle(allRect.begin(), allRect.end());
-
-            std::vector< std::pair<int, int> > randomShape;
-            for (unsigned int i = 0; i < nShapes - 1; i++) {
-                for (unsigned int j = 0; j < shapeSize; j++) {
-                    randomShape.push_back(allRect.back());
-                    allRect.pop_back();
-                }
-                geometry.push_back(randomShape);
-                randomShape.clear();
-            }
-            // For the last line, we push it all the way
-            int i = 0;
-            for (std::vector< std::pair<int, int> >::reverse_iterator
-                    it = allRect.rbegin(); it != allRect.rend(); ++it) {
-                randomShape.push_back(*it);
-                ++i;
+        std::vector< std::pair<int, int> > randomShape;
+        for (unsigned int i = 0; i < nShapes - 1; i++) {
+            for (unsigned int j = 0; j < shapeSize; j++) {
+                randomShape.push_back(allRect.back());
+                allRect.pop_back();
             }
             geometry.push_back(randomShape);
+            randomShape.clear();
+        }
+        // For the last line, we push it all the way
+        int i = 0;
+        for (std::vector< std::pair<int, int> >::reverse_iterator
+                it = allRect.rbegin(); it != allRect.rend(); ++it) {
+            randomShape.push_back(*it);
+            ++i;
+        }
+        geometry.push_back(randomShape);
 
-            int totalSize = 0;
-            for (unsigned int i = 0; i < geometry.size(); i++) {
-                totalSize += geometry[i].size();
-            }
+        int totalSize = 0;
+        for (unsigned int i = 0; i < geometry.size(); i++) {
+            totalSize += geometry[i].size();
+        }
     }
 
     else {

@@ -6,7 +6,7 @@ import numpy as np
 from math import sqrt, sin
 import sys
 import os
-
+from decimal import Decimal
 sys.path.insert(1, os.path.join(sys.path[0], '../../../'))
 import script.io as io
 from chars import *
@@ -26,13 +26,13 @@ quantityDict = dict()
 # ------------------------------------------------------------------------------
 # rho initial state
 # ------------------------------------------------------------------------------
-rho_uid_to_val = dict()
-rhoe_uid_to_val = dict()
+rho_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
+rhoe_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
 for i in range(Nx):
     for j in range(Ny):
         coords = coords_to_uid[(i, j)]
         P = 1.0
-        if i <= Nx // 2 and j <= Ny // 2:
+        if i <= Nx / 2 and j <= Ny / 2:
             rho_uid_to_val[coords] = 1#float(i) / Nx
         else:
             P = 0.1
@@ -72,21 +72,8 @@ for coord in coords_to_bc:
 # ------------------------------------------------------------------------------
 # velocity states
 # ------------------------------------------------------------------------------
-rhou_x_uid_to_val = dict()
-rhou_y_uid_to_val = dict()
-for i in range(Nx):
-    for j in range(Ny):
-        x = i * dx - lx / 2.
-        y = j * dy - ly / 2.
-        if x != 0 or y != 0:
-            rhou_x_uid_to_val[coords_to_uid[(i, j)]] = 0#2 * (x - lx / 4)#-y / (sqrt(x**2 + y**2))
-            rhou_y_uid_to_val[coords_to_uid[(i, j)]] = 0#x / (sqrt(x**2 + y**2))
-        else:
-            rhou_x_uid_to_val[coords_to_uid[(i, j)]] = 0#2 * (x - lx / 4)
-            rhou_y_uid_to_val[coords_to_uid[(i, j)]] = 0
 
 # Add quantities to the quantity dictionary
 quantityDict['rho'] = rho_uid_to_val
-quantityDict['rhou_x'] = rhou_x_uid_to_val
-quantityDict['rhou_y'] = rhou_y_uid_to_val
 quantityDict['rhoe'] = rhoe_uid_to_val
+

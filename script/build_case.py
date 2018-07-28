@@ -14,7 +14,7 @@ def build_case(case_path, output_dir, force_build = False):
     Load all physical/numerical data from case
     '''
 
-    # If the directort does not exist, then build:
+    # If the directory does not exist, then build:
     if not os.path.isdir(output_dir):
         force_build = True
         io.make_sure_path_exists(output_dir)
@@ -36,10 +36,10 @@ def build_case(case_path, output_dir, force_build = False):
     sys.path.append(case_path)
     # Reload chars also else, you build the case with the wrong characteristics
     import chars
-    chars = reload(chars)
+    # chars = reload(chars)
 
     import init as case
-    case = reload(case)
+    # case = reload(case)
 
     del sys.path[-1]
 
@@ -59,11 +59,9 @@ def build_case(case_path, output_dir, force_build = False):
     # Write quantities and boundary conditions if necessary
     for q_name, q in case.quantityDict.items():
         io.write_quantity(output_dir, q_name, q)
-
-    # Write file with list of quantities
-    io.write_quantity_names(output_dir, case.quantityDict.keys())
-
-    q_name_list = list(case.quantityDict.keys())
+    
+    # Use quantity list from the characteristics.
+    q_name_list = list(chars.quantityList)
 
     del case
 

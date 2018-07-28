@@ -4,484 +4,154 @@
 import __future__
 import sys
 import itertools
-import copy
 from decimal import *
 from seek_common import *
 import script.compiler as compiler
 
-# Get case names from all directories in case/project_name/
-case_name = args.c
-engineOptionDict = {
-'project_name': args.project_name,
-'compiler': 'mpi',
-'mode': 'release' if not args.debug else 'debug',
-'precision': 'double',
-'std': 'c++14',
-'must_compile': not args.nocompile,
-'vtune': args.vtune,
-'gdb' : args.debug,
-'valgrind' : False,
-'node_number' : int(np.ceil(float(args.max_core_number) /args.core_per_node))
-}
 
-# Define execution parameters
-machine = args.machine
-nTotalCores = args.max_core_number
-SDSgeom = 'line'
-#ratioThreadsCores = [1., 3.97]
-ratioThreadsCores = [1]
-SDSratioList = [4]
-SDScommonDivider = 5./32.
+testList = list()
+
 nruns = 1
-nCoresPerNode = args.core_per_node
-
-# Clean compile if requested.
-if args.clean_compile:
-    compiler.Engine(engineOptionDict, False, True)
-    print("Cleaned target")
-    sys.exit(0)
-
-def weakSDD(initSize, square = False):
-    testBattery = {}
-    caseSizeX = initSize // 2
-    caseSizeY = initSize
-    for p in [0, 1, 2, 3, 4, 5, 6]:
-    	# Defining case directory
-        if p % 2 == 1:
-            caseSizeY = caseSizeY * 2
-        else:
-            caseSizeX = caseSizeX * 2
-        cn = case_name + str(caseSizeX) + 'x' + str(caseSizeY)
-
-        for ratio in ratioThreadsCores:
-            initP = 0
-            if square == True:
-                initP = p // 2
-            for i in range(initP, p // 2 + 1):
-                test = {}
-                test['SDSgeom'] = SDSgeom
-                test['nSDD'] = (2**i, 2**(p-i))
-                nsdd = test['nSDD'][0] * test['nSDD'][1]
-                for SDSratio in SDSratioList:
-                    # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
-                    test['nCoresPerSDD'] = 1
-
-                    # Pour un calcul à charge/ressource constante
-                    test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratio)])
-
-                    # Définition du nombre de SDS
-                    test['nSDS'] = test['nThreads']
-
-                    # add the number of tests.
-                    test['nRuns'] = nruns
-
-                    # add the machine on which is run the test
-                    test['machine'] = machine
-
-                    # add the common SDS size
-                    test['nCommonSDS'] = 0
-
-                    # Finally add the test in the battery
-                    if cn not in testBattery.keys():
-                        testBattery[cn] = []
-                    testBattery[cn].append(copy.copy(test))
-    return testBattery
-
-def weakSDS(initSize):
-    testBattery = {}
-    caseSizeX = initSize // 2
-    caseSizeY = initSize
-    for p in range(0, 7):
-    	# Defining case directory
-        if p % 2 == 1:
-            caseSizeY = caseSizeY * 2
-        else:
-            caseSizeX = caseSizeX * 2
-        cn = case_name + str(caseSizeX) + 'x' + str(caseSizeY)
-
-        if caseSizeX != 512 or caseSizeY != 1024:
-            continue
-
-        for ratio in ratioThreadsCores:
-            test = {}
-            test['SDSgeom'] = SDSgeom
-            test['nSDD'] = (1, 1)
-            for SDSratio in SDSratioList:
-                # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
-                nCoresPerSDD = 2**p
-
-                # élimine cas impossible
-                if nCoresPerSDD > nTotalCores:
-                    continue
-
-                test['nCoresPerSDD'] = nCoresPerSDD
-
-                # Pour un calcul à charge/ressource constante
-                test['nThreads'] = int(nCoresPerSDD * ratio)
-                if test['nThreads'] <= 0:
-                    continue
-
-                # Définition du nombre de SDS
-                test['nSDS'] = int(test['nThreads'] * SDSratio)
-
-                # the maximum number is the number of cells.
-                if test['nSDS'] > caseSizeX * caseSizeY:
-                    continue
-
-                # add the number of tests.
-                test['nRuns'] = nruns
-
-                # add the machine on which is run the test
-                test['machine'] = machine
-
-                # Finally add the test in the battery
-                if cn not in testBattery.keys():
-                    testBattery[cn] = []
-
-                # add the common SDS size
-                test['nCommonSDS'] = int(test['nSDS'] * SDScommonDivider)
-                testBattery[cn].append(copy.copy(test))
-
-                test['nCommonSDS'] = 0
-                testBattery[cn].append(copy.copy(test))
-
-    return testBattery
-
-def strongSDS(caseSizeXY, startPower = 0, endPower = 7):
-    testBattery = {}
-    for p in range(startPower, endPower):
-    	# Defining case directory
-        cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-        for ratio in ratioThreadsCores:
-            test = {}
-            test['SDSgeom'] = SDSgeom
-            test['nSDD'] = (1, 1)
-            for SDSratio in SDSratioList:
-                # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
-                nCoresPerSDD = 2**p
-
-                # élimine cas impossible
-                if nCoresPerSDD > nTotalCores:
-                    continue
-
-                test['nCoresPerSDD'] = nCoresPerSDD
-
-                # Pour un calcul à charge/ressource constante
-                test['nThreads'] = int(nCoresPerSDD * ratio)
-                if test['nThreads'] <= 0:
-                    continue
-
-                # Définition du nombre de SDS
-                test['nSDS'] = int(test['nThreads'] * SDSratio)
-
-                # the maximum number is the number of cells.
-                if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
-                    continue
-
-                # add the number of tests.
-                test['nRuns'] = nruns
-
-                # add the machine on which is run the test
-                test['machine'] = machine
-
-                # Finally add the test in the battery
-                if cn not in testBattery.keys():
-                    testBattery[cn] = []
-
-                # add the common SDS size
-                test['nCommonSDS'] = int(test['nSDS'] * SDScommonDivider)
-                testBattery[cn].append(copy.copy(test))
-
-    return testBattery
-
-def strongSDD(caseSizeXY, square = False):
-    minSdd = int(np.log2(nTotalCores // nCoresPerNode))
-    maxSdd = int(np.log2(nTotalCores))
-
-    testBattery = {}
-    # Defining case directory
-    cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-    for ratio in ratioThreadsCores:
-        for p in range(minSdd, maxSdd + 1):
-            initP = 0
-            if square == True:
-                initP = p // 2
-            for i in range(initP, p // 2 + 1):
-                test = {}
-                test['SDSgeom'] = SDSgeom
-                test['nSDD'] = (2**i, 2**(p-i))
-                nsdd = test['nSDD'][0]*test['nSDD'][1]
-                for SDSratio in SDSratioList:
-                    nCoresPerSDD = 1
-
-                    # élimine cas impossible
-                    if nCoresPerSDD > nTotalCores / nsdd:
-                        continue
-
-                    test['nCoresPerSDD'] = nCoresPerSDD
-                    # Pour un calcul à charge/ressource constante
-                    test['nThreads'] = int(nCoresPerSDD * ratio)
-                    if test['nThreads'] <= 0:
-                        continue
-
-                    # Définition du nombre de SDS
-                    test['nSDS'] = test['nThreads']
-
-                    # add the number of tests.
-                    test['nRuns'] = nruns
-
-                    # add the machine on which is run the test
-                    test['machine'] = machine
-
-                    # add the common SDS size
-                    test['nCommonSDS'] = 0
-
-                    # Finally add the test in the battery
-                    if cn not in testBattery.keys():
-                        testBattery[cn] = []
-                    testBattery[cn].append(copy.copy(test))
-    return testBattery
-
-def ratio(caseSizeXY):
-    testBattery = {}
-    # Defining case directory
-    cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-    for ratio in ratioThreadsCores:
-        # Different SDD splits, nSDD = 2**p
-        test = {}
-        test['SDSgeom'] = SDSgeom
-        test['nSDD'] = (1, 1)
-
-        # add the number of tests.
-        test['nRuns'] = nruns
-
-        # add the machine on which is run the test
-        test['machine'] = machine
-
-        nsdd = test['nSDD'][0]*test['nSDD'][1]
-        for SDSratio in SDSratioList:
-            # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
-            nCoresPerSDD = nTotalCores / nsdd
-
-            # élimine cas impossible
-            if nCoresPerSDD > nTotalCores / nsdd:
-                continue
-
-            test['nCoresPerSDD'] = nCoresPerSDD
-            # Pour un calcul à charge/ressource constante
-            test['nThreads'] = int(nCoresPerSDD * ratio)
-            if test['nThreads'] <= 0:
-                continue
-
-            # Définition du nombre de SDS
-            # test['nSDS'] = compute_sds_number(case_path, nsdd, SDSsize)
-            test['nSDS'] = int(test['nThreads'] * SDSratio)
-
-            # the maximum number is the number of cells.
-            if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
-                continue
-
-            if cn not in testBattery.keys():
-                testBattery[cn] = []
-
-            # add the common SDS size
-            test['nCommonSDS'] = int(test['nSDS'] * SDScommonDivider)
-            testBattery[cn].append(copy.copy(test))
-
-    return testBattery
-
-def commonSDS(caseSizeXY):
-    testBattery = {}
-    # Defining case directory
-    cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-    for ratio in ratioThreadsCores:
-        # Different SDD splits, nSDD = 2**p
-        test = {}
-        test['SDSgeom'] = SDSgeom
-        test['nSDD'] = (1, 1)
-
-        # add the number of tests.
-        test['nRuns'] = nruns
-
-        # add the machine on which is run the test
-        test['machine'] = machine
-
-        nsdd = test['nSDD'][0]*test['nSDD'][1]
-        for SDSratio in SDSratioList:
-            # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
-            nCoresPerSDD = nTotalCores / nsdd
-
-            # élimine cas impossible
-            if nCoresPerSDD > nTotalCores / nsdd:
-                continue
-
-            test['nCoresPerSDD'] = nCoresPerSDD
-            # Pour un calcul à charge/ressource constante
-            test['nThreads'] = int(nCoresPerSDD * ratio)
-            if test['nThreads'] <= 0:
-                continue
-
-            # Définition du nombre de SDS
-            # test['nSDS'] = compute_sds_number(case_path, nsdd, SDSsize)
-            test['nSDS'] = int(test['nThreads'] * SDSratio)
-
-            # the maximum number is the number of cells.
-            if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
-                continue
-
-            if cn not in testBattery.keys():
-                testBattery[cn] = []
-
-            if test['nThreads'] == 1:
-                print("Are you kidding ")
-                sys.exit(1)
-
-            # add the common SDS size
-            #for commonSize in range(0, int(test['nSDS'] / 2), int(test['nSDS'] * SDScommonDivider / 4)):
-            for commonSize in [0, SDScommonDivider - 0.02, SDScommonDivider, SDScommonDivider + 0.02]:
-                test['nCommonSDS'] = commonSize
-                # Finally add the test in the battery
-                testBattery[cn].append(copy.copy(test))
-
-    return testBattery
-
-def explore(caseSizeXY, square = False):
-    minSdd = int(np.log2(nTotalCores // nCoresPerNode))
-    maxSdd = int(np.log2(nTotalCores))
-
-    testBattery = {}
-    # Defining case directory
-    cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
-    for ratio in ratioThreadsCores:
-        for p in range(maxSdd-2, maxSdd + 1):
-            # Different SDD splits, nSDD = 2**p
-            initP = 0
-            if square == True:
-                initP = p // 2
-            for i in range(initP, p // 2 + 1):
-                test = {}
-                test['SDSgeom'] = SDSgeom
-                test['nSDD'] = (2**i, 2**(p-i))
-
-                # add the number of tests.
-                test['nRuns'] = nruns
-
-                # add the machine on which is run the test
-                test['machine'] = machine
-
-                nsdd = test['nSDD'][0]*test['nSDD'][1]
-                for SDSratio in SDSratioList:
-                    # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
-                    test['nCoresPerSDD'] = float(nTotalCores) / nsdd
-
-                    # Pour un calcul à charge/ressource constante
-                    test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratio)])
-
-                    # Définition du nombre de SDS
-                    test['nSDS'] = int(test['nThreads'] * SDSratio)
-
-                    # the maximum number is the number of cells.
-                    if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
-                        continue
-
-                    if cn not in testBattery.keys():
-                        testBattery[cn] = []
-
-                    # add the common SDS size
-                    test['nCommonSDS'] = int(test['nSDS'] * SDScommonDivider)
-
-                    # Finally add the test in the battery
-                    testBattery[cn].append(copy.copy(test))
-
-    return testBattery
-
-def exploreCaseSize(initSize):
-    testBattery = {}
-    caseSizeX = initSize // 2
-    caseSizeY = initSize
-    for p in range(0, 3):
-    	# Defining case directory
-        if p % 2 == 1:
-            caseSizeY = caseSizeY * 2
-        else:
-            caseSizeX = caseSizeX * 2
-
-        for k, tl in explore((caseSizeX, caseSizeY), True).items():
-            if k not in battery:
-                testBattery[k] = tl
-            else:
-                testBattery[k] = battery[k] + tl
-
-    return testBattery
-
-battery = dict()
+SDSgeom = 'line'
+ratioThreadsCores = [3.92]
+SDSratioList = [4.]
+SDScommonDivider = [0.]
+SDDSizeList = range(minSdd, maxSdd)
+
+caseSize = (2048, 2048)
+if nTotalCores == 128:
+    caseSize = (4096, 4096)
+if nTotalCores == 256:
+    caseSize = (8192, 8192)
+if nTotalCores == 512:
+    caseSize = (16384, 16384)
+
+
+#testList.append(strongSDS((caseSize[0], caseSize[1]), ratioThreadsCores, SDSratioList, SDScommonDivider, 6, 7))
+#testList.append(strongSDD((2048, 2048), ratioThreadsCores, [4, 5], SDSratioList))
 
 '''
-for k, tl in weakSDS(512).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
+common
+strong SDD SDS
+weak SDD SDS
+explore((caseSize[0], caseSize[1]), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider, True)
+exploreCaseSize(512)
 
-for k, tl in weakSDD(256, True).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
-
-for k, tl in strongSDS((2048, 2048), 0, 4).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
-
-
-for k, tl in strongSDD((2048, 2048), True).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
-
-
-for k, tl in ratio((8192, 8192)).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
-
-
-for k, tl in commonSDS((4096, 4096)).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
-'''
-for k, tl in explore((128, 128), True).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
-'''
-for k, tl in exploreCaseSize(2048).items():
-    if k not in battery:
-        battery[k] = tl
-    else:
-        battery[k] = battery[k] + tl
 '''
 
-totalTestNumber = 0
-for k, tl in battery.items():
-    print("%s test type(s) on case %s" % (len(tl), k))
-    for t in tl:
-        totalTestNumber += t['nRuns']
-        print("\t%s" % t)
+if args.jobname == "Variant-2Nodes":
+    nruns = 1
+    ratioThreadsCores = [1.00]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.145, 0.155, 0.165]
+    SDDSizeList = range(minSdd, maxSdd + 1)
+    testList.append(explore((4096, 4096), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
 
-print("%s run(s) to perform." % totalTestNumber)
-if args.test == False:
-    runTestBattery(engineOptionDict, battery)
-    print("\nTest successfully passed\n")
+if args.jobname == "Variant-4Nodes":
+    nruns = 1
+    ratioThreadsCores = [3.91]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.0]
+    SDDSizeList = range(minSdd, maxSdd + 1)
+    testList.append(explore((caseSize[0], caseSize[1]), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+#    ratioThreadsCores = [1.0]
+#    SDScommonDivider = [0.10, 0.125, 0.15]
+#    SDDSizeList = range(minSdd, maxSdd + 1)
+#    testList.append(explore((caseSize[0], caseSize[1]), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
 
-#srun: error: Unable to create job step: More processors requested than permitted
+if args.jobname == "Variant-8Nodes":
+    testList.append(strongSDD((2048, 2048), ratioThreadsCores, [9], SDSratioList))
 
-#ccc_mprun -n 128 -x -c 1 hydro4x1-release-mpi.exec -i cases/hydro4x1/n2dsod8192x8192/init/8x16 -o /ccc/scratch/cont002/m7/weens4x/BATCH/batch.840510.thom113/Variant/tmp/hydro4x1/n2dsod8192x8192/final --dry
-#ccc_mprun -p knl -N 2 -n 256 -E -O
+if args.jobname == "Variant-16Nodes":
+    testList.append(strongSDD((2048, 2048), ratioThreadsCores, [10], SDSratioList))
+
+if args.jobname == "Variant-Thom-0":
+    nruns = 1
+    ratioThreadsCores = [1.0]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.0]
+    testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-Thom-1":
+    nruns = 1
+    ratioThreadsCores = [1.9]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.0]
+    testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-SKL-0":
+    nruns = 1
+    ratioThreadsCores = [1.0]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.0]
+    testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-SKL-1":
+    nruns = 1
+    ratioThreadsCores = [1.9]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.0]
+    testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-Yoccoz-0":
+    nruns = 1
+    ratioThreadsCores = [3.91]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.0]
+    testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+    #testList.append(strongSDD((4096, 2048), ratioThreadsCores, [0], SDSratioList))
+
+if args.jobname == "Variant-Yoccoz-1":
+    nruns = 1
+    ratioThreadsCores = [3.91]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.10]
+    testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-Thom-3":
+    nruns = 4
+    ratioThreadsCores = [1.0]
+    SDSratioList = [2.5, 3.5, 4.5, 5.5]
+    SDScommonDivider = [0.0]
+    testList.append(strongSDS((4096, 4096), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-Thom-4":
+    nruns = 5
+    ratioThreadsCores = [1.0]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.125]
+    testList.append(strongSDS((4096, 4096), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-Thom-5":
+    nruns = 6
+    ratioThreadsCores = [1.0]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.125]
+    testList.append(strongSDS((4096, 4096), ratioThreadsCores, SDSratioList, SDScommonDivider))
+
+if args.jobname == "Variant-Thom-6":
+    nruns = 1
+    ratioThreadsCores = [1.00]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.145, 0.155, 0.165]
+    SDDSizeList = range(minSdd, maxSdd)
+    #testList.append(exploreCaseSize(512, ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+    #testList.append(explore((512, 1024), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+    #testList.append(explore((1024, 1024), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+    #testList.append(explore((4096, 4096), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+    #testList.append(strongSDS((4096, 4096), ratioThreadsCores, SDSratioList, SDScommonDivider))
+    testList.append(strongSDD((4096, 4096), ratioThreadsCores, SDDSizeList, SDSratioList))
+
+if args.jobname == "Variant-Thom-7":
+    nruns = 1
+    ratioThreadsCores = [1.0]
+    SDSratioList = [4.0]
+    SDScommonDivider = [0.14, 0.15, 0.16]
+    SDDSizeList = range(minSdd, maxSdd)
+    #testList.append(explore((512, 512), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+    testList.append(strongSDS((4096, 4096), ratioThreadsCores, SDSratioList, SDScommonDivider, [8, 16, 32]))
+
+
+
+battery = compileTestBattery(testList, SDSgeom, nruns)
+runTestBattery(engineOptionDict, battery)

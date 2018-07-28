@@ -47,9 +47,8 @@ def case_exist(project_name, case_name):
     return True
 
 
-def check_test(test_path, ref_path):
+def check_test(test_path, ref_path, qties_to_compare):
     print("Checking test " + test_path + " against " + ref_path)
-    qties_to_compare = io.read_quantity_names(test_path)
     results = compare_data(ref_path, test_path, qties_to_compare)
     if results[0]:
         print("OK for all quantities")
@@ -104,9 +103,6 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
     for q_str in qty_name_list:
         sdd.merge_quantity(ref_path, ref_path, q_str)
 
-    # Copying perf results and quantity names to final path
-    copyfile(os.path.join(init_path, 'quantities.dat'), os.path.join(ref_path, 'quantities.dat'))
-
 def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
     # Start time
     start = timer()
@@ -138,7 +134,6 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
     output_path = os.path.join(tmp_dir, project_name, case_name, "final")
     rmtree(output_path, ignore_errors=True)
     copytree(input_path, output_path)
-    copyfile(os.path.join(init_path, 'quantities.dat'), os.path.join(output_path, 'quantities.dat'))
 
     # Compile (if needed) engine and call it
     print(COLOR_BLUE + "Compiling engine" + COLOR_ENDC)
@@ -164,7 +159,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
         create_ref(engineOptionDict, case_path, init_path, final_path)
 
         # Now actually compare.
-        result, qty, error_data = check_test(output_path, final_path)
+        result, qty, error_data = check_test(output_path, final_path, qty_name_list)
         if result:
             print("Compared with reference: OK.")
         else:

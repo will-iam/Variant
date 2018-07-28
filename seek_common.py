@@ -12,12 +12,13 @@ from shutil import rmtree
 from script.launcher import launch_test, case_exist
 import script.io as io
 import datetime
+import copy
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
 # Performance attributes
-perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('minComputeSum', int), ('maxComputeSum', int), ('maxIterationSum', int)]
+perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('minComputeSum', int), ('maxComputeSum', int), ('maxIterationSum', int), ('endTime', 'S10')]
 
 perf_attrnames = [t[0] for t in perf_dtypes]
 vi_dtypes = [('nSizeX', 'int'), ('nSizeY', 'int'), ('nSDD', 'int'), ('nSDD_X', 'int'), ('nSDD_Y', 'int'),
@@ -39,24 +40,300 @@ parser.add_argument("--nocheck", action='store_true', default=False, help = "Nev
 parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
 parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging tool")
 parser.add_argument("--test", action='store_true', default=False, help = "Show test to be run")
+parser.add_argument("--jobname", type = str, help = "On script to rule them all (the jobs).", default='unknown')
+
 args = parser.parse_args()
 
+# Get case names from all directories in case/project_name/
+case_name = args.c
+engineOptionDict = {
+'project_name': args.project_name,
+'compiler': 'mpi',
+'mode': 'release' if not args.debug else 'debug',
+'precision': 'double',
+'std': 'c++14',
+'must_compile': not args.nocompile,
+'vtune': args.vtune,
+'gdb' : args.debug,
+'valgrind' : False,
+'node_number' : int(np.ceil(float(args.max_core_number) /args.core_per_node))
+}
 
-def compute_sds_number2(total_cells, nSDD, SDSsize):
-    return total_cells / (nSDD * SDSsize)
+# Define execution parameters
+nTotalCores = args.max_core_number
+nCoresPerNode = args.core_per_node
 
-def compute_sds_number(case_path, nSDD, SDSsize):
-    sys.path.append(case_path)
-    import chars
-    chars = reload(chars)
-    totalCells = chars.Nx * chars.Ny
-    del sys.path[-1]
-    del chars
-    return compute_sds_number2(totalCells, nSDD, SDSsize)
+# Define les min/max SDDs
+minSdd = int(np.log2(nTotalCores // nCoresPerNode))
+maxSdd = int(np.log2(nTotalCores)) + 1
 
-def make_perf_data(perfPath, execTime, perf_info):
+# Clean compile if requested.
+if args.clean_compile:
+    compiler.Engine(engineOptionDict, False, True)
+    print("Cleaned target")
+    sys.exit(0)
+
+def compileTestBattery(testList, SDSgeom, nruns = 1):
+    battery = dict()
+    for e in testList:
+        for k, tl in e.items():
+            if k not in battery:
+                battery[k] = tl
+            else:
+                battery[k] = battery[k] + tl
+
+    totalTestNumber = 0
+    for k, tl in battery.items():
+        print("%s test type(s) on case %s" % (len(tl), k))
+        for t in tl:
+            # add the number of tests.
+            t['nRuns'] = nruns
+
+            # add the machine on which is run the test
+            t['machine'] = args.machine
+
+            # add SDS geometry here
+            t['SDSgeom'] = SDSgeom
+
+            totalTestNumber += t['nRuns']
+            print("\t%s" % t)
+    print("%s run(s) to perform." % totalTestNumber)
+
+    return battery
+
+def weakSDD(initSize, ratioThreadsCores, SDSratioList, square = True):
+    testBattery = {}
+    caseSizeX = initSize // 2
+    caseSizeY = initSize
+    for p in [0, 1, 2, 3, 4, 5, 6]:
+    	# Defining case directory
+        if p % 2 == 1:
+            caseSizeY = caseSizeY * 2
+        else:
+            caseSizeX = caseSizeX * 2
+        cn = case_name + str(caseSizeX) + 'x' + str(caseSizeY)
+
+        for ratio in ratioThreadsCores:
+            initP = 0
+            if square == True:
+                initP = p // 2
+            for i in range(initP, p // 2 + 1):
+                test = {}
+                test['nSDD'] = (2**i, 2**(p-i))
+                nsdd = test['nSDD'][0] * test['nSDD'][1]
+                for SDSratio in SDSratioList:
+                    # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
+                    test['nCoresPerSDD'] = 1
+
+                    # Pour un calcul à charge/ressource constante
+                    test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratio)])
+
+                    # Définition du nombre de SDS
+                    test['nSDS'] = test['nThreads']
+
+                    # add the common SDS size
+                    test['nCommonSDS'] = 0
+
+                    # Finally add the test in the battery
+                    if cn not in testBattery.keys():
+                        testBattery[cn] = []
+                    testBattery[cn].append(copy.copy(test))
+    return testBattery
+
+def weakSDS(initSize, ratioThreadsCores, SDSratioList, SDScommonDivider, exploredPower = range(0, 7)):
+    testBattery = {}
+    caseSizeX = initSize // 2
+    caseSizeY = initSize
+    for p in range(0, 7):
+    	# Defining case directory
+        if p % 2 == 1:
+            caseSizeY = caseSizeY * 2
+        else:
+            caseSizeX = caseSizeX * 2
+
+        if p not in exploredPower:
+            continue
+
+        cn = case_name + str(caseSizeX) + 'x' + str(caseSizeY)
+
+        for ratio in ratioThreadsCores:
+            test = {}
+            test['nSDD'] = (1, 1)
+            for SDSratio in SDSratioList:
+                # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
+                nCoresPerSDD = 2**p
+
+                # élimine cas impossible
+                if nCoresPerSDD > nTotalCores:
+                    continue
+
+                test['nCoresPerSDD'] = nCoresPerSDD
+
+                # Pour un calcul à charge/ressource constante
+                test['nThreads'] = int(nCoresPerSDD * ratio)
+                if test['nThreads'] <= 0:
+                    continue
+
+                # Définition du nombre de SDS
+                test['nSDS'] = int(test['nThreads'] * SDSratio)
+
+                # the maximum number is the number of cells.
+                if test['nSDS'] > caseSizeX * caseSizeY:
+                    continue
+
+                # Finally add the test in the battery
+                if cn not in testBattery.keys():
+                    testBattery[cn] = []
+
+                # add the common SDS size
+                for divider in SDScommonDivider:
+                    test['nCommonSDS'] = int(test['nSDS'] * divider)
+                    testBattery[cn].append(copy.copy(test))
+
+    return testBattery
+
+def strongSDS(caseSizeXY, ratioThreadsCores, SDSratioList, SDScommonDivider, corePerSDDList = [nTotalCores]):
+    """
+    Exploration strong SDS, nCoresPerSDD = nTotalCores / nSDD avec nSDD = 1
+    """
+    testBattery = {}
+    for nCoresPerSDD in corePerSDDList:
+    	# Defining case directory
+        cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
+        for ratio in ratioThreadsCores:
+            test = {}
+            test['nSDD'] = (1, 1)
+            for SDSratio in SDSratioList:
+
+                # élimine cas impossible
+                if nCoresPerSDD > nTotalCores:
+                    continue
+
+                test['nCoresPerSDD'] = nCoresPerSDD
+
+                # Pour un calcul à charge/ressource constante
+                test['nThreads'] = int(nCoresPerSDD * ratio)
+                if test['nThreads'] <= 0:
+                    continue
+
+                # Définition du nombre de SDS
+                test['nSDS'] = int(test['nThreads'] * SDSratio)
+
+                # the maximum number is the number of cells.
+                if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
+                    continue
+
+                # Finally add the test in the battery
+                if cn not in testBattery.keys():
+                    testBattery[cn] = []
+
+                # add the common SDS size
+                for divider in SDScommonDivider:
+                    test['nCommonSDS'] = int(test['nSDS'] * divider)
+                    testBattery[cn].append(copy.copy(test))
+
+    return testBattery
+
+def strongSDD(caseSizeXY, ratioThreadsCores, SDDSizeList, SDSratioList, square = False):
+
+    testBattery = {}
+    # Defining case directory
+    cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
+    for ratio in ratioThreadsCores:
+        for p in SDDSizeList:
+            initP = 0
+            if square == True:
+                initP = p // 2
+            for i in range(initP, p // 2 + 1):
+                test = {}
+                test['nSDD'] = (2**i, 2**(p-i))
+                nsdd = test['nSDD'][0]*test['nSDD'][1]
+                for SDSratio in SDSratioList:
+                    nCoresPerSDD = 1
+
+                    # élimine cas impossible
+                    if nCoresPerSDD > nTotalCores / nsdd:
+                        continue
+
+                    test['nCoresPerSDD'] = nCoresPerSDD
+                    # Pour un calcul à charge/ressource constante
+                    test['nThreads'] = int(nCoresPerSDD * ratio)
+                    if test['nThreads'] <= 0:
+                        continue
+
+                    # Définition du nombre de SDS
+                    test['nSDS'] = test['nThreads']
+
+                    # add the common SDS size
+                    test['nCommonSDS'] = 0
+
+                    # Finally add the test in the battery
+                    if cn not in testBattery.keys():
+                        testBattery[cn] = []
+                    testBattery[cn].append(copy.copy(test))
+    return testBattery
+
+def explore(caseSizeXY, ratioThreadsCores, SddSizeList, SDSratioList, SDScommonDivider, square = True):
+
+    testBattery = {}
+    # Defining case directory
+    cn = case_name + str(caseSizeXY[0]) + 'x' + str(caseSizeXY[1])
+    for ratio in ratioThreadsCores:
+        for p in SddSizeList:
+            # Different SDD splits, nSDD = 2**p
+            initP = 0
+            if square == True:
+                initP = p // 2
+            for i in range(initP, p // 2 + 1):
+                test = {}
+                test['nSDD'] = (2**i, 2**(p-i))
+
+                nsdd = test['nSDD'][0]*test['nSDD'][1]
+                for SDSratio in SDSratioList:
+                    # Exploration strong SDS, nCoresPerSDD = nTotalCores / nsdd
+                    test['nCoresPerSDD'] = float(nTotalCores) / nsdd
+
+                    # Pour un calcul à charge/ressource constante
+                    test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratio)])
+
+                    # Définition du nombre de SDS
+                    test['nSDS'] = int(test['nThreads'] * SDSratio)
+
+                    # the maximum number is the number of cells.
+                    if test['nSDS'] > caseSizeXY[0] * caseSizeXY[1]:
+                        continue
+
+                    if cn not in testBattery.keys():
+                        testBattery[cn] = []
+
+                    # add the common SDS size
+                    for divider in SDScommonDivider:
+                        test['nCommonSDS'] = int(test['nSDS'] * divider)
+                        # Finally add the test in the battery
+                        testBattery[cn].append(copy.copy(test))
+
+    return testBattery
+
+def exploreCaseSize(initSize, ratioThreadsCores, SddSizeList, SDSratioList, SDScommonDivider):
+    testBattery = {}
+    caseSizeX = initSize // 2
+    caseSizeY = initSize
+    for p in range(0, 7):
+    	# Defining case directory
+        if p % 2 == 1:
+            caseSizeY = caseSizeY * 2
+        else:
+            caseSizeX = caseSizeX * 2
+
+        for k, tl in explore((caseSizeX, caseSizeY), ratioThreadsCores, SddSizeList, SDSratioList, SDScommonDivider).items():
+            testBattery[k] = tl
+
+    return testBattery
+
+def make_perf_data(perfPath, execTime, perf_info, endTime):
     perf_values = list(io.read_perfs(perfPath).values())
     perf_values.append(execTime)
+
 
     iterationTimeDict = perf_info['iterationTime']
     computeTimeDict = perf_info['computeTime']
@@ -91,6 +368,8 @@ def make_perf_data(perfPath, execTime, perf_info):
     perf_values.append(minComputeSum)
     perf_values.append(maxComputeSum)
     perf_values.append(maxIterationSum)
+
+    perf_values.append(endTime)
 
     return tuple(perf_values)
 
@@ -131,6 +410,9 @@ def join_result_data(resultPath, variant_info, perf_for_allruns, nCoresPerSDD, m
     f.close()
 
 def runTestBattery(engineOptionDict, testBattery):
+    if args.test == True:
+        return
+
     tmp_dir = config.tmp_dir
     project_name = engineOptionDict['project_name']
 
@@ -144,7 +426,7 @@ def runTestBattery(engineOptionDict, testBattery):
 	    # Init results dir
         io.make_sure_path_exists(os.path.join(config.results_dir, project_name, cn))
         restultTag = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
-        results_path = os.path.join(config.results_dir, project_name, cn, 'data-' + restultTag + '.csv')
+        results_path = os.path.join(config.results_dir, project_name, cn, 'data-' + args.jobname + '-' + restultTag + '.csv')
 
         # Launch tests and compare results
         print(COLOR_BLUE + "Start seeking optimal with case: " + COLOR_ENDC + project_name + '/' + cn)
@@ -171,10 +453,15 @@ def runTestBattery(engineOptionDict, testBattery):
                 # Perfs info
                 perf_info = io.read_perf_info(tmp_test_path, totalSDDNumber)
 
+                endTime = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+                print("endTime:", endTime)
                 print("Total ExecTime:", exec_time)
                 print("Results for test: " + str(test) + " on run " + str(n) + " on " + str(test['nCoresPerSDD']) + " core(s).")
-                perf_for_allruns.append(make_perf_data(tmp_test_path, exec_time, perf_info))
+                perf_for_allruns.append(make_perf_data(tmp_test_path, exec_time, perf_info, endTime))
                 print("perf_for_allruns", perf_for_allruns)
 
             # Join results
             join_result_data(results_path, variant_info, perf_for_allruns, test['nCoresPerSDD'], test['machine'])
+
+    # Finally
+    print("\nTest successfully passed\n")

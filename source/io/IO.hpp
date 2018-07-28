@@ -87,8 +87,7 @@ namespace IO {
      */
     int loadQuantity(std::string directory,
             std::string quantityName,
-            Domain& domain,
-            bool constant = false);
+            Domain& domain);
 
     /*!
      * @brief Loads boundary conditions

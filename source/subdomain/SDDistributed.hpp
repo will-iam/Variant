@@ -215,12 +215,20 @@ class SDDistributed {
     void dispatchBoundaryCell(const std::map< std::pair<int, int>, real >& dirichletCellMap,
         const std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap);
 
+    /*! 
+    * @brief Dispatch the overlap cells among the sds.
+    */
+    void dispatchOverlapCell();
+
     /*!
      * @brief Updates overlap cells by communicating through MPI with other SDDs
-     *
-     * @param qtiesToUpdate list of str. names of quantities to update
      */
-    void updateOverlapCells(const std::vector<std::string>& qtiesToUpdate);
+    void updateOverlapCells();
+
+    void copyOverlapCell();
+    void sendOverlapCell();
+    void waitOverlapCell();
+    void parseOverlapCell();
 
     /*!
      * @brief Adds an equation to the stack of equations to be computed by
@@ -246,14 +254,17 @@ class SDDistributed {
 
   private:
 
-    // Attributes
+    // Multithreaded read/write buffer for SDD communication.
+    void writeBuffer(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap);
+    void readBuffer(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap);
 
+    // Attributes
     /*!
      * map storing physical quantities in correspondance
      * with their names
      * storing pointers for allocation at any time
      */
-    //std::map<std::string, QuantityInterface*> _quantityMap;
+
     std::map< std::string, Quantity<real>* > _quantityMap;
 
     /*!
@@ -320,12 +331,21 @@ class SDDistributed {
      * number of total SDDs
      */
     unsigned int _nSDD;
-    std::vector<int> _neighbourSDDVector;
+    std::vector<unsigned int> _neighbourSDDVector;
 
     // Building buffers based on recv and send maps (avoid memory allocation during loop)
-    std::unordered_map<int, std::pair< std::vector<real>, std::vector<real> > > _recvSendBuffer;
+    std::unordered_map<unsigned int, real* > _sendBuffer;
+    std::unordered_map<unsigned int, real* > _recvBuffer;
+    std::unordered_map<unsigned int, size_t> _bufferSize;
+
     MPI_Request* _requestArray;
     MPI_Status* _statusArray;
+    size_t _lastRequestArraySize;
+
+    // Speed-up structures.
+    std::unordered_map<unsigned int, std::vector<size_t> > _sendIndexVector;
+    std::unordered_map<unsigned int, std::vector<size_t> > _recvIndexVector;
+    std::unordered_map<size_t, size_t> _selfIndexMap;
 };
 
 template<typename T> void SDDistributed::addQuantity(std::string name) {

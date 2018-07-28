@@ -71,36 +71,28 @@ std::vector<unsigned int> Domain::getUidList() const {
 }
 
 std::pair<int, int> Domain::getCoordsOnDomain(unsigned int uid) const {
-
     return _uidToCoords.at(uid);
 }
 
 void Domain::addCoord(unsigned int uid, std::pair<int, int> coords) {
-
     assert(_uidToCoords.find(uid) == _uidToCoords.end());
     _uidToCoords[uid] = coords;
     _coordsToUid[coords] = uid;
 }
 
 void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, real value) {
-
     _SDD_coordsToBC[coordsOnSDD] = std::pair<char, real>(BCtype, value);
 }
 
-void Domain::addQuantity(std::string quantityName, bool constant) {
-
-    if (!constant)
-        _nonCstQties.push_back(quantityName);
+void Domain::addQuantity(std::string quantityName) {
     _sdd->addQuantity<real>(quantityName);
 }
 
 void Domain::addEquation(std::string eqName, eqType eqFunc) {
-
     _sdd->addEquation(eqName, eqFunc);
 }
 
 void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundaryThickness) {
-
     MPI_Comm_size(MPI_COMM_WORLD, &_MPI_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
 
@@ -124,7 +116,7 @@ void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundar
         MPI_Bcast(&_SDD_BLandSize_List[id], 4, MPI_INT, id, MPI_COMM_WORLD);
 }
 
-void Domain::buildBoundaryMap() {
+void Domain::buildCommunicationMap() {
 
     std::map< std::pair<int, int>, real > dirichletCellMap;
     std::map< std::pair<int, int>, std::pair<int, int> > neumannCellMap;
@@ -135,6 +127,9 @@ void Domain::buildBoundaryMap() {
 
     // Once we have the boundary cells, dispatch them among the SDS available.
     _sdd->dispatchBoundaryCell(dirichletCellMap, neumannCellMap);
+
+    // Dispatch overlap cells.
+    _sdd->dispatchOverlapCell();
 }
 
 void Domain::execEquation(const std::string& eqName) {
@@ -283,8 +278,9 @@ void SDDistributed::buildRecvMap(const Domain& domain,
         if (SDDandCoords.first >= 0) {
 
             _MPIRecv_map[*it] = SDDandCoords;
+
             // Adding the SDD to the list of neighbours
-            if (_nSDD > 1 && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
+            if (_nSDD > 1 && SDDandCoords.first != _id && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
                 _neighbourSDDVector.push_back(SDDandCoords.first);
         }
 
@@ -373,7 +369,7 @@ void SDDistributed::buildRecvMap(const Domain& domain,
                     //std::cerr <<  "targetCell.first: " << targetCell.first << ", targetCell.second: " << targetCell.second << std::endl;
                     //std::cerr <<  "SDDandCoordsOfTargetCell.first: " << SDDandCoordsOfTargetCell.first << std::endl;
                     // Adding the SDD to the list of neighbours
-                    if (_nSDD > 1 && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoordsOfTargetCell.first) == _neighbourSDDVector.end())
+                    if (_nSDD > 1 && SDDandCoordsOfTargetCell.first != _id && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoordsOfTargetCell.first) == _neighbourSDDVector.end())
                         _neighbourSDDVector.push_back(SDDandCoordsOfTargetCell.first);
                 }
             }
@@ -384,6 +380,39 @@ void SDDistributed::buildRecvMap(const Domain& domain,
         }
 
         //std::cout << it->first << "..." << it->second << std::endl;
+    }
+
+    // Use to speed-up structures to parse data from buffers.
+    //std::unordered_map<int, std::vector<unsigned int> > _recvIndexVector;
+    //std::unordered_map<int, std::vector<size_t> > _recvIndexVector;
+
+    // Compute the size and reserve it.
+    std::map<unsigned int, size_t> tmpCounter;
+    for (auto const& it: _MPIRecv_map) {
+        unsigned int SDDid = it.second.first;
+        if (_id == SDDid)
+            continue;
+
+        if (tmpCounter.find(SDDid) != tmpCounter.end())
+            ++tmpCounter[SDDid];
+        else
+            tmpCounter[SDDid] = 1;
+    }
+    for (auto const& it: tmpCounter)
+        _recvIndexVector[it.first].reserve(it.second);
+
+    // Now fill the index in the vectors.
+    for (auto const& it: _MPIRecv_map) {
+        unsigned int SDDid = it.second.first;
+        std::pair<int, int> coordsHere = it.first;
+        size_t indexHere = _coordConverter.convert(coordsHere.first, coordsHere.second);
+        if (_id != SDDid) {
+            _recvIndexVector[SDDid].push_back(indexHere);
+        } else {
+            std::pair<int, int> coordsThere(it.second.second);
+            size_t indexThere = _coordConverter.convert(coordsThere.first, coordsThere.second);
+            _selfIndexMap[indexHere] = indexThere;
+        }
     }
 }
 
@@ -473,24 +502,42 @@ void SDDistributed::buildSendMap() {
 
         // To reserve the size of the buffer init for 4 quantities.
         if (numberOfCellsToSend[SDDto] > 0) {
-            _recvSendBuffer[SDDto].first.reserve(4 * numberOfCellsToSend[SDDto]);
-            _recvSendBuffer[SDDto].second.reserve(4 * numberOfCellsToSend[SDDto]);
+            _sendBuffer[SDDto] = nullptr;
+            _recvBuffer[SDDto] = nullptr;
+            _sendIndexVector[SDDto].reserve(numberOfCellsToSend[SDDto]);
         }
     }
 
-    if (_recvSendBuffer.size() != _neighbourSDDVector.size()) {
+    if (_sendBuffer.size() != _neighbourSDDVector.size() && _sendIndexVector.size() == _neighbourSDDVector.size()) {
         std::cerr << std::endl << "neighbourSDDVector: ";
         for (auto& v : _neighbourSDDVector)
             std::cerr << v << " ";
-        std::cerr << std::endl << "recvSendBuffer: ";
-        for (auto& p : _recvSendBuffer)
+
+        std::cerr << std::endl << "sendBuffer: ";
+        for (auto& p : _sendBuffer)
             std::cerr << p.first << " ";
         std::cerr << std::endl;
+
+        exitfail("Buffer does not contain all the neighbours.");
+    }
+
+    if (_recvBuffer.size() != _neighbourSDDVector.size() && _recvIndexVector.size() == _neighbourSDDVector.size()) {
+        std::cerr << std::endl << "neighbourSDDVector: ";
+        for (auto& v : _neighbourSDDVector)
+            std::cerr << v << " ";
+
+        std::cerr << std::endl << "recvBuffer: ";
+        for (auto& p : _recvBuffer)
+            std::cerr << p.first << " ";
+        std::cerr << std::endl;
+
         exitfail("Buffer does not contain all the neighbours.");
     }
 
     for (const auto& sddId : _neighbourSDDVector) {
-        if (_recvSendBuffer.find(sddId) == _recvSendBuffer.end())
+        if (_sendBuffer.find(sddId) == _sendBuffer.end())
+            exitfail("Could not find SDD in neighbourhood.");
+        if (_recvBuffer.find(sddId) == _recvBuffer.end())
             exitfail("Could not find SDD in neighbourhood.");
     }
 
@@ -503,6 +550,43 @@ void SDDistributed::buildSendMap() {
     // Sync processes
     MPI_Barrier(MPI_COMM_WORLD);
     //std::cout << "Sync done" << std::endl;
+
+    // Use to speed-up structures to copy data into buffers.
+    for (const auto& toSDDid: _neighbourSDDVector) {
+        _sendIndexVector[toSDDid].clear();
+    }
+
+    // Copy data to send in the buffer.
+    for (auto const& it: _MPISend_map) {
+        unsigned int SDDid = it.first.first;
+        std::pair<int, int> coordsHere = it.second;
+        size_t index = _coordConverter.convert(coordsHere.first, coordsHere.second);
+        _sendIndexVector[SDDid].push_back(index);
+    }
+
+    // Reserve buffer memory.
+    if (_quantityMap.empty())
+        exitfail("At this point, the quantities must be loaded in the map.");
+
+    for (const auto& SDDid: _neighbourSDDVector) {
+        size_t s(_sendIndexVector[SDDid].size() * _quantityMap.size());
+
+        if (_bufferSize.find(SDDid) != _bufferSize.end()) {
+            std::cout << "delete buffer pointer in " << _id << std::endl;
+            delete[] _sendBuffer[SDDid];     
+            delete[] _recvBuffer[SDDid];
+        }    
+
+        _bufferSize[SDDid] = s;
+        _sendBuffer[SDDid] = new real[s];
+        _recvBuffer[SDDid] = new real[s];
+        
+        //std::cout << "allocate buffer pointer in " << _id << " with size" << s << std::endl;
+        for (size_t i(0); i < s; ++i){
+            _sendBuffer[SDDid][i] = 0.;
+            _recvBuffer[SDDid][i] = 0.;
+        }
+    }
 }
 
 unsigned int Domain::getUid(std::pair<int, int> coordsOnDomain) const {
@@ -510,13 +594,14 @@ unsigned int Domain::getUid(std::pair<int, int> coordsOnDomain) const {
     return _coordsToUid.at(coordsOnDomain);
 }
 
-void Domain::updateOverlapCells(const std::string& qtyName) {
-    _sdd->updateOverlapCells(std::vector<std::string>(1, qtyName));
-}
-
 void Domain::updateOverlapCells() {
-    // For each SDD...
-    _sdd->updateOverlapCells(_nonCstQties);
+    if (_nSDD < 2)
+        return;
+
+    _sdd->copyOverlapCell();
+    _sdd->sendOverlapCell();
+    _sdd->waitOverlapCell();
+    _sdd->parseOverlapCell();
 }
 
 void Domain::printState(std::string quantityName) {

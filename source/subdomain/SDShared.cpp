@@ -15,15 +15,26 @@ void SDShared::execEquation(eqType& eqFunc,
 }
 
 void SDShared::addDirichletCell(std::pair < std::pair<int, int>, real > d) {
-    _dirichletCellMap[d.first] = d.second;
+    _dirichletCellMap[convert(d.first.first, d.first.second)] = d.second;
 }
 
 void SDShared::addNeumannCell(std::pair< std::pair<int, int>, std::pair<int, int> > n) {
-    _neumannCellMap[n.first] = n.second;
+    _neumannCellMap[convert(n.first.first, n.first.second)] = convert(n.second.first, n.second.second);
+}
+
+size_t SDShared::getOverlapCellNumber(unsigned int sddId) const {
+    if (_sendIndexMap.find(sddId) == _sendIndexMap.end())
+        return 0;
+
+    return _sendIndexMap.at(sddId).size();
+}
+
+void SDShared::addOverlapCell(unsigned int sddId, size_t sendIndex, size_t recvIndex) {
+    _sendIndexMap[sddId].push_back(sendIndex);
+    _recvIndexMap[sddId].push_back(recvIndex);
 }
 
 void SDShared::updateBoundaryCells(Quantity<real>* quantity, bool changeNeumannToOpposite) const {
-
     updateDirichletCells(quantity);
     updateNeumannCells(quantity, changeNeumannToOpposite);
 }
@@ -33,10 +44,9 @@ void SDShared::updateDirichletCells(Quantity<real>* quantity) const {
     if (_dirichletCellMap.empty())
         return;
 
-    for (auto it = _dirichletCellMap.begin(); it != _dirichletCellMap.end(); ++it) {
-        const auto coords = it->first;
-        quantity->set(it->second, 0, coords.first, coords.second);
-    }
+    auto& qty(*quantity);
+    for (auto it = _dirichletCellMap.begin(); it != _dirichletCellMap.end(); ++it)
+        qty.set0(it->second, it->first);
 }
 
 void SDShared::updateNeumannCells(Quantity<real>* quantity, bool changeToOpposite) const {
@@ -44,17 +54,49 @@ void SDShared::updateNeumannCells(Quantity<real>* quantity, bool changeToOpposit
     if (_neumannCellMap.empty())
         return;
 
+    auto& qty(*quantity);
     if (changeToOpposite) {
         for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
-            const auto& coords = it->first;
-            const auto& targetCoords = it->second;
-            quantity->set(-quantity->get(0, targetCoords.first, targetCoords.second), 0, coords.first, coords.second);
+            qty.set0(-qty.get0(it->second), it->first);
         }
     } else {
         for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
-            const auto& coords = it->first;
-            const auto& targetCoords = it->second;
-            quantity->set(quantity->get(0, targetCoords.first, targetCoords.second), 0, coords.first, coords.second);
+            qty.set0(qty.get0(it->second), it->first);
         }
    }
 }
+
+void SDShared::copyOverlapCellIn(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const {
+     
+    const size_t plus(quantityMap.size());
+    for (auto const& it: _sendIndexMap) {
+        size_t startPos(_bufferStartPos.at(it.first) * quantityMap.size());
+        real* sddBuffer(buffer.at(it.first));
+        for (const auto p: quantityMap) {
+            auto& qty(*p.second);
+            size_t index(startPos++);
+            for (const unsigned int i : it.second) {
+                sddBuffer[index] = qty.get0(i);
+                index += plus;
+            }
+        }
+    } 
+}
+
+void SDShared::copyOverlapCellFrom(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const {
+    const size_t plus(quantityMap.size());
+    for (auto const& it: _recvIndexMap) {
+        real* sddBuffer(buffer.at(it.first));
+        size_t startPos(_bufferStartPos.at(it.first) * plus);
+        for (const auto p: quantityMap) {
+            auto& qty(*p.second);
+            size_t index(startPos++);
+            for (const unsigned int i : it.second) {           
+                qty.set0(sddBuffer[index], i);
+                index += plus;
+            }
+        }
+    }
+}
+
+

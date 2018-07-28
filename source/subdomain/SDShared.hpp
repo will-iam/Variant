@@ -14,6 +14,7 @@
 #include <vector>
 #include <utility>
 #include <map>
+#include <unordered_map>
 #include <functional>
 
 class SDShared;
@@ -55,8 +56,7 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * @brief updates boundary of all SDDs according to their
      * values on reference cells on other SDDs, for a given quantity.
      *
-     * /!\ This has to be called AFTER updating overlap cells, since boundary        // Updating umax for computation of the next dt
-        _umax = std::max(_umax, std::abs(ux.get(0, i, j)));
+     * /!\ This has to be called AFTER updating overlap cells, since boundary        
         _umax = std::max(_umax, std::abs(uy.get(0, i, j)));
 
      * cells may be updated with values on overlap cells.
@@ -94,10 +94,16 @@ class SDShared: public std::vector< std::pair<int,int> > {
 
     void addDirichletCell(std::pair < std::pair<int, int>, real > d);
     void addNeumannCell(std::pair< std::pair<int, int>, std::pair<int, int> > n);
-
     size_t getNumberBoundaryCells() const { return _neumannCellMap.size() + _dirichletCellMap.size(); }
-
     inline unsigned int convert(int coordX, int coordY) const {return _coordConverter.convert(coordX, coordY);}
+
+    void setBufferPos(unsigned int sddId, size_t pos) { _bufferStartPos[sddId] = pos; }
+    size_t getOverlapCellNumber(unsigned int sddId) const;
+    void addOverlapCell(unsigned int sddId, size_t sendIndex, size_t recvIndex);
+    
+    void copyOverlapCellIn(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const;    
+    void copyOverlapCellFrom(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const;    
+
   private:
 
     /*!
@@ -112,16 +118,19 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * set Dirichlet boundary conditions, and the
      * values of the BC
      */
-    std::map< std::pair<int, int>, real > _dirichletCellMap;
+    std::unordered_map< size_t, real > _dirichletCellMap;
 
     /*!
      * mapping between coords of cells on which are set
      * Neumann boundary conditions, and the associated
      * cells
      */
-    std::map< std::pair<int, int>, std::pair<int, int> > _neumannCellMap;
+    std::unordered_map< size_t, size_t > _neumannCellMap;
 
-
+    /* Buffer start position */
+    std::unordered_map<unsigned int, size_t > _bufferStartPos;
+    std::unordered_map<unsigned int, std::vector<size_t> > _sendIndexMap;
+    std::unordered_map<unsigned int, std::vector<size_t> > _recvIndexMap;
 };
 
 #endif

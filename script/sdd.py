@@ -5,6 +5,8 @@ import __future__
 import os
 import sys
 import script.io as io
+from timeit import default_timer as timer
+import numpy as np
 
 def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
     io.make_sure_path_exists(output_dir)
@@ -27,59 +29,50 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
             " " + str(nSDD_X) + " " + str(nSDD_Y) + " " + str(BClayer) + "\n")
     domain_shortinfo.close()
 
-    uid_to_SDD_and_coords = [None] * (domain_Nx * domain_Ny)
-
-    # We build for each SDD a file stream that will be updated through
-    # iterations on the domain data
-    file_streams = list()
-    for x in range(nSDD_X):
-        file_streams_tmp = list()
-        for y in range(nSDD_Y):
-            # Writing SDD file
-            SDDid = y * nSDD_X + x
-            SDDpath = os.path.join(output_dir, 'sdd' + str(SDDid))
-            io.make_sure_path_exists(SDDpath)
-            file_stream = open(os.path.join(SDDpath, 'sdd.dat'), 'w+')
-
-            # Writing bottom-left coords on domain
-            BL_X = SDD_Nx * x
-            BL_Y = SDD_Ny * y
-            file_stream.write(str(BL_X) + " " + str(BL_Y) + "\n")
-            file_stream.write(str(SDD_Nx) + " " + str(SDD_Ny) + "\n")
-            file_streams_tmp.append(file_stream)
-        file_streams.append(file_streams_tmp)
+    sdd_to_coords = dict()
+    for SDDid in range(nSDD_X * nSDD_Y):
+        sdd_to_coords[SDDid] = list()
 
     # Now iterating through all coords of domain
     for line in domain_f.readlines():
         line_split = line.split()
-
+        uid = int(line_split[0])
         coordX = int(line_split[1])
         coordY = int(line_split[2])
+        
         x = coordX // SDD_Nx
         y = coordY // SDD_Ny
         BL_X = SDD_Nx * x
         BL_Y = SDD_Ny * y
 
-        # SDD id is known based on coords
-        uid = int(line_split[0])
+        # SDD id is known based on coords        
         SDDid = y * nSDD_X + x
-
-        # Finally writing uid on domain and position on SDD
-        file_streams[x][y].write(str(uid) + " " +
-                str(coordX - BL_X) + " " + str(coordY - BL_Y) + "\n")
-
-        SDD_and_coords = dict()
-        SDD_and_coords['SDDid'] = SDDid
-        SDD_and_coords['coords'] = (coordX - BL_X, coordY - BL_Y)
-        uid_to_SDD_and_coords[uid] = SDD_and_coords
-
+        sdd_to_coords[SDDid].append((uid, coordX - BL_X, coordY - BL_Y))
+         
     # Closing all streams
     domain_f.close()
-    for y in range(nSDD_Y):
-        for x in range(nSDD_X):
-            file_streams[x][y].close()
 
-    return uid_to_SDD_and_coords
+    # We build for each SDD a file stream that will be updated through
+    # iterations on the domain data
+    for x in range(nSDD_X):
+        for y in range(nSDD_Y):
+            # Writing SDD file
+            SDDid = y * nSDD_X + x
+            SDDpath = os.path.join(output_dir, 'sdd' + str(SDDid))
+            io.make_sure_path_exists(SDDpath)
+
+            # Writing bottom-left coords on domain
+            BL_X = SDD_Nx * x
+            BL_Y = SDD_Ny * y
+            with open(os.path.join(SDDpath, 'sdd.dat'), 'w+') as file_stream:
+                file_stream.write(str(BL_X) + " " + str(BL_Y) + "\n")
+                file_stream.write(str(SDD_Nx) + " " + str(SDD_Ny) + "\n")
+
+                # Finally writing uid on domain and position on SDD
+                for c in sdd_to_coords[SDDid]:
+                    file_stream.write("%s %s %s\n" % (c[0], c[1], c[2]))
+
+    return sdd_to_coords
 
 def merge_domain(split_dir, output_dir):
     domain_shortinfo = open(os.path.join(split_dir, "domain.info"), 'r')
@@ -100,59 +93,49 @@ def merge_domain(split_dir, output_dir):
             # Writing SDD file
             SDDid = y * nSDD_X + x
             SDDpath = os.path.join(split_dir, 'sdd' + str(SDDid))
-            file_stream = open(os.path.join(SDDpath, 'sdd.dat'), 'r')
 
-            line_split = file_stream.readline().split()
-            BL_X = int(line_split[0])
-            BL_Y = int(line_split[1])
-            line_split = file_stream.readline().split()
-            SDD_Nx = int(line_split[0])
-            SDD_Ny = int(line_split[1])
+            with open(os.path.join(SDDpath, 'sdd.dat'), 'r') as file_stream:
+                line_split = file_stream.readline().split()
+                BL_X = int(line_split[0])
+                BL_Y = int(line_split[1])
+                line_split = file_stream.readline().split()
+                SDD_Nx = int(line_split[0])
+                SDD_Ny = int(line_split[1])
 
-            for i in range(SDD_Nx):
-                for j in range(SDD_Ny):
-                    line_split = file_stream.readline().split()
-                    uid = line_split[0]
-                    coordX_SDD = int(line_split[1])
-                    coordY_SDD = int(line_split[2])
-                    domain_f.write(uid + " " + str(BL_X + coordX_SDD) + " " +
-                            str(BL_Y + coordY_SDD) + "\n")
+                for i in range(SDD_Nx):
+                    for j in range(SDD_Ny):
+                        line_split = file_stream.readline().split()
+                        uid = line_split[0]
+                        coordX_SDD = int(line_split[1])
+                        coordY_SDD = int(line_split[2])
+                        domain_f.write(uid + " " + str(BL_X + coordX_SDD) + " " + str(BL_Y + coordY_SDD) + "\n")
 
     domain_f.close()
 
-def split_quantity(quantity_dir, output_dir, quantity_name,
-        uid_to_SDD_and_coords):
+def split_quantity(quantity_dir, output_dir, quantity_name, sdd_to_coords):
+
+    quantity_file_name = os.path.join(quantity_dir, quantity_name + '.dat')
+
+    # Assume the file is only zero in this case (to save space).
+    if not os.path.exists(quantity_file_name):
+        return
+
     domain_shortinfo = open(os.path.join(output_dir, "domain.info"), 'r')
     line_domain = domain_shortinfo.readline()
     line_split = line_domain.split()
     domain_shortinfo.close()
 
     nSDD = int(line_split[4]) * int(line_split[5])
-    quantity_f = open(os.path.join(quantity_dir, quantity_name + '.dat'), 'r')
-
-    file_streams = list()
+    quantity = np.loadtxt(quantity_file_name, usecols=[1])
+    
     # Opening streams for all SDDs
     for SDDid in range(nSDD):
         SDDpath = os.path.join(output_dir, 'sdd' + str(SDDid))
-        file_streams.append(open(os.path.join(SDDpath, quantity_name + '.dat'),
-            'w+'))
-
-    # Now iterationg through all cell uids on quantity file
-    for line in quantity_f.readlines():
-        line_split = line.split()
-        uid = int(line_split[0])
-        value = line_split[1]
-        SDD_and_coords = uid_to_SDD_and_coords[uid]
-        SDDid = SDD_and_coords['SDDid']
-        coords = SDD_and_coords['coords']
-        file_streams[SDDid].write(str(coords[0]) + " " + str(coords[1]) + " " +
-                value + "\n")
-
-    # Closing all streams
-    quantity_f.close()
-    for fs in file_streams:
-        fs.close()
-
+        with open(os.path.join(SDDpath, quantity_name + '.dat'), 'w+') as file_stream:
+            # Now iterationg through all cell uids on quantity file
+            for c in sdd_to_coords[SDDid]:
+                file_stream.write("%s %s %16.16g\n" % (c[1], c[2], quantity[c[0]]))
+   
 def split_bc(bc_dir, output_dir):
     domain_shortinfo = open(os.path.join(output_dir, "domain.info"), 'r')
     line_split = domain_shortinfo.readline().split()
@@ -260,41 +243,7 @@ def split_bc(bc_dir, output_dir):
         file_streams[i].close()
 
     return
-'''
-def split_qbc(split_dir, output_dir, quantity_name, uid_to_SDD_and_coords_bc):
-    domain_shortinfo = open(os.path.join(output_dir, "domain.dat"), 'r')
-    line_split = domain_shortinfo.readline().split()
-    domain_Nx = int(line_split[2])
-    domain_Ny = int(line_split[3])
-    nSDD = int(line_split[4]) * int(line_split[5])
-    domain_shortinfo.close()
 
-    qbc_f = open(os.path.join(split_dir, quantity_name + '_bc.dat'), 'r')
-
-    file_streams = list()
-    # Opening streams for all SDDs
-    for SDDid in range(nSDD):
-        SDDpath = os.path.join(output_dir, 'sdd' + str(SDDid))
-        file_streams.append(open(os.path.join(SDDpath, quantity_name + '_bc.dat'),
-            'w+'))
-
-    # Now iterationg through all cell uids on quantity file
-    for line in qbc_f.readlines():
-        line_split = line.split()
-        uid = int(line_split[0])
-        BCtype = line_split[1]
-        value = line_split[2]
-        SDD_and_coords = uid_to_SDD_and_coords_bc[uid - domain_Nx * domain_Ny]
-        SDDid = SDD_and_coords['SDDid']
-        coords = SDD_and_coords['coords']
-        file_streams[SDDid].write(str(coords[0]) + " " + str(coords[1]) + " " +
-                BCtype + " " + value + "\n")
-
-    # Closing all streams
-    qbc_f.close()
-    for fs in file_streams:
-        fs.close()
-'''
 def merge_quantity(split_dir, output_dir, quantity_name):
     domain_shortinfo = open(os.path.join(split_dir, "domain.info"), 'r')
     line_domain = domain_shortinfo.readline()
@@ -326,25 +275,31 @@ def merge_quantity(split_dir, output_dir, quantity_name):
         sdd_f.close()
 
         # Now iterating through quantity and add to global quantity stream
-        quantity_f = open(os.path.join(SDDpath, quantity_name + '.dat'), 'r')
-        i = 0
-        for line in quantity_f.readlines():
-            line_split = line.split()
-            coords = (int(line_split[0]), int(line_split[1]))
-            qty_stream.write(coords_to_uid[coords] + " " + line_split[2] +
-                    "\n")
+        with open(os.path.join(SDDpath, quantity_name + '.dat'), 'r') as quantity_f:
+            for line in quantity_f.readlines():
+                line_split = line.split()
+                coords = (int(line_split[0]), int(line_split[1]))
+                qty_stream.write(coords_to_uid[coords] + " " + line_split[2] + "\n")
 
     qty_stream.close()
 
 
 def split_case(domain_dir, nSDD_X, nSDD_Y, qty_name_list):
-	output_dir = os.path.join(domain_dir, str(nSDD_X) + "x" + str(nSDD_Y))
-	if os.path.isdir(output_dir):
-	    print("Split already exists")
-	    return output_dir
-	io.make_sure_path_exists(output_dir)
-	usc = split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y)
-	split_bc(domain_dir, output_dir)
-	for q_str in qty_name_list:
-	    split_quantity(domain_dir, output_dir, q_str, usc)
-	return output_dir
+    output_dir = os.path.join(domain_dir, str(nSDD_X) + "x" + str(nSDD_Y))
+    if os.path.isdir(output_dir):
+        print("Split already exists")
+        return output_dir
+    io.make_sure_path_exists(output_dir)
+    start = timer()
+    sdd_to_coords = split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y)
+    end = timer()
+    print("Time to split domain %s second(s)" % int((end - start)))
+
+    split_bc(domain_dir, output_dir)
+    for q_str in qty_name_list:
+        start = timer()
+        split_quantity(domain_dir, output_dir, q_str, sdd_to_coords)
+        end = timer()
+        print("Time to split quantity", q_str, "%s second(s)" % int((end - start)))
+
+    return output_dir

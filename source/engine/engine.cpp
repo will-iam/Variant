@@ -89,13 +89,13 @@ int Engine::main(int argc, char** argv) {
             return EXIT_FAILURE;
         }
 
-        if (_testFlag != 0){
+        #ifndef NDEBUG
+        if (_testFlag != 0)
             cout << "Test flag is on." << endl;
-        }
-
-        if (_dryFlag != 0){
+        
+        if (_dryFlag != 0)
             cout << "Dry flag is on." << endl;
-        }
+        #endif
     }
 
     _initpath = initfile;
@@ -114,12 +114,12 @@ int Engine::main(int argc, char** argv) {
     int result = init();
 
     if (result < 0) {
-
         cout << Console::_red << "Engine init() failed with return: ";
         cout << result << Console::_normal << endl;
         return EXIT_FAILURE;
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
     if (_MPI_rank == 0) {
 
         _timer.end();
@@ -142,20 +142,17 @@ int Engine::main(int argc, char** argv) {
     //SCOREP_USER_OA_PHASE_END( my_region_handle )
 
     if(result < 0) {
-
         cout << Console::_red << "Engine start() failed with return: ";
         cout << result << Console::_normal << endl;
         return EXIT_FAILURE;
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
     if (_MPI_rank == 0) {
-
         _timer.end();
-
         cout << Console::_green;
         TimeStamp::printLocalTime();
         cout << ": Engine stopped normally." << endl;
-	    cout << Console::_normal << "Total loop time: ";
         _timer.reportLast();
 
         perfResults["loopTime"] = _timer.getLastSteadyDuration();
@@ -169,6 +166,7 @@ int Engine::main(int argc, char** argv) {
 
     finalize();
 
+    MPI_Barrier(MPI_COMM_WORLD);
     if (_MPI_rank == 0) {
 	    _timer.end();
 	    _timer.reportLast();

@@ -41,6 +41,9 @@ int Hydro4x1::init() {
     // Now that the subdomains info were loaded they can be built
     _domain->buildSubDomainsMPI(4, 1);
 
+    // build SDS in each SDD.
+    _domain->buildThreads();
+
     // Initial time
     _t = 0;
 
@@ -52,6 +55,9 @@ int Hydro4x1::init() {
 
     // Loading boundary conditions on \rho
     IO::loadBoundaryConditions(_initpath, *_domain);
+
+    // Build communication maps between sdds (overlap and boundary).
+    _domain->buildCommunicationMap();
 
     // The first dt has to be computed
     // and the first umax searched manually
@@ -82,7 +88,6 @@ int Hydro4x1::init() {
     }
 
     // Init tasks pool
-    _domain->buildThreads();
     _domain->addEquation("advection", std::bind(&Hydro4x1::advection, this,
                                    std::placeholders::_1, std::placeholders::_2));
     _domain->addEquation("source", std::bind(&Hydro4x1::source, this,
@@ -90,6 +95,7 @@ int Hydro4x1::init() {
 
     _domain->addEquation("updateBoundary", std::bind(&Hydro4x1::updateBoundary, this,
                                    std::placeholders::_1, std::placeholders::_2));
+
     return 0;
 }
 
@@ -118,10 +124,12 @@ int Hydro4x1::start() {
         // Compute next dt
         computeDT();
 
+        // ----------------------------------------------------------------------
         // Synchronize overlap cells: requires communication
    	    _timerComputation.end();
         _domain->updateOverlapCells();
    	    _timerComputation.begin();
+        // ----------------------------------------------------------------------
 
         // update BoundaryCells
         _domain->execEquation("updateBoundary");
@@ -133,11 +141,13 @@ int Hydro4x1::start() {
         _domain->switchQuantityPrevNext("rhou_y");
         _domain->switchQuantityPrevNext("rhoe");
 
+        // ----------------------------------------------------------------------
         // Resynchronize overlap cells for rho quantity before calling next step
    	    _timerComputation.end();
         _domain->updateOverlapCells();
    	    _timerComputation.begin();
 
+        // ----------------------------------------------------------------------
         // update BoundaryCells
         _domain->execEquation("updateBoundary");
 
@@ -186,11 +196,11 @@ void Hydro4x1::advection(const SDShared& sds, const std::map< std::string, Quant
         const int j = coords.second;
         
         // Get values from quantity.
-        unsigned int k_bottom = sds.convert(i, j - 1);
-        unsigned int k_top = sds.convert(i, j + 1);
-        unsigned int k_center = sds.convert(i, j);
-        unsigned int k_left(k_center - 1);
-        unsigned int k_right(k_center + 1);
+        size_t k_bottom = sds.convert(i, j - 1);
+        size_t k_top = sds.convert(i, j + 1);
+        size_t k_center = sds.convert(i, j);
+        size_t k_left(k_center - 1);
+        size_t k_right(k_center + 1);
 
         real rho_left = rho.get0(k_left);
         real rho_center = rho.get0(k_center);
@@ -281,11 +291,11 @@ void Hydro4x1::source(const SDShared& sds, const std::map< std::string, Quantity
         const int j = coords.second;
 
         // Get values from quantity.
-        unsigned int k_bottom = sds.convert(i, j - 1);
-        unsigned int k_top = sds.convert(i, j + 1);
-        unsigned int k_center = sds.convert(i, j);
-        unsigned int k_left(k_center - 1);
-        unsigned int k_right(k_center + 1);
+        size_t k_bottom = sds.convert(i, j - 1);
+        size_t k_top = sds.convert(i, j + 1);
+        size_t k_center = sds.convert(i, j);
+        size_t k_left(k_center - 1);
+        size_t k_right(k_center + 1);
 
         real rho_left = rho.get0(k_left);
         real rho_center = rho.get0(k_center);

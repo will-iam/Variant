@@ -14,20 +14,6 @@
 #include <vector>
 
 #include "CoordConverter.hpp"
-//#include "SDShared.hpp"
-
-/*!
- * @brief Interface for storing multi-type quantity in the same array.
- */
-class QuantityInterface {
-  public:
-    /*!
-     * Virtual destructor
-     */
-    virtual ~QuantityInterface() {};
-};
-
-template<typename T> class Quantity;
 
 /*!
  * @brief Physical quantity used in numerical schemes.
@@ -40,7 +26,7 @@ template<typename T> class Quantity;
  * of order 1 in time, and switches between them to avoid
  * unnecesary writing.
  */
-template<typename T> class Quantity:public QuantityInterface {
+template<typename T> class Quantity {
   public:
 
     /*!
@@ -89,9 +75,11 @@ template<typename T> class Quantity:public QuantityInterface {
     int currentPrev() const;
 
     
-    const T& get0(unsigned int pos) const;
-    const T& get1(unsigned int pos) const;
-    void set1(T value, unsigned int pos);
+    const T& get0(size_t pos) const;
+    const T& get1(size_t pos) const;
+
+    void set0(T value, size_t pos);
+    void set1(T value, size_t pos);
 
   private:
 
@@ -169,17 +157,22 @@ template<typename T> void Quantity<T>::set(T value,
 }
 
 template<typename T>
-const T& Quantity<T>::get0(unsigned int pos) const {
+const T& Quantity<T>::get0(size_t pos) const {
     return (*_prev)[pos];
 }
 
 template<typename T>
-const T& Quantity<T>::get1(unsigned int pos) const {
+const T& Quantity<T>::get1(size_t pos) const {
     return (*_next)[pos];
 }
 
 template<typename T>
-void Quantity<T>::set1(T value, unsigned int pos) {
+void Quantity<T>::set0(T value, size_t pos) {
+    (*_prev)[pos] = value;
+}
+
+template<typename T>
+void Quantity<T>::set1(T value, size_t pos) {
     (*_next)[pos] = value;
 }
 

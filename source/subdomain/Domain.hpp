@@ -190,7 +190,7 @@ class Domain {
      *
      * @param name of new quantity
      */
-    void addQuantity(std::string quantityName, bool constant = false);
+    void addQuantity(std::string quantityName);
     /*!
      * @brief Adds function that resolves a new equation on a SDS to be computed
      * for each iteration by the domain.
@@ -208,9 +208,10 @@ class Domain {
     void buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundaryThickness);
     /*!
      * @brief Builds all info needed by the domain to compute the boundary
-     * according to the boundary conditions set on boundary cells.
+     * according to the boundary conditions set on boundary cells, and overlap cells.
+     * must be called once the boundary conditions are defined.
      */
-    void buildBoundaryMap();
+    void buildCommunicationMap();
     /*!
      * @brief Builds the task pool for each SDD.
      *
@@ -229,12 +230,9 @@ class Domain {
      * @brief updates overlap cells of all SDDs according to their
      * values on reference cells on other SDDs, for a given quantity.
      *
-     * @param quantityName name of quantity to update
      */
     void updateOverlapCells();
-    void updateOverlapCells(const std::string& qtyName);
-
-
+    
     /*! @brief Returns non-modifiable id of SDD and coordinates on SDD of cell
      * given by its coordinates on the domain.
      *
@@ -330,9 +328,6 @@ class Domain {
     int _SDD_BL_Y;
     unsigned int _SDD_Nx;
     unsigned int _SDD_Ny;
-
-    std::vector<std::string> _nonCstQties;
-
 };
 
 /*!
