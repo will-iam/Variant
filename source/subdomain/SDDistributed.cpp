@@ -28,7 +28,7 @@ SDDistributed::~SDDistributed() {
 
         if (_recvBuffer[it.first] != nullptr)
             delete[] _recvBuffer[it.first];
-    } 
+    }
 
     _bufferSize.clear();
     _sendBuffer.clear();
@@ -92,7 +92,7 @@ void SDDistributed::dispatchBoundaryCell(const std::map< std::pair<int, int>, re
     if (_SDSVector.empty())
         exitfail("You must initialize the SDS list before splitting the boundary cell");
 
-    // This is a uniform ditribution of the cells, the boundary cells in each sds does not correspond the geometric position of the cell.    
+    // This is a uniform ditribution of the cells, the boundary cells in each sds does not correspond the geometric position of the cell.
     size_t s = neumannCellMap.size() / _SDSVector.size();
     size_t counter = 0;
     size_t cursor = 0;
@@ -158,11 +158,11 @@ void SDDistributed::dispatchOverlapCell() {
         if (_sendIndexVector[SDDid].size() != _recvIndexVector[SDDid].size())
             exitfail("Size problem in speed-up structures: different vector size.");
     }
-    
+
     if (totalSize == 0)
         exitfail("Zero overlap cells in parallel configuration.");
 
-    // This is a uniform ditribution of the cells, the boundary cells in each sds does not correspond the geometric position of the cell.    
+    // This is a uniform ditribution of the cells, the boundary cells in each sds does not correspond the geometric position of the cell.
     size_t s = totalSize / _SDSVector.size();
     size_t counter = 0;
     size_t cursor = 0;
@@ -189,14 +189,14 @@ void SDDistributed::dispatchOverlapCell() {
         if (++i_vector >= _sendIndexVector[*SDDit].size()){
             i_vector = 0;
             ++SDDit;
-        }    
+        }
     }
 
     // Now set the pos in the buffer to start to copy/read the data.
     //std::cout << "[" << _id << "] Total Size: " << totalSize << " in " << _neighbourSDDVector.size() << " neighbour(s)." << std::endl;
     size_t check = 0;
     for (const auto& SDDid: _neighbourSDDVector) {
-        //if (_id == 2)    
+        //if (_id == 2)
         //    std::cout << "[" << _id << "] to SDDid: " << SDDid << " current total " << check << std::endl;
 
         size_t pos(0);
@@ -205,7 +205,7 @@ void SDDistributed::dispatchOverlapCell() {
             size_t n = _SDSVector[i].getOverlapCellNumber(SDDid);
             if (n != 0) {
                 _SDSVector[i].setBufferPos(SDDid, pos);
-                
+
                 //if (_id == 2)
                 //    std::cout << "[" << _id << "] SDS: " << i << ", to SDDid: " << SDDid << " start at pos " << pos << " contains " << n << std::endl;
 
@@ -291,15 +291,15 @@ void SDDistributed::updateOverlapCells() {
             unsigned int SDDid = it.first;
             auto& v(_recvBuffer[SDDid]);
             for (const unsigned int i : it.second) {
-                p.second->set0(v[bufIndices[SDDid]], i);
+                qty.set0(v[bufIndices[SDDid]], i);
                 ++bufIndices[SDDid];
             }
         }
-    } 
+    }
 
     // Special case: parsing data for periodic boundary condition with itself.
     for (auto const& it: _selfIndexMap) {
-        size_t indexHere(it.first), indexThere(it.second);        
+        size_t indexHere(it.first), indexThere(it.second);
         for (const auto p: _quantityMap) {
             auto& qty(*p.second);
             qty.set0(qty.get0(indexThere), indexHere);
@@ -322,7 +322,7 @@ void SDDistributed::copyOverlapCell() {
             }
         }
     } */
-    
+
 }
 
 void SDDistributed::sendOverlapCell() {
@@ -363,14 +363,14 @@ void SDDistributed::parseOverlapCell() {
 
     // Special case: parsing data for periodic boundary condition with itself.
     for (auto const& it: _selfIndexMap) {
-        size_t indexHere(it.first), indexThere(it.second);        
+        size_t indexHere(it.first), indexThere(it.second);
         for (const auto p: _quantityMap) {
             auto& qty(*p.second);
             qty.set0(qty.get0(indexThere), indexHere);
         }
     }
 
-    
+
 }
 
 

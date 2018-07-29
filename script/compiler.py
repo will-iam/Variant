@@ -56,46 +56,36 @@ class Engine:
             cwd = os.path.join(config.workspace, 'source'))
         p.wait()
 
-    def run(self, input_path, output_path, nnodes =1, mpi_nprocs = 0, ncores = 1, run_option = []):
+    def run(self, input_path, output_path, nnodes, mpi_nprocs, ncores, run_option = []):
+        if mpi_nprocs == 0:
+            print("run failed - not enough mpi process specified.")
+            sys.exit(1)
+
+        # Command base: mpirun specified in config file.
         cmd = config.mpi_RUN.split(' ')
-        if mpi_nprocs > 0:
-            if self._gdb:
-                #cmd = cmd + ['-n', str(mpi_nprocs), 'xterm', '-e', 'gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path] + run_option
-                cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path] + run_option
-                print(' '.join(cmd))
-                subprocess.check_call(cmd)
-            elif self._valgrind:
-                subprocess.check_call([config.mpi_RUN, '-n', str(mpi_nprocs), '-x',
-                    'valgrind', '--leak-check=yes',
-                    '--log-file=valgrind-out.txt',
-                    self._binary_path, '-i', input_path, '-o', output_path])
-            elif self._vtune:
-                #project = os.path.basename(self._binary_path).split('-')[0]
-                vcmd = ['amplxe-cl', '-r', 'vtune-hs', '-collect', 'hotspots']
-                #vcmd = ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
-                #vcmd = ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
-                #vcmd = ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
-                cmd = cmd + ['-n', str(mpi_nprocs), '-x', '-c', str(ncores)] + vcmd + [self._binary_path, '-i', input_path, '-o', output_path] + run_option
-                print(' '.join(cmd))
-                subprocess.check_call(cmd)
-            else:
-                '''
-                # to add environment variable visible in this process + all children:
-                os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
-                '''
-                # KnL options
-                # '-m', 'block:block'
-                # '-m', 'block:cyclic'
-                # '-m', 'block:fcyclic'
-                cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-m', 'block:cyclic', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path] + run_option
-                #cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-c', str(ncores), self._binary_path, '-i', input_path, '-o', output_path] + run_option
-                print(' '.join(cmd))
-                subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
-        else:
-            if self._gdb:
-                subprocess.check_call(['gdb', '--args', self._binary_path, '-i', input_path, '-o', output_path])
-            elif self._valgrind:
-                subprocess.check_call(['valgrind', '--leak-check=yes',
-                    self._binary_path, '-c', str(nthreads), '-i', input_path, '-o', output_path])
-            else:
-                subprocess.check_call([self._binary_path, '-i', input_path, '-o', output_path])
+
+        # KnL options
+        # '-m', 'block:block'
+        # '-m', 'block:cyclic'
+        # '-m', 'block:fcyclic'
+        #cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-m', 'block:cyclic', '-c', str(ncores)]
+        cmd = cmd + ['-hostfile', 'hostfile', '-n', str(mpi_nprocs)]
+
+        if self._gdb:
+            cmd = cmd + ['xterm', '-e', 'gdb', '--args']
+        elif self._valgrind:
+            cmd = cmd + ['valgrind', '--leak-check=yes', '--log-file=valgrind-out.txt']
+        elif self._vtune:
+            cmd = cmd + ['amplxe-cl', '-r', 'vtune-hs', '-collect', 'hotspots']
+            #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
+            #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
+            #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
+
+        '''
+        # to add environment variable visible in this process + all children:
+        os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
+        '''
+
+        cmd = cmd + [self._binary_path, '-i', input_path, '-o', output_path] + run_option
+        print(' '.join(cmd))
+        subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
