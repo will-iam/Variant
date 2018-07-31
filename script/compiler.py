@@ -5,7 +5,7 @@ import __future__
 import os
 import sys
 import subprocess
-import io
+import rio
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
 

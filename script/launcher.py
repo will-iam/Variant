@@ -13,7 +13,7 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import config
 from script.build_case import build_case
-import script.io as io
+import script.rio as io
 import script.sdd as sdd
 import script.compiler as compiler
 from script.analytics import compare_data
@@ -27,7 +27,7 @@ def get_ref_name():
 
     # cmd = [config.mpi_CC, '--version']
     # res = subprocess.check_call(cmd)
-     
+
     return 'ref'
 
 def get_case_path(project_name, case_name):
@@ -141,7 +141,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
     run_option = [] if compare_with_ref == True else ['--dry']
-    
+
     engine.run(input_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
     end = timer()
 

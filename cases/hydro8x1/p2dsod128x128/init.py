@@ -8,7 +8,7 @@ import sys
 import os
 from decimal import Decimal
 sys.path.insert(1, os.path.join(sys.path[0], '../../../'))
-import script.io as io
+import script.rio as io
 from chars import *
 
 # ------------------------------------------------------------------------------

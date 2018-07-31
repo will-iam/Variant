@@ -4,7 +4,7 @@
 import __future__
 import os
 import sys
-import script.io as io
+import script.rio as io
 from timeit import default_timer as timer
 import numpy as np
 
@@ -39,16 +39,16 @@ def split_domain(domain_dir, output_dir, nSDD_X, nSDD_Y):
         uid = int(line_split[0])
         coordX = int(line_split[1])
         coordY = int(line_split[2])
-        
+
         x = coordX // SDD_Nx
         y = coordY // SDD_Ny
         BL_X = SDD_Nx * x
         BL_Y = SDD_Ny * y
 
-        # SDD id is known based on coords        
+        # SDD id is known based on coords
         SDDid = y * nSDD_X + x
         sdd_to_coords[SDDid].append((uid, coordX - BL_X, coordY - BL_Y))
-         
+
     # Closing all streams
     domain_f.close()
 
@@ -127,7 +127,7 @@ def split_quantity(quantity_dir, output_dir, quantity_name, sdd_to_coords):
 
     nSDD = int(line_split[4]) * int(line_split[5])
     quantity = np.loadtxt(quantity_file_name, usecols=[1])
-    
+
     # Opening streams for all SDDs
     for SDDid in range(nSDD):
         SDDpath = os.path.join(output_dir, 'sdd' + str(SDDid))
@@ -135,7 +135,7 @@ def split_quantity(quantity_dir, output_dir, quantity_name, sdd_to_coords):
             # Now iterationg through all cell uids on quantity file
             for c in sdd_to_coords[SDDid]:
                 file_stream.write("%s %s %16.16g\n" % (c[1], c[2], quantity[c[0]]))
-   
+
 def split_bc(bc_dir, output_dir):
     domain_shortinfo = open(os.path.join(output_dir, "domain.info"), 'r')
     line_split = domain_shortinfo.readline().split()

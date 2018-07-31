@@ -7,7 +7,7 @@ import sys
 from importlib import *
 from shutil import rmtree
 import config
-import script.io as io
+import script.rio as io
 
 def build_case(case_path, output_dir, force_build = False):
     '''
@@ -59,7 +59,7 @@ def build_case(case_path, output_dir, force_build = False):
     # Write quantities and boundary conditions if necessary
     for q_name, q in case.quantityDict.items():
         io.write_quantity(output_dir, q_name, q)
-    
+
     # Use quantity list from the characteristics.
     q_name_list = list(chars.quantityList)
 

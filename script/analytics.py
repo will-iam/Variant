@@ -6,7 +6,7 @@ from decimal import Decimal
 import sys
 import os
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from script.io import read_quantity, read_converter
+from script.rio import read_quantity, read_converter
 from timeit import default_timer as timer
 
 def mass(data, dx, dy):
@@ -27,7 +27,7 @@ def compare_data(input_path1, input_path2, quantityNameList):
 
     Nx1, Ny1, dx1, dy1 = read_converter(input_path1, uid_to_coords_1)
     Nx2, Ny2, dx2, dy2 = read_converter(input_path2, uid_to_coords_2)
-    
+
     if not dx1 == dx2 or not dy1 == dy2 or not Nx1 == Nx2 or not Ny1 == Ny2:
         return False, "domain", (dx1, dy1, None)
 

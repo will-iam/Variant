@@ -32,7 +32,8 @@ for i in range(Nx):
     for j in range(Ny):
         coords = coords_to_uid[(i, j)]
         P = 1.0
-        if i <= Nx // 2 and j <= Ny // 2:
+        #if i <= Nx / 2 and j <= Ny / 2:
+        if i <= Nx / 2:
             rho_uid_to_val[coords] = 1#float(i) / Nx
         else:
             P = 0.1

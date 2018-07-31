@@ -8,7 +8,7 @@ import sys
 import os
 from decimal import Decimal
 sys.path.insert(1, os.path.join(sys.path[0], '../../../'))
-import script.io as io
+import script.rio as io
 from chars import *
 
 # ------------------------------------------------------------------------------
@@ -76,4 +76,3 @@ for coord in coords_to_bc:
 # Add quantities to the quantity dictionary
 quantityDict['rho'] = rho_uid_to_val
 quantityDict['rhoe'] = rhoe_uid_to_val
-

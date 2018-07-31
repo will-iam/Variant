@@ -29,11 +29,11 @@ if nTotalCores == 512:
 #if args.jobname == "Variant-Job-XYZ6":
     #Special argument depending on the job.
 
-testList.append(explore((256, 256), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
+#testList.append(explore((256, 256), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
 #testList.append(weakSDD(128, ratioThreadsCores, SDSratioList))
 #testList.append(weakSDS(128, ratioThreadsCores, SDSratioList, SDScommonDivider))
-#testList.append(strongSDD((2048, 2048), ratioThreadsCores, [9], SDSratioList))
-#testList.append(strongSDS((2048, 2048), ratioThreadsCores, SDSratioList, SDScommonDivider))
+testList.append(strongSDD((256, 32), ratioThreadsCores, SDDSizeList, SDSratioList))
+#testList.append(strongSDS((128, 128), ratioThreadsCores, SDSratioList, SDScommonDivider))
 #testList.append(exploreCaseSize(512, ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
 
 battery = compileTestBattery(testList, SDSgeom, nruns)

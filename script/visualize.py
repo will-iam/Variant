@@ -3,16 +3,17 @@
 
 import sys
 import os
+from rio import read_quantity, read_converter
+
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
-#plt.style.use('ggplot')
+plt.style.use('ggplot')
 import numpy as np
 from decimal import Decimal
 from timeit import default_timer as timer
 import argparse
-from script.io import read_quantity, read_converter
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
 
@@ -22,8 +23,8 @@ parser.add_argument("--case", type = str, help = "Case to visualize", required=T
 args = parser.parse_args()
 
 # Check if refence results exist.
-#case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'final')
-case_path = os.path.join(config.cases_dir, 'hydro4x1', 'n2dsod512x512', 'ref', 'final')
+case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'final')
+#case_path = os.path.join(config.cases_dir, 'hydro4x1', 'n2dsod512x512', 'ref', 'final')
 print("Looking for results in %s ..." % case_path)
 
 if not os.path.isdir(case_path):
@@ -41,7 +42,7 @@ uid_to_coords = dict()
 Nx, Ny, dx, dy = read_converter(case_path, uid_to_coords)
 
 for q in quantityListName:
-    data[q] = np.zeros((Nx, Ny), dtype = np.dtype(Decimal))
+    data[q] = np.zeros((Nx, Ny))
     start = timer()
     read_quantity(data[q], case_path, uid_to_coords, q)
     end = timer()
@@ -52,7 +53,7 @@ for q in quantityListName:
 fig = plt.figure(0, figsize=(9, 6))
 ax0 = fig.add_subplot(221)
 
-im = ax0.pcolormesh(data['rho'])
+im = ax0.pcolormesh(data['rho'].transpose())
 fig.colorbar(im, ax=ax0)
 ax0.set_title('rho pcolormesh with levels')
 ax0.axis('tight')
@@ -63,7 +64,7 @@ ax0.axis('tight')
 #plt.legend()
 
 ax1 = fig.add_subplot(223)
-cf1 = ax1.contourf(data['rho'])
+cf1 = ax1.contourf(data['rho'].transpose())
 fig.colorbar(cf1, ax=ax1)
 ax1.set_title('rho contourf with levels')
 ax1.axis('tight')
@@ -74,14 +75,15 @@ ax1.axis('tight')
 #plt.legend()
 
 ax2 = fig.add_subplot(222)
-cf2 = ax2.contourf(data['rhoe'])
+cf2 = ax2.contourf(data['rhoe'].transpose())
 fig.colorbar(cf2, ax=ax2)
 ax2.set_title('rhoe contourf with levels')
 ax2.axis('tight')
 
 
-x = np.linspace(0., 1.0, Nx)
-y = np.linspace(0., 1.0, Ny)
+x = np.linspace(0., Nx * float(dx), Nx)
+y = np.linspace(0., Ny * float(dy), Ny)
+
 Ux = np.zeros((Nx, Ny))
 Uy = np.zeros((Nx, Ny))
 Ek = np.zeros((Nx, Ny))
@@ -89,17 +91,13 @@ for i in range(Nx):
     for j in range(Ny):
         Ux[i][j] = data['rhou_x'][i][j] / data['rho'][i][j]
         Uy[i][j] = data['rhou_y'][i][j] / data['rho'][i][j]
-#        Ek[i][j] = np.sqrt(Ux[i][j]*Ux[i][j] + Uy[i][j]*Uy[i][j])
-        Ek[i][j] = Ux[i][j]
+        Ek[i][j] = np.sqrt(Ux[i][j]*Ux[i][j] + Uy[i][j]*Uy[i][j])
 
 ax3 = fig.add_subplot(224)
-#strm = ax3.streamplot(X, Y, data['rhou_x'], data['rhou_y'], color=U, linewidth=2, cmap='autumn')
-#strm = ax3.streamplot(X, Y, data['rhou_x'], V)
-#strm = ax3.streamplot(x, y, Ux, Uy, density=[0,1.0])
-#strm = ax3.streamplot(x, y, Ux, Uy, color=Ek)
-strm = ax3.streamplot(x, y, Uy, Ux)
-#cf3 = ax3.contourf(Ek)
-#fig.colorbar(cf3, ax=ax3)
+#lw = 3 * Ek.transpose() / Ek.max()
+#strm = ax3.streamplot(x, y, Ux.transpose(), Uy.transpose(), color=Ek.transpose(), cmap='autumn', linewidth=lw)
+strm = ax3.streamplot(x, y, Ux.transpose(), Uy.transpose(),color=Ek.transpose())
+fig.colorbar(strm.lines)
 ax3.set_title('rhou')
 ax3.axis('tight')
 

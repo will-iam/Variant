@@ -123,7 +123,7 @@ int IO::loadQuantity(std::string directory, std::string quantityName, Domain& do
     // If the file does not exist, SDD quantity will be initialized to 0.
     if (!ifs.is_open())
         return 0;
-    
+
     std::string tmpStr;
 
     for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
@@ -172,8 +172,7 @@ int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
 }
 
 
-int IO::writeQuantity(std::string directory,
-        std::string quantityName, const Domain& domain) {
+int IO::writeQuantity(std::string directory, std::string quantityName, const Domain& domain) {
 
     const SDDistributed& sdd = domain.getSDDconst();
 

@@ -6,7 +6,7 @@ Nx = 256
 Ny = 256
 
 # Scheme execution options
-T = 0.5
+T = 0.2
 CFL = 0.5
 
 gamma = 1.4

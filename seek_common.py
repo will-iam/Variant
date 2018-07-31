@@ -10,12 +10,14 @@ import config
 from collections import *
 from shutil import rmtree
 from script.launcher import launch_test, case_exist
-import script.io as io
+import script.rio as io
 import datetime
 import copy
 
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
+COLOR_GREEN = '\033[92m'
+COLOR_WARNING = '\033[93m'
 
 # Performance attributes
 perf_dtypes = [('initTime', int), ('finalizeTime', int), ('nIterations', int), ('loopTime', int), ('totalExecTime', int), ('minComputeSum', int), ('maxComputeSum', int), ('maxIterationSum', int), ('endTime', 'S10')]
@@ -464,4 +466,4 @@ def runTestBattery(engineOptionDict, testBattery):
             join_result_data(results_path, variant_info, perf_for_allruns, test['nCoresPerSDD'], test['machine'])
 
     # Finally
-    print("\nTest successfully passed\n")
+    print(COLOR_GREEN + "\nTest successfully passed\n" + COLOR_ENDC)

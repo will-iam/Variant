@@ -39,7 +39,7 @@ def read_converter(input_dir, uid_to_coords):
 
 
 def read_quantity(data, input_dir, uid_to_coords, quantity_name):
-    
+
 #    with open(os.path.join(input_dir, quantity_name + '.dat'), 'r') as quantity_f:
 #        for line in quantity_f:
 #            line_list = line.split(' ')
@@ -55,7 +55,7 @@ def read_quantity(data, input_dir, uid_to_coords, quantity_name):
 def read_exec_options(input_dir):
     with open(os.path.join(output_dir, 'exec_options.dat'), 'r') as f:
         line_list = f.readline().split()
-    
+
     exec_options = dict()
     exec_options['nSDD'] = int(line_list[0])
     exec_options['nSDD_X'] = int(line_list[1])
