@@ -6,12 +6,11 @@ import os
 import sys
 from importlib import *
 from shutil import rmtree
-import config
 import script.rio as io
 
 def build_case(case_path, output_dir, force_build = False):
     '''
-    Load all physical/numerical data from case
+    Build all physical/numerical data from case
     '''
 
     # If the directory does not exist, then build:
@@ -26,22 +25,16 @@ def build_case(case_path, output_dir, force_build = False):
             print('case already built')
             sys.path.append(case_path)
             import chars
-            chars = reload(chars)
-            del sys.path[-1]
             qtyList = chars.quantityList
+            del sys.path[-1]
+            del sys.modules["chars"]
             del chars
             return list(qtyList)
 
-    print(case_path)
+    print("Case path:", case_path)
     sys.path.append(case_path)
     # Reload chars also else, you build the case with the wrong characteristics
-    import chars
-    # chars = reload(chars)
-
     import init as case
-    # case = reload(case)
-
-    del sys.path[-1]
 
     rmtree(output_dir, ignore_errors=True)
 
@@ -61,8 +54,11 @@ def build_case(case_path, output_dir, force_build = False):
         io.write_quantity(output_dir, q_name, q)
 
     # Use quantity list from the characteristics.
-    q_name_list = list(chars.quantityList)
+    q_name_list = list(case.quantityList)
 
+    # Del case and chars
+    del sys.path[-1]
+    del sys.modules["init"]
     del case
 
     # Return path to case directory

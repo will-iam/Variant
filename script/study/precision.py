@@ -16,7 +16,6 @@ from rio import read_quantity, read_converter
 sys.path.insert(1, os.path.join(sys.path[0], '../..'))
 import config
 
-
 parser = argparse.ArgumentParser(description="Visualize reference results from simulation", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
 parser.add_argument("--case", type = str, help = "Case to visualize", required=True)
@@ -54,9 +53,8 @@ for i in range(Nx):
     rho_1D[i] = data['rho'][i][0]
 
 gamma = 1.4
-npts = Nx
 positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                        geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=npts)
+                        geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=Nx)
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)

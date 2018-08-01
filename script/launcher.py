@@ -102,6 +102,7 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
     sdd.merge_domain(ref_path, ref_path)
     for q_str in qty_name_list:
         sdd.merge_quantity(ref_path, ref_path, q_str)
+    rmtree(os.path.join(ref_path, "sdd0"), ignore_errors=True)
 
 def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
     # Start time
