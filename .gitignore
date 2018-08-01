@@ -123,3 +123,5 @@ ref2
 results/
 model/data
 model/rapport
+cases/*/*/ref
+cases/*/*/init
