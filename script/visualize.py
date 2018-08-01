@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
+import __future__
 import sys
 import os
 import matplotlib
@@ -72,8 +73,9 @@ positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125
                                            geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=npts)
 
 # Now show them.
-########## rho ################
 fig = plt.figure(0, figsize=(9, 6))
+
+########## rho ################
 ax0 = fig.add_subplot(221)
 cf = ax0.contourf(data['rho'].transpose())
 fig.colorbar(cf, ax=ax0)
@@ -84,7 +86,6 @@ ax0.axis('tight')
 ax1 = fig.add_subplot(223)
 ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
 plt.plot(values['x'], values['rho'], linewidth=1.5, color='r', linestyle='dashed', label="exact")
-
 ax1.set(xlabel='x', ylabel='density', title='Rho value on y = 0')
 ax1.grid()
 ax1.axis([0, 1, 0, 1.1])
