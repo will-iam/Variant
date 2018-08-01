@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -8,16 +8,16 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
-#plt.style.use('ggplot')
+plt.style.use('ggplot')
 import numpy as np
 from decimal import Decimal
 from timeit import default_timer as timer
 import argparse
-from rio import read_quantity, read_converter
+from sod.sod import solve
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
+from rio import read_quantity, read_converter
+sys.path.insert(1, os.path.join(sys.path[0], '../..'))
 import config
-sys.path.insert(1, os.path.join(sys.path[0], 'sod_shocktube'))
-from sod import solve
 
 parser = argparse.ArgumentParser(description="Visualize reference results from simulation", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
@@ -90,7 +90,7 @@ ax1.set(xlabel='x', ylabel='density', title='Rho value on y = 0')
 ax1.grid()
 ax1.axis([0, 1, 0, 1.1])
 #ax1.axis('tight')
-    
+
 ########## internal energy ################
 ax2 = fig.add_subplot(222)
 cm = ax2.pcolormesh(Ei.transpose())

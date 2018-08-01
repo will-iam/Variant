@@ -1,5 +1,8 @@
-Please fill in the config.py with your workspace directory and compiler
-commands.
+Please fill in the config.py with your workspace directory and compiler commands.
 
 // Does everything (build and start case)
-python seek_optimal.py hydro4x1 -c n2dsod --core_per_node 32 --max_core_number 32
+python3 seek_optimal.py hydro4x1 -c n2dsod --core_per_node 1 --max_core_number 1
+
+// Some post-process script
+python3 script/study/visualize.py hydro4x1 --case n2dsod256x32
+python3 script/study/precision.py hydro4x1 --case n2dsod256x32

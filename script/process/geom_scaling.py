@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
-
 """
 Plot to compare different SDS geometry: random or line.
 """
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt
@@ -42,7 +42,7 @@ for data in sizeDataDict:
 
         for run in value:
             nSDD = run['point'][0] * run['point'][1]
-    
+
             if nSDD != R:
                 continue
 
@@ -96,4 +96,3 @@ plt.xlabel('Core(s)')
 plt.ylabel('(Log scaled) Loop Time')
 plt.legend()
 plt.show()
-

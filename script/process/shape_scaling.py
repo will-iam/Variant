@@ -1,9 +1,10 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 """
 Plot to compare different shape of the SDD split: (X, Y) with a single thread and a single core in each.
 """
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt
@@ -122,5 +123,3 @@ plt.xlabel('Core(s)')
 plt.ylabel('(Log scaled) Loop Time')
 plt.legend()
 plt.show()
-
-

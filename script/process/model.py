@@ -1,6 +1,9 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
+"""
+"""
 
+import __future__
 import os
 import sys
 from collections import *

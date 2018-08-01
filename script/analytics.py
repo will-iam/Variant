@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
+import __future__
 import numpy as np
 from decimal import Decimal
 import sys

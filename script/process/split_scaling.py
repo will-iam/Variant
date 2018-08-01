@@ -1,6 +1,9 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
+"""
+"""
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt

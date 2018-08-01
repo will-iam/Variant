@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
-
 """
 Plot the scaling of the sds ratio (per thread) parameter.
 """
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt
@@ -95,5 +95,3 @@ parser.outputPoint("plot/sds_scaling_HT_dot-%sx%s.dat" % (caseSize[0], caseSize[
 
 
 plt.show()
-
-

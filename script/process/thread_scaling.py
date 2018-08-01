@@ -1,6 +1,9 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
+"""
+"""
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt
@@ -35,7 +38,7 @@ threadRatioDict = {}
 for data in sizeDataDict:
     for key, value in data.items():
         keyDict = parser.extractKey(key)
-        
+
         Nt = keyDict['Nt']
         Ns = keyDict['Ns']
         for run in value:
@@ -46,7 +49,7 @@ for data in sizeDataDict:
 #            if Nt >= 4.0:
 #                continue
 
-            t = run['loopTime'] 
+            t = run['loopTime']
             if Nt not in threadRatioDict.keys():
                 threadRatioDict[Nt] = list()
             threadRatioDict[Nt].append(t)
@@ -85,5 +88,3 @@ parser.outputCurve("plot/thread_scaling-%sx%s.dat" % (caseSize[0], caseSize[1]),
 parser.outputPoint("plot/thread_scaling_dot-%sx%s.dat" % (caseSize[0], caseSize[1]), threadRatioDict)
 
 plt.show()
-
-

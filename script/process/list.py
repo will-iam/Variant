@@ -1,6 +1,9 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
+"""
+"""
 
+import __future__
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,7 +53,7 @@ if globalListSDS:
 #        print "\t..."
 #        for i in range(np.max([0, len(globalListSDS) - 5]), len(globalListSDS)):
 #            print "\t%s on point %s, commonSize %s, for key: %s and ratio : minimal time x %s" % (globalListSDS[i][0], globalListSDS[i][1], globalListSDS[i][4], globalListSDS[i][2], globalListSDS[i][0] / globalListSDS[0][0])
-    
+
 globalListSDD = [e for e in globalList if e[1][2] == 1]
 if globalListSDD:
     print "\nBest results for SDD: %s" % len(globalListSDD)

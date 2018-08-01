@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt
@@ -68,7 +69,7 @@ for data in sizeDataDict:
             maxCase = (nx, ny)
 
         if minCase[0] > nx or  minCase[1] > ny:
-            minCase = (nx, ny)  
+            minCase = (nx, ny)
 
         caseNormalizer = nx * ny
         normalizeDict[caseNormalizer] = caseNormalizer
@@ -157,4 +158,3 @@ parser.outputPoint("plot/case_scaling_sdd_HT_dot-%s.dat" % initSize, sddCaseDict
 
 
 plt.show()
-

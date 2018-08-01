@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
+import __future__
 import parser
 import sys
 import matplotlib.pyplot as plt
@@ -48,7 +49,7 @@ for data in sizeDataDict:
             # On several nodes, select only pure SDD, which is the best result.
             if R > 64 and nSDD < R:
                 continue
-            
+
             # Don't remove HyperThreading.
             # We assume that hyperthreading with SDD leads to same results as with SDS.
             #if R > 64 and nSDD == R and Nt > 1.0:
@@ -125,5 +126,3 @@ plt.legend()
 '''
 
 plt.show()
-
-

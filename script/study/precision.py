@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -6,15 +6,15 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-#plt.style.use('ggplot')
+plt.style.use('ggplot')
 from decimal import Decimal
 from timeit import default_timer as timer
 import argparse
-from rio import read_quantity, read_converter
+from sod.sod import solve
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
+from rio import read_quantity, read_converter
+sys.path.insert(1, os.path.join(sys.path[0], '../..'))
 import config
-sys.path.insert(1, os.path.join(sys.path[0], 'sod_shocktube'))
-from sod import solve
 
 
 parser = argparse.ArgumentParser(description="Visualize reference results from simulation", prefix_chars='-')
@@ -52,7 +52,7 @@ x = np.linspace(0., Nx * float(dx), Nx)
 rho_1D = np.zeros(Nx)
 for i in range(Nx):
     rho_1D[i] = data['rho'][i][0]
-  
+
 gamma = 1.4
 npts = Nx
 positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),

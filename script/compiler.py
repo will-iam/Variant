@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
 import os
 import sys
 import subprocess
-import rio
+import script.rio
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import config
 

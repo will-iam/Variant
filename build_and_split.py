@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -53,7 +53,3 @@ print("Build case %s in %s second(s)" % (case_path, int((end - start))))
 for (nSDD_X, nSDD_Y) in nSDD:
 	print("Splitting into " + str((nSDD_X, nSDD_Y)))
 	sdd.split_case(init_path, nSDD_X, nSDD_Y, qty_name_list)
-
-
-
-
