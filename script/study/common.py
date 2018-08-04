@@ -3,14 +3,15 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-plt.style.use('ggplot')
+#plt.style.use('ggplot')
 from decimal import Decimal
 from timeit import default_timer as timer
 import argparse
-from sod.sod import solve
+sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
+from sod import solve
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from rio import read_quantity, read_converter
-sys.path.insert(1, os.path.join(sys.path[0], '../..'))
+sys.path.insert(1, os.path.join(sys.path[0], '..','..'))
 import config
 
 parser = argparse.ArgumentParser(description="Visualize reference results from simulation", prefix_chars='-')

@@ -104,14 +104,23 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
         sdd.merge_quantity(ref_path, ref_path, q_str)
     rmtree(os.path.join(ref_path, "sdd0"), ignore_errors=True)
 
-def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
-    # Start time
-    start = timer()
-
+def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref):
     #Define paths
     project_name = engineOptionDict['project_name']
     case_path = get_case_path(project_name, case_name)
     init_path = os.path.join(case_path, "init")
+
+    # Path where the reference will be stored if any.
+    ref_path = os.path.join(case_path, get_ref_name())
+    if fastref == True:
+        # Don't check if you want only to build the ref.
+        compare_with_ref = False
+        if os.path.isdir(ref_path):
+            print("Reference for case does exist already, return.")
+            return None, 0
+
+    # Start time
+    start = timer()
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
@@ -141,7 +150,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
     engine = compiler.Engine(engineOptionDict, engineOptionDict['must_compile'])
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    run_option = [] if compare_with_ref == True else ['--dry']
+    run_option = [] if compare_with_ref == True or fastref == True else ['--dry']
 
     engine.run(input_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
     end = timer()
@@ -153,18 +162,23 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref):
         for q_str in qty_name_list:
             sdd.merge_quantity(output_path, output_path, q_str)
 
-        # Path where the reference will be stored.
-        final_path = os.path.join(case_path, get_ref_name(), "final")
-
         # Getting/building reference for the case
-        create_ref(engineOptionDict, case_path, init_path, final_path)
+        create_ref(engineOptionDict, case_path, init_path, ref_path)
 
         # Now actually compare.
-        result, qty, error_data = check_test(output_path, final_path, qty_name_list)
+        result, qty, error_data = check_test(output_path, ref_path, qty_name_list)
         if result:
             print("Compared with reference: OK.")
         else:
             print("Compared with reference: ERROR, different result for quantity " + qty)
             sys.exit(1)
+
+    if fastref == True:
+        print(COLOR_BLUE + "Merging final data" + COLOR_ENDC)
+        io.make_sure_path_exists(ref_path)
+        sdd.merge_domain(output_path, ref_path)
+        for q_str in qty_name_list:
+            sdd.merge_quantity(output_path, ref_path, q_str)
+
 
     return output_path, int((end - start) * 1000)

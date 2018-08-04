@@ -39,6 +39,7 @@ parser.add_argument("--max_core_number", type = int, help = "Max. number of proc
 parser.add_argument("--nocompile", action='store_true', default=False, help = "Never compiles project before calling it")
 parser.add_argument("--clean-compile", action='store_true', default=False, help = "Clean SCons compilation file")
 parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
+parser.add_argument("--fastref", action='store_true', default=False, help = "Build ref only with given parameters")
 parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
 parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging tool")
 parser.add_argument("--test", action='store_true', default=False, help = "Show test to be run")
@@ -437,6 +438,7 @@ def runTestBattery(engineOptionDict, testBattery):
         for test in testList:
             # Launching runs for the test
             perf_for_allruns = []
+            variant_info = None
             for n in range(test['nRuns']):
                 # Check results and compare to reference (one check for all runs).
                 if not args.nocheck and n == test['nRuns'] - 1:
@@ -445,7 +447,10 @@ def runTestBattery(engineOptionDict, testBattery):
                     compare_with_ref = False
 
                 # Launch Test
-                tmp_test_path, exec_time = launch_test(tmp_dir, engineOptionDict, cn, test, compare_with_ref)
+                tmp_test_path, exec_time = launch_test(tmp_dir, engineOptionDict, cn, test, compare_with_ref, args.fastref)
+                if tmp_test_path is None:
+                    # This test was not performed.
+                    continue
 
                 totalSDDNumber = test['nSDD'][0] * test['nSDD'][1]
 
@@ -463,7 +468,8 @@ def runTestBattery(engineOptionDict, testBattery):
                 print("perf_for_allruns", perf_for_allruns)
 
             # Join results
-            join_result_data(results_path, variant_info, perf_for_allruns, test['nCoresPerSDD'], test['machine'])
+            if variant_info is not None:
+                join_result_data(results_path, variant_info, perf_for_allruns, test['nCoresPerSDD'], test['machine'])
 
     # Finally
     print(COLOR_GREEN + "\nTest successfully passed\n" + COLOR_ENDC)

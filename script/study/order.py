@@ -12,7 +12,7 @@ rawCaseList = [d for d in os.listdir(case_dir_path)
 
 caseList = list()
 for d in rawCaseList:
-    f = os.path.join(case_dir_path, d,'ref','final')
+    f = os.path.join(case_dir_path, d,'ref')
     if not os.path.isdir(f):
         continue
     if not os.path.isfile(os.path.join(f, 'rho.dat')):
@@ -39,22 +39,23 @@ for d in caseList:
     print("Time to compute exact", q_name, "of %s elements" % len(values['rho']), "%s second(s)" % int((end - start)))
     order[float(dx)] = np.linalg.norm((q - values['rho']), ord=2) / Nx
 
-print(sorted(order))
-print([order[x] for x in sorted(order)])
+#print(sorted(order))
+#print([order[x] for x in sorted(order)])
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 
-color = 'tab:blue'
-last_dx = sorted(order)[-1]
-last_value = order[last_dx]
+#color = 'tab:blue'
+color = 'blue'
+last_dx = float(sorted(order)[-1])
+last_value = float(order[last_dx])
 x = np.linspace(0., last_dx, 30)
 y = (last_value / last_dx) * x
 
-ax1.plot(sorted(order), [order[x] for x in sorted(order)], marker='+', linewidth=1.5, color=color, label="order")
-ax1.plot(x, y, linewidth=1.0, linestyle='dashed', color='black', label="extrap.")
+ax1.plot(sorted(order), [order[v] for v in sorted(order)], marker='+', linewidth=1.5, color=color, label="order")
+ax1.plot(x, y,linewidth=1.0, linestyle='dashed', color='black', label="extrap.")
 ax1.set_ylabel('L^2-norm |sim. - exact|')
 ax1.grid()
 ax1.set(xlabel='dx', title='Order')

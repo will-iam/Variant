@@ -11,14 +11,15 @@ import script.compiler as compiler
 
 nruns = 1
 SDSgeom = 'line'
-ratioThreadsCores = [2.00]
+ratioThreadsCores = [1.00]
 SDSratioList = [4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
 caseSize = (64, 1)
+engineOptionDict['precision'] = 'float'
 
 testBattery = dict()
-for p in range(9, 12):
+for p in range(0, 16):
     xSize = caseSize[0] * 2**p
     cn = case_name + str(xSize)
     test = dict()

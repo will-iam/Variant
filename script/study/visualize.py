@@ -2,31 +2,11 @@
 # -*- coding:utf-8 -*-
 
 import __future__
-import sys
-import os
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.colors import BoundaryNorm
-from matplotlib.ticker import MaxNLocator
-plt.style.use('ggplot')
-import numpy as np
-from decimal import Decimal
-from timeit import default_timer as timer
-import argparse
-from sod.sod import solve
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from rio import read_quantity, read_converter
-sys.path.insert(1, os.path.join(sys.path[0], '../..'))
-import config
-
-parser = argparse.ArgumentParser(description="Visualize reference results from simulation", prefix_chars='-')
-parser.add_argument("project_name", type = str, help = "Name of scheme")
-parser.add_argument("--case", type = str, help = "Case to visualize", required=True)
-args = parser.parse_args()
+from common import *
 
 # Check if refence results exist.
-case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'final')
-#case_path = os.path.join(config.cases_dir, 'hydro4x1', 'n2dsod512x512', 'ref', 'final')
+case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref')
+#case_path = os.path.join(config.cases_dir, 'hydro4x1', 'n2dsod512x512', 'ref')
 print("Looking for results in %s ..." % case_path)
 
 if not os.path.isdir(case_path):
