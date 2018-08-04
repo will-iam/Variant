@@ -34,10 +34,12 @@ def build_case(case_path, output_dir, force_build = False):
     print("Case path:", case_path)
     sys.path.append(case_path)
     # Reload chars also else, you build the case with the wrong characteristics
+    import chars
+    reload(chars)
+
     import init as case
 
     rmtree(output_dir, ignore_errors=True)
-
     io.make_sure_path_exists(output_dir)
 
     # Write scheme info
@@ -60,7 +62,8 @@ def build_case(case_path, output_dir, force_build = False):
     del sys.path[-1]
     del sys.modules["init"]
     del case
-
+    del chars
+    
     # Return path to case directory
     return q_name_list
 

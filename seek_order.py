@@ -16,14 +16,14 @@ SDSratioList = [4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
 caseSize = (64, 1)
-engineOptionDict['precision'] = 'float'
+engineOptionDict['precision'] = 'double'
 
 testBattery = dict()
 for p in range(0, 16):
     xSize = caseSize[0] * 2**p
     cn = case_name + str(xSize)
     test = dict()
-    test['nSDD'] = (maxSdd, 1)
+    test['nSDD'] = (2**(maxSdd-1), 1)
     test['nCoresPerSDD'] = float(nTotalCores) / maxSdd
     test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratioThreadsCores[0])])
     test['nSDS'] = int(test['nThreads'] * SDSratioList[0])

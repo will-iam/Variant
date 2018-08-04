@@ -21,14 +21,14 @@ from script.analytics import compare_data
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
-def get_ref_name():
+def get_ref_name(precision):
     #return os.path.join('ref' + str(sys.version_info[0]), socket.gethostname())
     #return os.path.join('ref' + str(sys.version_info[0]))
 
     # cmd = [config.mpi_CC, '--version']
     # res = subprocess.check_call(cmd)
 
-    return 'ref'
+    return os.path.join('ref', precision)
 
 def get_case_path(project_name, case_name):
     return os.path.join(config.cases_dir, project_name, case_name)
@@ -111,7 +111,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
     init_path = os.path.join(case_path, "init")
 
     # Path where the reference will be stored if any.
-    ref_path = os.path.join(case_path, get_ref_name())
+    ref_path = os.path.join(case_path, get_ref_name(engineOptionDict['precision']))
     if fastref == True:
         # Don't check if you want only to build the ref.
         compare_with_ref = False
