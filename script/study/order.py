@@ -34,6 +34,7 @@ for d in rawCaseList:
         continue
     caseListFloat.append(f)
 
+for d in rawCaseList:
     f = os.path.join(case_dir_path, d, 'ref', 'double')
     if not os.path.isdir(f):
         continue
