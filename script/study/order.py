@@ -1,10 +1,10 @@
 import __future__
 from common import *
 
-def computeError(directory):
+def computeError(d):
     uid_to_coords = dict()
     start = timer()
-    Nx, Ny, dx, dy = read_converter(directory, uid_to_coords)
+    Nx, Ny, dx, dy = read_converter(d, uid_to_coords)
     data = np.zeros((Nx, Ny))
     read_quantity(data, d, uid_to_coords, q_name)
     q = data[:,0]
@@ -24,37 +24,30 @@ print("Looking for results in %s for case like %s ..." % (case_dir_path, args.ca
 rawCaseList = [d for d in os.listdir(case_dir_path)
     if os.path.isdir(os.path.join(case_dir_path, d)) and d.startswith(args.case)]
 
-caseListFloat = list()
-caseListDouble = list()
+q_name = "rho"
+order = {'float': dict(), 'double': dict()}
+
+# Compute order values
 for d in rawCaseList:
     f = os.path.join(case_dir_path, d, 'ref', 'float')
     if not os.path.isdir(f):
         continue
-    if not os.path.isfile(os.path.join(f, 'rho.dat')):
+    if not os.path.isfile(os.path.join(f, q_name + '.dat')):
         continue
-    caseListFloat.append(f)
+    dx, err = computeError(f)
+    order['float'][dx] = err
 
 for d in rawCaseList:
     f = os.path.join(case_dir_path, d, 'ref', 'double')
     if not os.path.isdir(f):
         continue
-    if not os.path.isfile(os.path.join(f, 'rho.dat')):
+    if not os.path.isfile(os.path.join(f, q_name + '.dat')):
         continue
-    caseListDouble.append(f)
-
-print("Found %s references in simple precision." % len(caseListFloat))
-print("Found %s references in double precision." % len(caseListDouble))
-
-# Compute order values
-q_name = "rho"
-order = {'float': dict(), 'double': dict()}
-for d in caseListFloat:
-    dx, err = computeError(d)
-    order['float'][dx] = err
-
-for d in caseListDouble:
-    dx, err = computeError(d)
+    dx, err = computeError(f)
     order['double'][dx] = err
+
+print("Found %s references in simple precision." % len(order['float']))
+print("Found %s references in double precision." % len(order['double']))
 
 #print(sorted(order))
 #print([order[x] for x in sorted(order)])

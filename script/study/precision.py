@@ -5,10 +5,9 @@ import __future__
 from common import *
 
 # Check if refence results exist.
-case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'float')
-#case_path = os.path.join(config.cases_dir, 'hydro4x1', 'n2dsod512x512', 'ref', 'float')
-print("Looking for results in %s ..." % case_path)
+case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'double')
 
+print("Looking for results in %s ..." % case_path)
 if not os.path.isdir(case_path):
     print("Can't file reference result directory.")
     sys.exit(1)
