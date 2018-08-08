@@ -209,13 +209,13 @@ class SDDistributed {
      */
     void buildAllSDS(unsigned int nSDS, std::string geomType);
 
-    /*! 
+    /*!
     * @brief Dispatch the boundary cells among the sds.
     */
     void dispatchBoundaryCell(const std::map< std::pair<int, int>, real >& dirichletCellMap,
         const std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap);
 
-    /*! 
+    /*!
     * @brief Dispatch the overlap cells among the sds.
     */
     void dispatchOverlapCell();
@@ -223,8 +223,6 @@ class SDDistributed {
     /*!
      * @brief Updates overlap cells by communicating through MPI with other SDDs
      */
-    void updateOverlapCells();
-
     void copyOverlapCell();
     void sendOverlapCell();
     void waitOverlapCell();
@@ -332,14 +330,15 @@ class SDDistributed {
      */
     unsigned int _nSDD;
     std::vector<unsigned int> _neighbourSDDVector;
-
     // Building buffers based on recv and send maps (avoid memory allocation during loop)
     std::unordered_map<unsigned int, real* > _sendBuffer;
     std::unordered_map<unsigned int, real* > _recvBuffer;
     std::unordered_map<unsigned int, size_t> _bufferSize;
 
+    #ifndef SEQUENTIAL
     MPI_Request* _requestArray;
     MPI_Status* _statusArray;
+    #endif
     size_t _lastRequestArraySize;
 
     // Speed-up structures.

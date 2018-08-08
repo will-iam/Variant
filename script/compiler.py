@@ -19,14 +19,15 @@ class Engine:
         self._gdb = engineOptionDict['gdb']
         self._vtune = engineOptionDict['vtune']
         self._valgrind = engineOptionDict['valgrind']
+        self._verrou = engineOptionDict['verrou']
 
         if clean:
             self._clean(self._project_name, self._compiler, self._mode, self._precision, self._std)
         elif build:
             self._binary_path = self._build(self._project_name, self._compiler, self._mode, self._precision, self._std)
-        else:
-            program_file = self._project_name + '-' + self._mode + '-' + self._compiler + '.exec'
-            self._binary_path = os.path.join(config.workspace, program_file)
+
+        program_file = self._project_name + '-' + self._mode + '-' + self._compiler + '-' + self._precision + '.exec'
+        self._binary_path = os.path.join(config.workspace, program_file)
 
     def _build(self, project_name, compiler, mode, precision, std):
         p = subprocess.Popen(['scons',
@@ -41,8 +42,6 @@ class Engine:
         if p.returncode != 0:
             print("Compilation failed")
             sys.exit(1)
-        program_file = project_name + '-' + mode + '-' + compiler + '.exec'
-        return os.path.join(config.workspace, program_file)
 
     def _clean(self, project_name, compiler, mode, precision, std):
         p = subprocess.Popen(['scons',
@@ -61,18 +60,21 @@ class Engine:
             print("run failed - not enough mpi process specified.")
             sys.exit(1)
 
+        cmd = list()
         # Command base: mpirun specified in config file.
-        cmd = config.mpi_RUN.split(' ')
+        if self._compiler == 'mpi':
+            cmd = cmd + config.mpi_RUN.split(' ')
 
-        # KnL options
-        # '-m', 'block:block'
-        # '-m', 'block:cyclic'
-        # '-m', 'block:fcyclic'
-        #cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-m', 'block:cyclic', '-c', str(ncores)]
-        cmd = cmd + ['-hostfile', 'hostfile', '-n', str(mpi_nprocs)]
+            # KnL options
+            # '-m', 'block:block'
+            # '-m', 'block:cyclic'
+            # '-m', 'block:fcyclic'
+            #cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-m', 'block:cyclic', '-c', str(ncores)]
+            cmd = cmd + ['-hostfile', 'hostfile', '-n', str(mpi_nprocs)]
 
         if self._gdb:
-            cmd = cmd + ['xterm', '-e', 'gdb', '--args']
+            #cmd = cmd + ['xterm', '-e', 'gdb', '--args']
+            cmd = cmd + ['lldb', '--']
         elif self._valgrind:
             cmd = cmd + ['valgrind', '--leak-check=yes', '--log-file=valgrind-out.txt']
         elif self._vtune:
@@ -80,6 +82,8 @@ class Engine:
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
+        elif self._verrou is not None:
+            cmd = cmd + ['valgrind', '--tool=none']
 
         '''
         # to add environment variable visible in this process + all children:

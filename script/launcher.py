@@ -105,7 +105,13 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
     rmtree(os.path.join(ref_path, "sdd0"), ignore_errors=True)
 
 def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref):
-    #Define paths
+    # Check values for pure sequential test.
+    if engineOptionDict['compiler'] != 'mpi':
+        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
+            print('Cannot start a test in pure sequential mode with these options.')
+            sys.exit(1)
+
+    # Define paths
     project_name = engineOptionDict['project_name']
     case_path = get_case_path(project_name, case_name)
     init_path = os.path.join(case_path, "init")

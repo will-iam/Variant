@@ -7,7 +7,6 @@
  * @brief define the base Engine class for a numerical scheme
  */
 #include <string>
-#include <mpi.h>
 #include <vector>
 
 #include "number/number.hpp"

@@ -44,6 +44,10 @@ parser.add_argument("--vtune", action='store_true', default=False, help = "Enabl
 parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging tool")
 parser.add_argument("--test", action='store_true', default=False, help = "Show test to be run")
 parser.add_argument("--jobname", type = str, help = "On script to rule them all (the jobs).", default='unknown')
+parser.add_argument("--verrou", type = str, default='', help = "Enable verrou tool: nearest \
+    (default), upward, downward, toward zero are IEEE-754 compliant modes,\
+    random (asynchronous CESTAC method), average \"uniform_absolute output randomization\"\
+    in the MCA literature")
 
 args = parser.parse_args()
 
@@ -59,7 +63,8 @@ engineOptionDict = {
 'vtune': args.vtune,
 'gdb' : args.debug,
 'valgrind' : False,
-'node_number' : int(np.ceil(float(args.max_core_number) /args.core_per_node))
+'node_number' : int(np.ceil(float(args.max_core_number) /args.core_per_node)),
+'verrou' : None if not args.verrou else args.verrou,
 }
 
 # Define execution parameters
@@ -72,6 +77,7 @@ maxSdd = int(np.log2(nTotalCores)) + 1
 
 # Clean compile if requested.
 if args.clean_compile:
+    import script.compiler as compiler
     compiler.Engine(engineOptionDict, False, True)
     print("Cleaned target")
     sys.exit(0)

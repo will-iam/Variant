@@ -7,6 +7,9 @@
 #include "exception/exception.hpp"
 #include "IO.hpp"
 #include "engine.hpp"
+#ifndef SEQUENTIAL
+#include <mpi.h>
+#endif
 //#include <scorep/SCOREP_User.h>
 
 using namespace std;
@@ -16,16 +19,18 @@ int Engine::main(int argc, char** argv) {
     // Init the rand system
     srand(1337);
 
+    #ifdef SEQUENTIAL
+    _MPI_rank = 0;
+    #else
     // Init MPI
     MPI_Init(NULL, NULL);
-
     MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
+    #endif
 
     int flag;
     const int stringsize = 180;
     char initfile[ stringsize ];
     char outputpath[ stringsize ];
-    bool initfileSet = false;
     bool outputpathSet = false;
     _testFlag = 0;
     _dryFlag = 0;
@@ -49,12 +54,11 @@ int Engine::main(int argc, char** argv) {
                 break;
 
             case 'i':
-                strncpy(initfile,optarg,stringsize);
-                initfileSet = true;
+                strncpy(initfile, optarg, stringsize);
                 break;
 
             case 'o':
-                strncpy(outputpath,optarg,stringsize);
+                strncpy(outputpath, optarg, stringsize);
                 outputpathSet = true;
                 break;
 
@@ -92,7 +96,7 @@ int Engine::main(int argc, char** argv) {
         #ifndef NDEBUG
         if (_testFlag != 0)
             cout << "Test flag is on." << endl;
-        
+
         if (_dryFlag != 0)
             cout << "Dry flag is on." << endl;
         #endif
@@ -118,8 +122,9 @@ int Engine::main(int argc, char** argv) {
         cout << result << Console::_normal << endl;
         return EXIT_FAILURE;
     }
-
+    #ifndef SEQUENTIAL
     MPI_Barrier(MPI_COMM_WORLD);
+    #endif
     if (_MPI_rank == 0) {
 
         _timer.end();
@@ -147,7 +152,9 @@ int Engine::main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    #ifndef SEQUENTIAL
     MPI_Barrier(MPI_COMM_WORLD);
+    #endif
     if (_MPI_rank == 0) {
         _timer.end();
         cout << Console::_green;
@@ -166,7 +173,9 @@ int Engine::main(int argc, char** argv) {
 
     finalize();
 
+    #ifndef SEQUENTIAL
     MPI_Barrier(MPI_COMM_WORLD);
+    #endif
     if (_MPI_rank == 0) {
 	    _timer.end();
 	    _timer.reportLast();
@@ -174,7 +183,9 @@ int Engine::main(int argc, char** argv) {
 	    IO::writePerfResults(_outputpath, perfResults);
     }
 
+    #ifndef SEQUENTIAL
     MPI_Finalize();
+    #endif
 
     return EXIT_SUCCESS;
 }
@@ -185,31 +196,22 @@ void Engine::setOptions(real T, real CFL) {
     _CFL = CFL;
 }
 
-/*
-void Engine::updateGlobalUxmax() {
-
-    std::vector<real> _bufferUxmax;
-    int size = 0;
-    int rank = _MPI_rank;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    _bufferUxmax.resize(size);
-
-    MPI_Allgather(&_local_uxmax, 1, MPI_REALTYPE,
-                  &_bufferUxmax[0], 1, MPI_REALTYPE, MPI_COMM_WORLD);
-
-    _global_uxmax = *(std::max_element(_bufferUxmax.begin(), _bufferUxmax.end()));
-}
-*/
-
 void Engine::updateDomainUxmax() {
 
+    #ifndef SEQUENTIAL
     _SDD_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
     MPI_Allreduce(&_SDD_uxmax, &_Domain_uxmax, 1, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
+    #else
+    _Domain_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
+    #endif
 }
 
 void Engine::updateDomainUymax() {
 
+    #ifndef SEQUENTIAL
     _SDD_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
     MPI_Allreduce(&_SDD_uymax, &_Domain_uymax, 1, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
+    #else
+    _Domain_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
+    #endif
 }

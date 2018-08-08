@@ -5,7 +5,7 @@ import __future__
 from common import *
 
 # Check if refence results exist.
-case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'double')
+case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'float')
 
 print("Looking for results in %s ..." % case_path)
 if not os.path.isdir(case_path):

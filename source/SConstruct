@@ -20,7 +20,7 @@ lib = ARGUMENTS.get('lib', 'linux') #holds the current library to use
 
 precision = ARGUMENTS.get('precision', 'double') #computing digit precision
 
-std = ARGUMENTS.get('std', 'c++11') # C++ standard
+std = ARGUMENTS.get('std', 'c++14') # C++ standard
 
 #check if the user has been naughty: only path must exist
 if not os.path.exists(workspace):
@@ -67,12 +67,10 @@ mylinkflags = []
 if compiler == 'gnu':
 	env['CC'] = config.gnu_CC
 	env['CXX'] = config.gnu_CXX
-    #env['CCVERSION'] = config.CCVERSION
-    #env['CXXVERSION'] = config.CXXVERSION
 	#-Wl,--no-as-needed
 
 	# Needed with gcc to compile the threads, don't ask me why...
-	mylinkflags.append('-pthread')
+	#mylinkflags.append('-pthread')
 	print 'We compile with GNU compiler'
 
 if compiler == 'clang':
@@ -80,13 +78,13 @@ if compiler == 'clang':
 	env['CXX'] = config.clang_CXX
 
 	# Needed with clang to compile the threads, don't ask me why...
-	mylinkflags.append('-pthread')
+	#mylinkflags.append('-pthread')
 	print 'We compile with Clang compiler'
 
 if compiler == 'intel':
     env['CC'] = config.intel_CC
     env['CXX'] = config.intel_CXX
-    mylinkflags.append('-pthread')
+    #mylinkflags.append('-pthread')
 
     # And... needed with intel too!
     print 'We compile with Intel compiler'
@@ -138,19 +136,23 @@ elif precision == 'float':
 elif precision == 'long_double':
     mycflags.append('-DPRECISION_LONG_DOUBLE')
 
+# Add this flag to compile in pure sequential mode.
+if compiler != 'mpi':
+    mycflags.append('-DSEQUENTIAL')
+
 env.Append(CXXFLAGS= '-std='+std)
 #append the user's additional compile flags
 env.Append(CXXFLAGS= mycflags)
 env.Append(LINKFLAGS= mylinkflags)
 
 #make sure the sconscripts can get to the variables
-Export('mymode','compiler','project','lib')
+Export('mymode','compiler','project','lib','precision')
 
 #put all .sconsign files in one place
 env.SConsignFile()
 
 #specify the sconscript for the project
 prog = SConscript('SConscript', exports = 'env')
-execpath = os.path.join(workspace, '.build', project + '-' + mymode + '-' + compiler)
+execpath = os.path.join(workspace, '.build', project + '-' + mymode + '-' + compiler + '-' + precision)
 inst = env.Install(execpath, prog)
 Default(inst)

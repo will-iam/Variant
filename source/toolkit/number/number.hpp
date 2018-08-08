@@ -4,30 +4,39 @@
 #include <cmath>
 #include <random>
 #include <limits>
+#ifndef SEQUENTIAL
 #include <mpi.h>
+#endif
 
 #define positiveModulo(a, b) (((a) % (b)) + (b)) % (b)
 
 #if defined(PRECISION_FLOAT)
 typedef float real;
-const MPI_Datatype MPI_REALTYPE = MPI_FLOAT;
 typedef std::numeric_limits<float> oss_nl;
+    #ifndef SEQUENTIAL
+    const MPI_Datatype MPI_REALTYPE = MPI_FLOAT;
+    #endif
 #endif
 
 #if defined(PRECISION_DOUBLE)
 typedef double real;
-const MPI_Datatype MPI_REALTYPE = MPI_DOUBLE;
 typedef std::numeric_limits<double> oss_nl;
+    #ifndef SEQUENTIAL
+    const MPI_Datatype MPI_REALTYPE = MPI_DOUBLE;
+    #endif
 #endif
 
 #if defined(PRECISION_LONG_DOUBLE)
 typedef long double real;
-const MPI_Datatype MPI_REALTYPE = MPI_LONGDOUBLE;
 typedef std::numeric_limits<long double> oss_nl;
+    #ifndef SEQUENTIAL
+    const MPI_Datatype MPI_REALTYPE = MPI_LONGDOUBLE;
+    #endif
 #endif
 
+
 namespace Number {
-    
+
 #if defined (PRECISION_FLOAT)
     const real maxprecision = 1.0e-7f;
     const int digitsize = -logf(maxprecision) / logf(10.f) + 1;
@@ -70,4 +79,3 @@ namespace Number {
 }
 
 #endif
-

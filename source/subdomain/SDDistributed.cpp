@@ -34,8 +34,10 @@ SDDistributed::~SDDistributed() {
     _sendBuffer.clear();
     _recvBuffer.clear();
 
+    #ifndef SEQUENTIAL
     delete[] _requestArray;
     delete[] _statusArray;
+    #endif
 
     for (auto it = _quantityMap.begin(); it != _quantityMap.end(); ++it)
         delete (it->second);
@@ -253,79 +255,14 @@ Quantity<real>* SDDistributed::getQuantity(std::string name) {
     return _quantityMap[name];
 }
 
-void SDDistributed::updateOverlapCells() {
-
-    // Copy data to send in the buffer.
-    for (auto const& it: _sendIndexVector) {
-        unsigned int SDDid = it.first;
-        size_t index(0);
-        for (const auto p: _quantityMap) {
-            const auto& qty(*p.second);
-            for (const unsigned int i : it.second) {
-                _sendBuffer[SDDid][index++] = qty.get0(i);
-            }
-        }
-    }
-
-    size_t i = 0;
-    for (const auto& toSDDid: _neighbourSDDVector) {
-        real* dataToSend = _sendBuffer[toSDDid];
-        real* dataToRecv = _recvBuffer[toSDDid];
-        size_t bufferSize = _bufferSize[toSDDid];
-
-        MPI_Irecv(dataToRecv, bufferSize,
-                  MPI_REALTYPE, toSDDid, toSDDid * _nSDD + _id,
-                  MPI_COMM_WORLD, &_requestArray[i++]);
-
-        MPI_Isend(dataToSend, bufferSize,
-                  MPI_REALTYPE, toSDDid, _id * _nSDD + toSDDid,
-                  MPI_COMM_WORLD, &_requestArray[i++]);
-    }
-    MPI_Waitall(i, _requestArray, _statusArray);
-
-    // Parsing recved message: updating cells
-    std::map<int, int> bufIndices;
-    for (const auto p: _quantityMap) {
-        auto& qty(*p.second);
-        for (auto const& it: _recvIndexVector) {
-            unsigned int SDDid = it.first;
-            auto& v(_recvBuffer[SDDid]);
-            for (const unsigned int i : it.second) {
-                qty.set0(v[bufIndices[SDDid]], i);
-                ++bufIndices[SDDid];
-            }
-        }
-    }
-
-    // Special case: parsing data for periodic boundary condition with itself.
-    for (auto const& it: _selfIndexMap) {
-        size_t indexHere(it.first), indexThere(it.second);
-        for (const auto p: _quantityMap) {
-            auto& qty(*p.second);
-            qty.set0(qty.get0(indexThere), indexHere);
-        }
-    }
-}
-
 void SDDistributed::copyOverlapCell() {
-
+    #ifndef SEQUENTIAL
     _threadPool->start("writeBuffer");
-    /*
-    // Copy data to send in the buffer.
-    for (auto const& it: _sendIndexVector) {
-        unsigned int SDDid = it.first;
-        size_t index(0);
-        for (const auto p: _quantityMap) {
-            const auto& qty(*p.second);
-            for (const unsigned int i : it.second) {
-                _sendBuffer[SDDid][index++] = qty.get0(i);
-            }
-        }
-    } */
-
+    #endif
 }
 
 void SDDistributed::sendOverlapCell() {
+    #ifndef SEQUENTIAL
     _lastRequestArraySize = 0;
     for (const auto& toSDDid: _neighbourSDDVector) {
         real* dataToSend = _sendBuffer[toSDDid];
@@ -340,27 +277,20 @@ void SDDistributed::sendOverlapCell() {
                   MPI_REALTYPE, toSDDid, _id * _nSDD + toSDDid,
                   MPI_COMM_WORLD, &_requestArray[_lastRequestArraySize++]);
     }
+    #endif
 }
 
 void SDDistributed::waitOverlapCell() {
+    #ifndef SEQUENTIAL
     MPI_Waitall(_lastRequestArraySize, _requestArray, _statusArray);
+    #endif
 }
 
 void SDDistributed::parseOverlapCell() {
+    #ifndef SEQUENTIAL
     _threadPool->start("readBuffer");
-    /*
-    for (auto const& it: _recvIndexVector) {
-        unsigned int SDDid = it.first;
-        auto& v(_recvBuffer[SDDid]);
-        size_t index(0);
-        for (const auto p: _quantityMap) {
-            auto& qty(*p.second);
-            for (const unsigned int i : it.second) {
-                qty.set0(v[index++], i);
-            }
-        }
-    } */
-
+    #endif
+    
     // Special case: parsing data for periodic boundary condition with itself.
     for (auto const& it: _selfIndexMap) {
         size_t indexHere(it.first), indexThere(it.second);
@@ -369,8 +299,6 @@ void SDDistributed::parseOverlapCell() {
             qty.set0(qty.get0(indexThere), indexHere);
         }
     }
-
-
 }
 
 

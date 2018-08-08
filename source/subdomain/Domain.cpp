@@ -5,6 +5,9 @@
 #include <fstream>
 #include <cassert>
 #include <algorithm>
+#ifndef SEQUENTIAL
+#include <mpi.h>
+#endif
 
 Domain::Domain() {
 
@@ -93,15 +96,18 @@ void Domain::addEquation(std::string eqName, eqType eqFunc) {
 }
 
 void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundaryThickness) {
-    MPI_Comm_size(MPI_COMM_WORLD, &_MPI_size);
+    #ifndef SEQUENTIAL
     MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
+    #else
+    _MPI_rank = 0;
+    assert(_nSDD == 1);
+    #endif
 
     assert((_nSDD_X * _nSDD_Y) == _nSDD);
     assert(_Nx % _nSDD_X == 0);
     assert(_Ny % _nSDD_Y == 0);
 
     _sdd = new SDDistributed(_SDD_Nx, _SDD_Ny, _SDD_BL_X, _SDD_BL_Y, boundaryThickness, neighbourHood, _MPI_rank, _nSDD);
-
     _sdd->buildAllSDS(_nSDS, _SDSgeom);
 
     // Communicating size and coords of SDD
@@ -112,8 +118,11 @@ void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundar
     BLandSize[2] = _SDD_Nx;
     BLandSize[3] = _SDD_Ny;
     _SDD_BLandSize_List[_MPI_rank] = BLandSize;
+
+    #ifndef SEQUENTIAL
     for (unsigned int id = 0; id < _nSDD; ++id)
         MPI_Bcast(&_SDD_BLandSize_List[id], 4, MPI_INT, id, MPI_COMM_WORLD);
+    #endif
 }
 
 void Domain::buildCommunicationMap() {
@@ -122,7 +131,9 @@ void Domain::buildCommunicationMap() {
     std::map< std::pair<int, int>, std::pair<int, int> > neumannCellMap;
 
     _sdd->buildRecvMap(*this, dirichletCellMap, neumannCellMap);
+    #ifndef SEQUENTIAL
     MPI_Barrier(MPI_COMM_WORLD);
+    #endif
     _sdd->buildSendMap();
 
     // Once we have the boundary cells, dispatch them among the SDS available.
@@ -378,13 +389,7 @@ void SDDistributed::buildRecvMap(const Domain& domain,
                 assert(false);
             }
         }
-
-        //std::cout << it->first << "..." << it->second << std::endl;
     }
-
-    // Use to speed-up structures to parse data from buffers.
-    //std::unordered_map<int, std::vector<unsigned int> > _recvIndexVector;
-    //std::unordered_map<int, std::vector<size_t> > _recvIndexVector;
 
     // Compute the size and reserve it.
     std::map<unsigned int, size_t> tmpCounter;
@@ -417,10 +422,11 @@ void SDDistributed::buildRecvMap(const Domain& domain,
 }
 
 void SDDistributed::buildSendMap() {
-
+    #ifndef SEQUENTIAL
     unsigned int nSDD = _nSDD;
     std::vector<int> numberOfCellsToRecv(nSDD, 0); // data sent to other SDDs
     std::vector<int> numberOfCellsToSend(nSDD, 0); // data recved from other SDDs
+
     std::vector<MPI_Status> statuses(nSDD);
 
     // Counting number of cells to receive based on recv map
@@ -573,20 +579,21 @@ void SDDistributed::buildSendMap() {
 
         if (_bufferSize.find(SDDid) != _bufferSize.end()) {
             std::cout << "delete buffer pointer in " << _id << std::endl;
-            delete[] _sendBuffer[SDDid];     
+            delete[] _sendBuffer[SDDid];
             delete[] _recvBuffer[SDDid];
-        }    
+        }
 
         _bufferSize[SDDid] = s;
         _sendBuffer[SDDid] = new real[s];
         _recvBuffer[SDDid] = new real[s];
-        
+
         //std::cout << "allocate buffer pointer in " << _id << " with size" << s << std::endl;
         for (size_t i(0); i < s; ++i){
             _sendBuffer[SDDid][i] = 0.;
             _recvBuffer[SDDid][i] = 0.;
         }
     }
+    #endif
 }
 
 unsigned int Domain::getUid(std::pair<int, int> coordsOnDomain) const {

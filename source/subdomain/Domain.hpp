@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 #include <array>
-#include <mpi.h>
 
 #include "SDDistributed.hpp"
 #include "number/number.hpp"
@@ -232,7 +231,7 @@ class Domain {
      *
      */
     void updateOverlapCells();
-    
+
     /*! @brief Returns non-modifiable id of SDD and coordinates on SDD of cell
      * given by its coordinates on the domain.
      *
@@ -321,7 +320,6 @@ class Domain {
 
     // MPI Variables
     int _MPI_rank;
-    int _MPI_size;
     SDDistributed* _sdd; // Each proc possesses one SDD
 
     int _SDD_BL_X;

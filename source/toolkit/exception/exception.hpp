@@ -54,7 +54,7 @@ class Console {
 void convert(std::ostream& o, const char *s);
 
 template <typename T1, typename T2>
-std::ostream& operator<<(std::ostream& os, std::pair<T1, T2> p) {
+void operator<<(std::ostream& os, std::pair<T1, T2> p) {
     os << "(" << p.first << " ; " << p.second << ")";
 }
 

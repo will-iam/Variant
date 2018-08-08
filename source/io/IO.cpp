@@ -19,8 +19,13 @@ void stor(std::string tmpStr, long double& target) {
 
 int IO::loadSDDInfo(std::string directory, Domain& domain) {
 
+    #ifndef SEQUENTIAL
     int SDDid;
     MPI_Comm_rank(MPI_COMM_WORLD, &SDDid);
+    #else
+    int SDDid = 0;
+    #endif
+
     std::ostringstream oss;
     oss << SDDid;
 
