@@ -1,10 +1,10 @@
 Import('localenv')
 localenv = localenv.Clone()
 
-#Specialize environment
+# build sources only if this is not in sequential mode.
+if '-DSEQUENTIAL' not in localenv['CXXFLAGS']:
+    srcs = Glob('*.cpp')
+    objs = localenv.Object(srcs)
+    Return('objs')
 
-# build sources
-srcs = Glob('*.cpp')
-objs = localenv.Object(srcs)
-
-Return('objs')
+Return()

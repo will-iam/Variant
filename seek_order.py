@@ -17,10 +17,10 @@ SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
 caseSize = (64, 1)
 engineOptionDict['precision'] = 'float'
-engineOptionDict['compiler'] = 'clang'
+engineOptionDict['compiler'] = 'gnu'
 
 testBattery = dict()
-for p in range(0, 1):
+for p in range(0, 4):
     xSize = caseSize[0] * 2**p
     cn = case_name + str(xSize)
     test = dict()

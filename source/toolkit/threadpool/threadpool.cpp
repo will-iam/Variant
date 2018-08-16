@@ -1,6 +1,4 @@
 #include "threadpool.hpp"
-#include "exception/exception.hpp"
-#include <iostream>
 
 Worker::Worker(ThreadPool &s, int id) : _pool(s), _id(id), _start(0), _coworkerA(nullptr) , _coworkerB(nullptr) { }
 
@@ -30,8 +28,10 @@ void Worker::_commonTask() {
     int taskIndex(SYNC);
     while (true) {
         { // acquire lock
+            #ifndef SEQUENTIAL
             std::lock_guard<std::mutex> lock(_pool._taskMutex);
-            
+            #endif
+
             // There is no common work available.
             if (_pool._nextTaskCursor.load() == SYNC)
                 return;
@@ -96,12 +96,12 @@ ThreadPool::ThreadPool(size_t nThreads, size_t commonSize):
 
     // Create coworker tree
     for(size_t i = 0, cursor = 1; i < _workerVector.size() && cursor < _workerVector.size(); ++i) {
-        Worker* a = _workerVector[cursor];            
+        Worker* a = _workerVector[cursor];
         ++cursor;
 
         Worker* b = nullptr;
         if (cursor < _workerVector.size())
-            b = _workerVector[cursor];        
+            b = _workerVector[cursor];
         ++cursor;
 
        _workerVector[i]->setCoworker(a, b);
@@ -157,7 +157,6 @@ void ThreadPool::start(const std::string& taskListName) {
     #endif
 
     // This defines the common tasks
-    //if (_taskListMap.find(taskListName) != _taskListMap.end()) {
     if (_commonSize > 0) {
         _commonTaskVector = &(_taskListMap[taskListName]);
         _commonTaskVectorSize = _commonTaskVector->size();
@@ -172,7 +171,7 @@ void ThreadPool::start(const std::string& taskListName) {
 
     // Start master worker (the worker of this 'master' thread).
     _workerVector[0]->work();
-    
+
     #if PROFILE >= 1
     _timer.end();
     #endif

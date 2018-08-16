@@ -84,9 +84,9 @@ if compiler == 'clang':
 if compiler == 'intel':
     env['CC'] = config.intel_CC
     env['CXX'] = config.intel_CXX
-    #mylinkflags.append('-pthread')
 
     # And... needed with intel too!
+    #mylinkflags.append('-pthread')
     print 'We compile with Intel compiler'
 
 if compiler == 'mpi':
