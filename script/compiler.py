@@ -76,15 +76,17 @@ class Engine:
             #cmd = cmd + ['xterm', '-e', 'gdb', '--args']
             cmd = cmd + ['lldb', '--']
         elif self._valgrind:
-            cmd = cmd + ['valgrind', '--leak-check=yes', '--log-file=valgrind-out.txt']
+            cmd = cmd + ['valgrind', '--leak-check=yes', '--track-origins=yes', '--leak-check=full', '--show-leak-kinds=all', '--log-file=valgrind-out.txt']
         elif self._vtune:
             cmd = cmd + ['amplxe-cl', '-r', 'vtune-hs', '-collect', 'hotspots']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
         elif self._verrou is not None:
-            cmd = cmd + ['valgrind', '--tool=none']
-
+            if self._verrou == 'check':
+                cmd = cmd + ['valgrind', '--tool=none']
+            else:
+                cmd = cmd + ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou]
         '''
         # to add environment variable visible in this process + all children:
         os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'

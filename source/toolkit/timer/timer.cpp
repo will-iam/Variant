@@ -2,6 +2,8 @@
 #include "exception/exception.hpp"
 
 Timer::Timer() :
+    _startSteady(steady_clock::now()),
+    _endSteady(steady_clock::now()),
     _totalSteady(0.),
     _call(0.) {
 }

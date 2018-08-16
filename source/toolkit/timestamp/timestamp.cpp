@@ -273,4 +273,3 @@ time_t TimeStamp::yyyymmdd(const unsigned int& dateNumber){
 
     return timegm(timeinfo);
 }
-

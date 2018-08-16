@@ -41,9 +41,11 @@ parser.add_argument("--clean-compile", action='store_true', default=False, help 
 parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
 parser.add_argument("--fastref", action='store_true', default=False, help = "Build ref only with given parameters")
 parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
-parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging tool")
+parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging compilation option -g -O0")
+parser.add_argument("--gdb", action='store_true', default=False, help = "Enable debugging tool")
 parser.add_argument("--test", action='store_true', default=False, help = "Show test to be run")
 parser.add_argument("--jobname", type = str, help = "On script to rule them all (the jobs).", default='unknown')
+parser.add_argument("--valgrind", action='store_true', default=False, help = "Run with valgrind memory check")
 parser.add_argument("--verrou", type = str, default='', help = "Enable verrou tool: nearest \
     (default), upward, downward, toward zero are IEEE-754 compliant modes,\
     random (asynchronous CESTAC method), average \"uniform_absolute output randomization\"\
@@ -61,10 +63,10 @@ engineOptionDict = {
 'std': 'c++14',
 'must_compile': not args.nocompile,
 'vtune': args.vtune,
-'gdb' : args.debug,
-'valgrind' : False,
+'gdb' : args.gdb,
+'valgrind' : args.valgrind,
 'node_number' : int(np.ceil(float(args.max_core_number) /args.core_per_node)),
-'verrou' : None if not args.verrou else args.verrou,
+'verrou' : None if not args.verrou else args.verrou
 }
 
 # Define execution parameters
