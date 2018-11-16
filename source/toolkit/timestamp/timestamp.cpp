@@ -2,8 +2,7 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
-
-#include "timestamp.h"
+#include "timestamp.hpp"
 
 #include <errno.h>
 #include <cstring>

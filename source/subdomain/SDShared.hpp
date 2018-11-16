@@ -67,7 +67,7 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * @param changeNeumannToOpposite if true, this changes the value into its
      * opposite on cells that have Neumann BC.
      */
-    void updateBoundaryCells(Quantity<real>* quantity, bool changeNeumannToOpposite = false) const;
+    void updateBoundaryCells(Quantity<real>* quantity) const;
 
     /*!
      * @brief Updates Neumann boundary cells of SDD according to values
@@ -81,7 +81,7 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * according to value. This depends on the boundary and is useful for
      * quantities traditionnally defined on edges.
      */
-    void updateNeumannCells(Quantity<real>* quantity, bool changeToOpposite = false) const;
+    void updateNeumannCells(Quantity<real>* quantity) const;
 
     /*!
      * @brief Updates Dirichlet boundary cells of SDD according to values stored
@@ -92,9 +92,19 @@ class SDShared: public std::vector< std::pair<int,int> > {
     void updateDirichletCells(Quantity<real>* quantity) const;
 
 
-    void addDirichletCell(std::pair < std::pair<int, int>, real > d);
-    void addNeumannCell(std::pair< std::pair<int, int>, std::pair<int, int> > n);
-    size_t getNumberBoundaryCells() const { return _neumannCellMap.size() + _dirichletCellMap.size(); }
+    void addDirichletCell(std::pair < std::pair<int, int>, std::map<std::string, real> > d);
+    void addNeumannCell(std::pair< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > > n);
+    size_t getNumberBoundaryCells() const {
+        size_t s(0);
+        for (auto m : _neumannCellMap)
+             s += m.second.size();
+
+        for (auto m : _dirichletCellMap)
+            s += m.second.size();
+
+        return s;
+    }
+
     inline unsigned int convert(int coordX, int coordY) const {return _coordConverter.convert(coordX, coordY);}
 
     void setBufferPos(unsigned int sddId, size_t pos) { _bufferStartPos[sddId] = pos; }
@@ -118,14 +128,14 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * set Dirichlet boundary conditions, and the
      * values of the BC
      */
-    std::unordered_map< size_t, real > _dirichletCellMap;
+    std::map<std::string, std::unordered_map< size_t, real >> _dirichletCellMap;
 
     /*!
      * mapping between coords of cells on which are set
      * Neumann boundary conditions, and the associated
      * cells
      */
-    std::unordered_map< size_t, size_t > _neumannCellMap;
+    std::map<std::string, std::unordered_map< size_t, std::pair<size_t, real>>> _neumannCellMap;
 
     /* Buffer start position */
     std::unordered_map<unsigned int, size_t > _bufferStartPos;

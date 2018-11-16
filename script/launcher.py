@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -6,6 +6,10 @@ import os
 import sys
 import socket
 import numpy as np
+
+sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sedov'))
+sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sod'))
+import script.error_norm
 from shutil import copyfile, copytree, rmtree
 from timeit import default_timer as timer
 
@@ -21,14 +25,17 @@ from script.analytics import compare_data
 COLOR_BLUE = '\x1b[1;36m'
 COLOR_ENDC = '\x1b[0m'
 
-def get_ref_name(precision):
+def get_ref_name(precision, rounding_mode):
     #return os.path.join('ref' + str(sys.version_info[0]), socket.gethostname())
     #return os.path.join('ref' + str(sys.version_info[0]))
 
     # cmd = [config.mpi_CC, '--version']
     # res = subprocess.check_call(cmd)
 
-    return os.path.join('ref', precision)
+    if rounding_mode == '' or rounding_mode == None or rounding_mode == 'check':
+        rounding_mode = 'nearest'
+
+    return os.path.join('ref', precision, rounding_mode)
 
 def get_case_path(project_name, case_name):
     return os.path.join(config.cases_dir, project_name, case_name)
@@ -47,13 +54,14 @@ def case_exist(project_name, case_name):
     return True
 
 
-def check_test(test_path, ref_path, qties_to_compare):
+def check_test(test_path, ref_path, qties_to_compare, precision):
     print("Checking test " + test_path + " against " + ref_path)
-    results = compare_data(ref_path, test_path, qties_to_compare)
+    results = compare_data(ref_path, test_path, qties_to_compare, precision)
     if results[0]:
-        print("OK for all quantities")
+        print("OK for all quantities in %s precision." % precision)
     else:
-        print("Error for quantity " + str(results[1]))
+        print("Error in %s precision for quantity %s" % (precision, str(results[1])))
+        print("Max error: %s" % np.max(results[2][2]))
     return results
 
 def create_ref(engineOptionDict, case_path, init_path, ref_path):
@@ -110,20 +118,25 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
         if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
-
+    
     # Define paths
     project_name = engineOptionDict['project_name']
     case_path = get_case_path(project_name, case_name)
     init_path = os.path.join(case_path, "init")
+    ref_path = os.path.join(case_path, get_ref_name(engineOptionDict['precision'], engineOptionDict['verrou']))
 
-    # Path where the reference will be stored if any.
-    ref_path = os.path.join(case_path, get_ref_name(engineOptionDict['precision']))
     if fastref == True:
         # Don't check if you want only to build the ref.
         compare_with_ref = False
         if os.path.isdir(ref_path):
             print("Reference for case does exist already, return.")
             return None, 0
+
+    # Don't create or compare with reference if rounding mode is random: non sense.
+    if fastref == True or compare_with_ref == True:
+        if engineOptionDict['verrou'] == 'random' or engineOptionDict['verrou'] == 'average':
+            print('Rounding mode not allowed to create a reference.')
+            sys.exit(1)
 
     # Start time
     start = timer()
@@ -156,7 +169,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
     engine = compiler.Engine(engineOptionDict, engineOptionDict['must_compile'])
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    run_option = [] if compare_with_ref == True or fastref == True else ['--dry']
+    run_option = [] if compare_with_ref == True or fastref == True or engineOptionDict['verrou'] != None else ['--dry']
 
     engine.run(input_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
     end = timer()
@@ -172,7 +185,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
         create_ref(engineOptionDict, case_path, init_path, ref_path)
 
         # Now actually compare.
-        result, qty, error_data = check_test(output_path, ref_path, qty_name_list)
+        result, qty, error_data = check_test(output_path, ref_path, qty_name_list, engineOptionDict['precision'])
         if result:
             print("Compared with reference: OK.")
         else:
@@ -186,5 +199,19 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
         for q_str in qty_name_list:
             sdd.merge_quantity(output_path, ref_path, q_str)
 
+    # Export error norm
+    if engineOptionDict['verrou'] != None and engineOptionDict['verrou'] != 'nearest':
+        print(COLOR_BLUE + "Merging final data" + COLOR_ENDC)
+        sdd.merge_domain(output_path, ref_path)
+        # Merge everything first.
+        for q_str in qty_name_list:
+            sdd.merge_quantity(output_path, ref_path, q_str)
+
+        # Then compute the errors.
+        err = error_norm.compute(ref_path, qty_name_list, test['solver'])
+    
+        # Save errors in ref path.
+        if err is not None:
+            error_norm.save(ref_path, err)
 
     return output_path, int((end - start) * 1000)

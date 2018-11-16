@@ -21,7 +21,7 @@
 #endif
 
 #include <iostream>
-#include "timestamp/timestamp.h"
+#include "timestamp/timestamp.hpp"
 
 class Console {
     public:

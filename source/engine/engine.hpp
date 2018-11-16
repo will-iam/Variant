@@ -54,8 +54,10 @@ class Engine {
      */
     void setOptions(real T, real CFL);
 
+    void updateDomainUmax();
     void updateDomainUxmax();
     void updateDomainUymax();
+    real reduceMin(const real& v);
 
   protected:
     std::string _initpath;

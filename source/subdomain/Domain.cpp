@@ -83,8 +83,8 @@ void Domain::addCoord(unsigned int uid, std::pair<int, int> coords) {
     _coordsToUid[coords] = uid;
 }
 
-void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, real value) {
-    _SDD_coordsToBC[coordsOnSDD] = std::pair<char, real>(BCtype, value);
+void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, const std::map<std::string, real>& qtyValue) {
+    _SDD_coordsToBC[coordsOnSDD] = std::pair<char, std::map<std::string, real> >(BCtype, qtyValue);
 }
 
 void Domain::addQuantity(std::string quantityName) {
@@ -127,8 +127,8 @@ void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundar
 
 void Domain::buildCommunicationMap() {
 
-    std::map< std::pair<int, int>, real > dirichletCellMap;
-    std::map< std::pair<int, int>, std::pair<int, int> > neumannCellMap;
+    std::map< std::pair<int, int>, std::map<std::string, real>  > dirichletCellMap;
+    std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > > neumannCellMap;
 
     _sdd->buildRecvMap(*this, dirichletCellMap, neumannCellMap);
     #ifndef SEQUENTIAL
@@ -214,7 +214,7 @@ std::pair<int, int> Domain::getBLOfSDD(unsigned int SDDid) const {
     return std::pair<int, int>(BLandSize[0], BLandSize[1]);
 }
 
-std::pair<char, real> Domain::getBoundaryCondition(std::pair<int, int> coordsOnSDD) const {
+std::pair<char, std::map<std::string, real>> Domain::getBoundaryCondition(std::pair<int, int> coordsOnSDD) const {
     if (_SDD_coordsToBC.find(coordsOnSDD) == _SDD_coordsToBC.end())
         exitfail("Boundary conditions not found on proc: %", _MPI_rank);
 
@@ -224,8 +224,8 @@ std::pair<char, real> Domain::getBoundaryCondition(std::pair<int, int> coordsOnS
 // Because it needs a method from the class Domain, we
 // define this function from SDDistributed here
 void SDDistributed::buildRecvMap(const Domain& domain,
-        std::map< std::pair<int, int>, real >& dirichletCellMap,
-        std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap) {
+        std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap) {
 
     // Init boundary cells of SDD
     std::vector< std::pair<int, int> > boundaryCellList;
@@ -302,7 +302,7 @@ void SDDistributed::buildRecvMap(const Domain& domain,
             // of the cell on the domain
 
             std::pair<int, int> coordsOnDomain = SDDandCoords.second;
-            std::pair<char, double> bc = domain.getBoundaryCondition(*it);
+            std::pair<char, std::map<std::string, real> > bc = domain.getBoundaryCondition(*it);
 
             if (bc.first == 'D') {
                 // Dirichlet BC
@@ -347,7 +347,7 @@ void SDDistributed::buildRecvMap(const Domain& domain,
                 coordsOfTargetCell.second = targetCell.second - thisSDDBL.second;
 
                 // Finally add target cell as neumann cell
-                neumannCellMap[*it] = coordsOfTargetCell;
+                neumannCellMap[*it] = std::make_pair(coordsOfTargetCell, bc.second);
             }
 
             else if (bc.first == 'P') {
@@ -653,15 +653,11 @@ void Domain::switchQuantityPrevNext(std::string quantityName) {
 }
 
 
-int isPowerOf(unsigned int N, unsigned int reason) {
-
-    unsigned int power = 0;
-    while ((N % reason) == 0 && N > 1) {
-        ++power;
-        N /= reason;
-    }
-
-    if (N == 1)
-        return power;
-    return -1;
+void Domain::showInfo() const {
+    std::cout << Console::_cyan;
+    std::cout << "Computation Domain: ";
+    std::cout << Console::_bold;
+    std::cout << "(" << _Nx << " x " << _Ny <<"), ["<< _nSDD_X << ":" << _nSDD_Y << ":" << _nThreads << ":" << _nSDS <<"]" << std::endl;
+    std::cout << Console::_normal;
 }
+

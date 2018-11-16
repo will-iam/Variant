@@ -38,6 +38,38 @@ def read_converter(input_dir, uid_to_coords):
 
     return Nx, Ny, dx, dy
 
+def read_converter_1D(input_dir, uid_to_coords):
+    with open(os.path.join(input_dir, 'domain.dat'), 'r') as domain_f:
+        # Reading mesh info on the first line
+        # Read dx and dy in first line
+        first_line = domain_f.readline().split()
+        lx = Decimal(first_line[2])
+        ly = Decimal(first_line[3])
+        Nx = int(first_line[4])
+        Ny = int(first_line[5])
+
+        dx = lx / Nx
+        dy = ly / Ny
+
+        if Nx == Ny:
+            for line in domain_f:
+                line_list = line.split()
+                if line_list:
+                    i = int(line_list[1])
+                    j = int(line_list[2])
+                    if i == j:
+                        uid_to_coords[int(line_list[0])] = (i, j)
+        else:
+            for line in domain_f:
+                line_list = line.split()
+                if line_list:
+                    i = int(line_list[1])
+                    j = int(line_list[2])
+                    if i == 0 or j == 0:
+                        uid_to_coords[int(line_list[0])] = (i, j)
+
+    return Nx, Ny, dx, dy
+
 
 def read_quantity(data, input_dir, uid_to_coords, quantity_name):
 
@@ -165,7 +197,14 @@ def write_bc(output_dir, coords_to_uid_and_bc):
         for bcc, (uid, bc) in coords_to_uid_and_bc.items():
             f.write(str(uid) + " ")
             f.write(str(bcc[0]) + " " + str(bcc[1]) + " ")   # (i, j) coords
-            f.write(str(bc[0]) + " " + str(bc[1]) + "\n")   # boundary condition
+            # boundary condition
+            if bc[1] == 0:
+                f.write(str(bc[0]) + " 0\n")   
+            else:
+                f.write(str(bc[0]) + " " + str(len(bc[1])))
+                for qty, value in bc[1].items():
+                    f.write(" " + str(qty) + " " + str(value))
+                f.write("\n")
 
 def read_variant_info(data_dir, nSDD):
     whole_data = []

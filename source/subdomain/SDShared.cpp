@@ -1,4 +1,6 @@
+#include <cassert>
 #include "SDShared.hpp"
+#include "exception/exception.hpp"
 
 SDShared::SDShared(const std::vector< std::pair<int, int> >& coords,
         const CoordConverter& coordConverter,
@@ -14,12 +16,14 @@ void SDShared::execEquation(eqType& eqFunc,
     eqFunc(*this, quantityMap);
 }
 
-void SDShared::addDirichletCell(std::pair < std::pair<int, int>, real > d) {
-    _dirichletCellMap[convert(d.first.first, d.first.second)] = d.second;
+void SDShared::addDirichletCell(std::pair < std::pair<int, int>, std::map<std::string, real> > d) {
+    for (auto p : d.second)
+        _dirichletCellMap[p.first][convert(d.first.first, d.first.second)] = p.second;
 }
 
-void SDShared::addNeumannCell(std::pair< std::pair<int, int>, std::pair<int, int> > n) {
-    _neumannCellMap[convert(n.first.first, n.first.second)] = convert(n.second.first, n.second.second);
+void SDShared::addNeumannCell(std::pair< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > > n) {
+    for (auto p : n.second.second)
+        _neumannCellMap[p.first][convert(n.first.first, n.first.second)] = std::make_pair(convert(n.second.first.first, n.second.first.second), p.second);
 }
 
 size_t SDShared::getOverlapCellNumber(unsigned int sddId) const {
@@ -34,36 +38,46 @@ void SDShared::addOverlapCell(unsigned int sddId, size_t sendIndex, size_t recvI
     _recvIndexMap[sddId].push_back(recvIndex);
 }
 
-void SDShared::updateBoundaryCells(Quantity<real>* quantity, bool changeNeumannToOpposite) const {
+void SDShared::updateBoundaryCells(Quantity<real>* quantity) const {
     updateDirichletCells(quantity);
-    updateNeumannCells(quantity, changeNeumannToOpposite);
+    updateNeumannCells(quantity);
 }
 
 void SDShared::updateDirichletCells(Quantity<real>* quantity) const {
-
-    if (_dirichletCellMap.empty())
-        return;
-
     auto& qty(*quantity);
-    for (auto it = _dirichletCellMap.begin(); it != _dirichletCellMap.end(); ++it)
+
+    // No dirichlet values stored for this quantity.
+    std::map<std::string, std::unordered_map< size_t, real >>::const_iterator it = _dirichletCellMap.find(qty.getName());
+    if (it == _dirichletCellMap.end())
+        return;
+    
+    const std::unordered_map< size_t, real>& dirichletValue = it->second;
+
+    // This cannot be.
+    assert(!dirichletValue.size());
+
+
+    for (auto it = dirichletValue.begin(); it != dirichletValue.end(); ++it)
         qty.set0(it->second, it->first);
 }
 
-void SDShared::updateNeumannCells(Quantity<real>* quantity, bool changeToOpposite) const {
-
-    if (_neumannCellMap.empty())
-        return;
+void SDShared::updateNeumannCells(Quantity<real>* quantity) const {
 
     auto& qty(*quantity);
-    if (changeToOpposite) {
-        for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
-            qty.set0(-qty.get0(it->second), it->first);
-        }
-    } else {
-        for (auto it = _neumannCellMap.begin(); it != _neumannCellMap.end(); ++it) {
-            qty.set0(qty.get0(it->second), it->first);
-        }
-   }
+
+    // No dirichlet values stored for this quantity.
+    std::map<std::string, std::unordered_map< size_t, std::pair<size_t, real>>>::const_iterator cit = _neumannCellMap.find(qty.getName());
+    if (cit == _neumannCellMap.end())
+        return;
+
+    const std::unordered_map< size_t, std::pair<size_t, real>>& neumannCoeff = cit->second;
+
+    // This cannot be.
+    assert(neumannCoeff.size() != 0);
+
+    for (auto it = neumannCoeff.begin(); it != neumannCoeff.end(); ++it) {
+        qty.set0(it->second.second * qty.get0(it->second.first), it->first);
+    }
 }
 
 void SDShared::copyOverlapCellIn(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const {

@@ -29,6 +29,7 @@ class Timer {
         double _totalSteady;
         double _call;
         std::deque<unsigned long int> _steadyDeque;
+        double _lastTotalPrinted;
 };
 
 #endif // TIMER_H

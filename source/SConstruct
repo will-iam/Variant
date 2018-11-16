@@ -33,8 +33,8 @@ if not (compiler in ['gnu', 'intel', 'clang', 'mpi']):
 	Exit(1)
 
 #check if the user has been naughty: only 'debug','profile' or 'release' allowed
-if not (mymode in ['maxidebug', 'debug', 'profile', 'release']):
-	print "Error: expected 'maxidebug', 'debug', 'profile' or 'release', found: " + mymode
+if not (mymode in ['maxidebug', 'debug', 'profile', 'release', 'optimized']):
+	print "Error: expected either 'maxidebug', 'debug', 'profile', 'release' or 'optimized', found: " + mymode
 	Exit(1)
 
 if not (lib in ['linux', 'macos']):
@@ -90,34 +90,39 @@ if compiler == 'intel':
     print 'We compile with Intel compiler'
 
 if compiler == 'mpi':
-	env['CC'] = config.mpi_CC
-	env['CXX'] = config.mpi_CXX
-
-	# And... needed with intel too!
-	if config.mpi_build == 'linux':
-		mylinkflags.append('-pthread')
-	print 'We compile with MPI compiler'
+    env['CC'] = config.mpi_CC
+    env['CXX'] = config.mpi_CXX
+#    mycflags.extend(['-no-fma'])
+#   -I$MPI_INCDIR -L$MPI_LIBDIR
+#    mycflags.extend(['-I/opt/mpi/openmpi-icc/2.0.4/include'])
+#    mylinkflags.extend(['-L/opt/mpi/openmpi-icc/2.0.4/lib', '-lmpi', '-lmpi_cxx'])
+    # And... needed with intel too!
+    #if config.mpi_build == 'linux':
+    mylinkflags.append('-pthread')
+    print 'We compile with MPI compiler'
 
 #extra compile flags
 if mymode == 'maxidebug':
-	mycflags = ['-W','-Werror','-ansi','-Wall', '-Wextra', '-pedantic', '-g']
+	mycflags.extend(['-W','-Werror','-ansi','-Wall', '-Wextra', '-pedantic', '-g'])
 	mycflags.append('-Wfatal-errors')
 	if platform.system() == 'Linux':
 		env['CXX'] = 'scan-build ' + env['CXX']
 
 if mymode == 'profile':
-	mycflags = ['-W','-Wall','-Wfatal-errors','-Wextra','-pg','-DNDEBUG',
-    '-DPROFILE=1']
+	mycflags.extend(['-W','-Wall','-Wfatal-errors','-Wextra','-pg','-DNDEBUG', '-DPROFILE=1'])
 	#mylinkflags.append('-pg')
 
 if mymode == 'release':
-	mycflags = ['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native', '-g']
+	mycflags.extend(['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-g'])
+
+if mymode == 'optimized':
+	mycflags.extend(['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native'])
 
 if mymode == 'debug':
-   	#mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
-   	mycflags = ['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g']
-	if platform.system() == 'Linux':
-		mycflags = mycflags + ['-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
+   	#mycflags.extend(['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g'])
+   	mycflags.extend(['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g'])
+	#if platform.system() == 'Linux':
+	#	mycflags = mycflags + ['-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']
 
 # Set the library path
 #if lib == 'linux':

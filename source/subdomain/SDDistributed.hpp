@@ -187,8 +187,8 @@ class SDDistributed {
      * @param domain parent domain of the SDD
      */
     void buildRecvMap(const Domain& domain,
-        std::map< std::pair<int, int>, real >& dirichletCellMap,
-        std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap);
+        std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap);
 
     /*!
      * @brief Adds physical quantity (and thus data) used
@@ -212,8 +212,8 @@ class SDDistributed {
     /*!
     * @brief Dispatch the boundary cells among the sds.
     */
-    void dispatchBoundaryCell(const std::map< std::pair<int, int>, real >& dirichletCellMap,
-        const std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap);
+    void dispatchBoundaryCell(const std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        const std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap);
 
     /*!
     * @brief Dispatch the overlap cells among the sds.
@@ -348,8 +348,7 @@ class SDDistributed {
 };
 
 template<typename T> void SDDistributed::addQuantity(std::string name) {
-
-    _quantityMap[name] = new Quantity<T>((_sizeX + 2 * _boundaryThickness) * (_sizeY + 2 * _boundaryThickness), _coordConverter);
+    _quantityMap[name] = new Quantity<T>(name, (_sizeX + 2 * _boundaryThickness) * (_sizeY + 2 * _boundaryThickness), _coordConverter);
 }
 
 #endif

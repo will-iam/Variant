@@ -64,19 +64,15 @@ class Engine:
         # Command base: mpirun specified in config file.
         if self._compiler == 'mpi':
             cmd = cmd + config.mpi_RUN.split(' ')
-
-            # KnL options
-            # '-m', 'block:block'
-            # '-m', 'block:cyclic'
-            # '-m', 'block:fcyclic'
-            #cmd = cmd + ['-N', str(nnodes), '-n', str(mpi_nprocs), '-E', '-O', '-x', '-m', 'block:cyclic', '-c', str(ncores)]
             cmd = cmd + ['-hostfile', 'hostfile', '-n', str(mpi_nprocs)]
 
         if self._gdb:
             #cmd = cmd + ['xterm', '-e', 'gdb', '--args']
-            cmd = cmd + ['lldb', '--']
+            #cmd = cmd + ['lldb', '--']
+            cmd = cmd + ['gdb', '--args']
         elif self._valgrind:
-            cmd = cmd + ['valgrind', '--leak-check=yes', '--track-origins=yes', '--leak-check=full', '--show-leak-kinds=all', '--log-file=valgrind-out.txt']
+            #cmd = cmd + ['valgrind', '--leak-check=yes', '--track-origins=yes', '--leak-check=full', '--show-leak-kinds=all', '--log-file=valgrind-out.txt']
+            cmd = cmd + ['valgrind', '--leak-check=yes', '--track-origins=yes']
         elif self._vtune:
             cmd = cmd + ['amplxe-cl', '-r', 'vtune-hs', '-collect', 'hotspots']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
@@ -86,7 +82,8 @@ class Engine:
             if self._verrou == 'check':
                 cmd = cmd + ['valgrind', '--tool=none']
             else:
-                cmd = cmd + ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou]
+                # --rounding-mode=<random|average|upward|downward|toward_zero|farthest|float|nearest>
+                cmd = cmd + ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex']
         '''
         # to add environment variable visible in this process + all children:
         os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'

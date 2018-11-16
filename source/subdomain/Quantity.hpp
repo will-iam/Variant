@@ -36,7 +36,7 @@ template<typename T> class Quantity {
      * @param coordConverter : tool linking coordinates of a 
      * cell/node to the corresponding memory index
      */
-    Quantity(unsigned int size, const CoordConverter & coordConverter);
+    Quantity(std::string, unsigned int size, const CoordConverter & coordConverter);
 
     /*!
      * @brief Returns desired data available for reading
@@ -48,7 +48,7 @@ template<typename T> class Quantity {
      *
      * @return reference to the desired data
      */
-    const T& get(unsigned int n, int coordX, int coordY) const;
+    T get(unsigned int n, int coordX, int coordY) const;
 
     /*!
      * @brief Returns desired data available for reading
@@ -75,11 +75,13 @@ template<typename T> class Quantity {
     int currentPrev() const;
 
     
-    const T& get0(size_t pos) const;
-    const T& get1(size_t pos) const;
+    T get0(size_t pos) const;
+    T get1(size_t pos) const;
 
     void set0(T value, size_t pos);
     void set1(T value, size_t pos);
+
+    std::string getName() const {return _name;}
 
   private:
 
@@ -113,17 +115,24 @@ template<typename T> class Quantity {
      * Copy of coordinates converter owned by the SDD
      */
     CoordConverter _coordConverter;
+
+    /*!
+     * Finally, we decided to store the name.
+     */
+    std::string _name;
 };
 
 template<typename T>
-Quantity<T>::Quantity(unsigned int size,
+Quantity<T>::Quantity(std::string name, unsigned int size,
         const CoordConverter & coordConverter):_size(size), _coordConverter(coordConverter)
 {
-    _dataLeft.resize(_size);
-    _dataRight.resize(_size);
+    _dataLeft.resize(_size, 0.);
+    _dataRight.resize(_size, 0.);
 
     _prev = &_dataLeft;
     _next = &_dataRight;
+
+    _name = name;
 }
 
 template<typename T>
@@ -139,7 +148,7 @@ template<typename T> void Quantity<T>::switchPrevNext()
 }
 
 template<typename T>
-const T& Quantity<T>::get(unsigned int n, int coordX, int coordY) const
+T Quantity<T>::get(unsigned int n, int coordX, int coordY) const
 {
     unsigned int i = _coordConverter.convert(coordX, coordY);
     return (n == 0) ? (*_prev)[i] : (*_next)[i];
@@ -157,12 +166,12 @@ template<typename T> void Quantity<T>::set(T value,
 }
 
 template<typename T>
-const T& Quantity<T>::get0(size_t pos) const {
+T Quantity<T>::get0(size_t pos) const {
     return (*_prev)[pos];
 }
 
 template<typename T>
-const T& Quantity<T>::get1(size_t pos) const {
+T Quantity<T>::get1(size_t pos) const {
     return (*_next)[pos];
 }
 

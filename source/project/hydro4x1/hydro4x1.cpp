@@ -44,6 +44,10 @@ int Hydro4x1::init() {
     // build SDS in each SDD.
     _domain->buildThreads();
 
+    // Show domain info.
+    if (_MPI_rank == 0)
+        _domain->showInfo();
+
     // Initial time
     _t = 0;
 
@@ -319,20 +323,14 @@ void Hydro4x1::source(const SDShared& sds, const std::map< std::string, Quantity
 
         // Energy source term
         real PCenter = (_gamma - 1) * rhoe_center;
-
         real uxCellLeft = (rho_left == 0.) ? 0. : rhou_x.get0(k_left) / rho_left;
-
         real uxCellRight = (rho_right == 0.) ? 0. : rhou_x.get0(k_right) / rho_right;
-
         real uyCellBottom = (rho_bottom == 0.) ? 0. : rhou_y.get0(k_bottom) / rho_bottom;
-
         real uyCellTop = (rho_top == 0.) ? 0. : rhou_y.get0(k_top) / rho_top;
-
-        rhoe.set1(rhoe_center - _dt * PCenter * ((uxCellRight - uxCellLeft) / (2 * _dx) + (uyCellTop - uyCellBottom) / (2 * _dy)), k_center);
+        rhoe.set1(rhoe_center - _dt * PCenter * ((uxCellRight - uxCellLeft) / (2 * _dx) + (uyCellTop - uyCellBottom) / (2 * _dy)), k_center); 
 
         // Updating umax and uymax
         if (rho_center != 0.) {
-            // real plus = std::abs(sqrt(_gamma * PCenter / rho0ij));
             real plus = std::abs(sqrt(_gamma * (_gamma - 1) * rhoe_center / rho_center));
             real uxMax = std::abs(rhou_x1 / rho_center) + plus;
             if (sdsUxMax < uxMax)
@@ -351,8 +349,8 @@ void Hydro4x1::source(const SDShared& sds, const std::map< std::string, Quantity
 void Hydro4x1::updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
     // update BoundaryCells
     sds.updateBoundaryCells(quantityMap.at("rho"));
-    sds.updateBoundaryCells(quantityMap.at("rhou_x"), true);
-    sds.updateBoundaryCells(quantityMap.at("rhou_y"), true);
+    sds.updateBoundaryCells(quantityMap.at("rhou_x"));
+    sds.updateBoundaryCells(quantityMap.at("rhou_y"));
     sds.updateBoundaryCells(quantityMap.at("rhoe"));
 }
 

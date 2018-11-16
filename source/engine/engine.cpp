@@ -1,9 +1,11 @@
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <getopt.h>
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#include "timestamp/timestamp.h"
+#include "timestamp/timestamp.hpp"
 #include "exception/exception.hpp"
 #include "IO.hpp"
 #include "engine.hpp"
@@ -23,7 +25,7 @@ int Engine::main(int argc, char** argv) {
     _MPI_rank = 0;
     #else
     // Init MPI
-    MPI_Init(NULL, NULL);
+    MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
     #endif
 
@@ -31,6 +33,7 @@ int Engine::main(int argc, char** argv) {
     const int stringsize = 180;
     char initfile[ stringsize ];
     char outputpath[ stringsize ];
+    char mode[ stringsize ];
     bool outputpathSet = false;
     _testFlag = 0;
     _dryFlag = 0;
@@ -43,7 +46,7 @@ int Engine::main(int argc, char** argv) {
     std::map<std::string, int> perfResults;
 
     int option_index = 0;
-    while ((flag = getopt_long(argc, argv, "i:o:h", long_options, &option_index)) != EOF) {
+    while ((flag = getopt_long(argc, argv, "i:o:m:h", long_options, &option_index)) != EOF) {
         switch(flag){
 
             case 0:
@@ -82,6 +85,28 @@ int Engine::main(int argc, char** argv) {
         cout << "\t- think simple." << endl;
         cout << "\t- think modular: encapsulate as much as possible and put every member private." << Console::_normal << endl;
 #endif
+
+        #if defined (PRECISION_FLOAT)
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "float." << Console::_normal << std::endl;
+        #endif
+        #if defined (PRECISION_DOUBLE)
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "double." << Console::_normal << std::endl;
+        #endif
+        #if defined (PRECISION_LONG_DOUBLE)
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "long double." << Console::_normal << std::endl;
+        #endif
+
+        std::cout << Console::_blue;
+        std::cout << "Show cosinus value to test libm exclusion: << -3.9998531498835127e-01 = " << std::scientific;
+        std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
+        std::cout << Console::_bold << cos(42.) << std::endl;
+        std::cout << std::setprecision(2) << std::fixed << Console::_normal;
+        //std::cout << std::setprecision(6) << std::defaultfloat << Console::_normal;
+        /*
+        if (-3.9998531498835127e-01 != cos(42.)) {
+            std::cout << Console::_normal << "Cosinus computation is wrong.";
+            return EXIT_FAILURE;
+        } */
 
         if (!outputpathSet){
             cout << "Output path argument missing. Exit." << endl;
@@ -196,6 +221,22 @@ void Engine::setOptions(real T, real CFL) {
     _CFL = CFL;
 }
 
+void Engine::updateDomainUmax() {
+
+    #ifndef SEQUENTIAL
+    _SDD_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
+    _SDD_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
+    real _SDD_umax[] = {_SDD_uxmax, _SDD_uymax};
+    real _Domain_umax[] = {0., 0.};
+    MPI_Allreduce(&_SDD_umax, &_Domain_umax, 2, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
+    _Domain_uxmax = _Domain_umax[0];
+    _Domain_uymax = _Domain_umax[1];
+    #else
+    _Domain_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
+    _Domain_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
+    #endif
+}
+
 void Engine::updateDomainUxmax() {
 
     #ifndef SEQUENTIAL
@@ -213,5 +254,15 @@ void Engine::updateDomainUymax() {
     MPI_Allreduce(&_SDD_uymax, &_Domain_uymax, 1, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
     #else
     _Domain_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
+    #endif
+}
+
+real Engine::reduceMin(const real& v) {
+    #ifndef SEQUENTIAL
+    real min_value(0.);
+    MPI_Allreduce(&v, &min_value, 1, MPI_REALTYPE, MPI_MIN, MPI_COMM_WORLD);
+    return min_value;
+    #else
+    return v;
     #endif
 }

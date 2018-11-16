@@ -169,8 +169,7 @@ def split_bc(bc_dir, output_dir):
         uid = line_split[0]
         coordX = int(line_split[1])
         coordY = int(line_split[2])
-        BCtype = line_split[3]
-        value = line_split[4]
+       
 
         # Determine to which SDD belongs the boundary cell
         eqCoordX = coordX
@@ -198,7 +197,7 @@ def split_bc(bc_dir, output_dir):
         BL_X = BL[SDDid][0]
         BL_Y = BL[SDDid][1]
 
-        newLine = uid + " " + str(coordX - BL_X) + " " + str(coordY - BL_Y) + " " + BCtype + " " + value + "\n"
+        newLine = uid + " " + str(coordX - BL_X) + " " + str(coordY - BL_Y) + " " + " ".join(line_split[3:])  + "\n"
         # and add the boundary cell to the corresponding file
         file_streams[SDDid].write(newLine)
 
@@ -235,7 +234,7 @@ def split_bc(bc_dir, output_dir):
             otherBL_Y = BL[otherSDDid][1]
 
             # and add the boundary cell to the corresponding file
-            newLine = uid + " " + str(coordX - otherBL_X) + " " + str(coordY - otherBL_Y) + " " + BCtype + " " + value + "\n"
+            newLine = uid + " " + str(coordX - otherBL_X) + " " + str(coordY - otherBL_Y) + " " + " ".join(line_split[3:]) + "\n"
             file_streams[otherSDDid].write(newLine)
 
     bc_f.close()

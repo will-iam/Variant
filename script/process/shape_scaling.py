@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 """
 Plot to compare different shape of the SDD split: (X, Y) with a single thread and a single core in each.

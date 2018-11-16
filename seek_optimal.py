@@ -1,4 +1,4 @@
-##!/usr/local/bin/python3
+##!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -32,7 +32,7 @@ if nTotalCores == 512:
 #testList.append(explore((256, 256), ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
 #testList.append(weakSDD(128, ratioThreadsCores, SDSratioList))
 #testList.append(weakSDS(128, ratioThreadsCores, SDSratioList, SDScommonDivider))
-testList.append(strongSDD((256, 32), ratioThreadsCores, SDDSizeList, SDSratioList))
+testList.append(strongSDD((256, 256), ratioThreadsCores, SDDSizeList, SDSratioList))
 #testList.append(strongSDS((128, 128), ratioThreadsCores, SDSratioList, SDScommonDivider))
 #testList.append(exploreCaseSize(512, ratioThreadsCores, SDDSizeList, SDSratioList, SDScommonDivider))
 

@@ -345,16 +345,21 @@ def make_perf_data(perfPath, execTime, perf_info, endTime):
     perf_values = list(io.read_perfs(perfPath).values())
     perf_values.append(execTime)
 
-
     iterationTimeDict = perf_info['iterationTime']
     computeTimeDict = perf_info['computeTime']
 
     sumComputeTimeMatrix = np.empty((len(perf_info['iterationTime']), len(iterationTimeDict[0])))
     iterationTimeMatrix = np.empty((len(perf_info['iterationTime']), len(iterationTimeDict[0])))
 
+    # Detect the ratio between computeTime and iterationTime.
+    if len(computeTimeDict[0]) <  len(iterationTimeDict[0]):
+        print("There is more iteration time vallues than computation time values. You didn't get what an iteration time is.")
+        sys.exit(1)
+    ratioCperI = len(computeTimeDict[0]) // len(iterationTimeDict[0])
+ 
     for sdd in iterationTimeDict:
         # First Sum the compute time to make a new array.
-        if len(computeTimeDict[sdd]) // 3 !=  len(iterationTimeDict[sdd]):
+        if len(computeTimeDict[sdd]) // ratioCperI !=  len(iterationTimeDict[sdd]):
             print('The list sizes do not correspond.')
             sys.exit(1)
 
@@ -365,7 +370,7 @@ def make_perf_data(perfPath, execTime, perf_info, endTime):
         for t in computeTimeDict[sdd]:
             partialSum += t
             counter += 1
-            if counter == 3:
+            if counter == ratioCperI:
                 sumComputeTimeMatrix[sdd][index] = partialSum
                 index += 1
                 counter = 0

@@ -5,28 +5,32 @@ import __future__
 from common import *
 
 # Check if refence results exist.
-case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', 'float')
-#case_path = os.path.join(config.cases_dir, 'hydro4x1', 'n2dsod512x512', 'ref', 'float')
-print("Looking for results in %s ..." % case_path)
+cases_dir = os.path.join(config.workspace, 'empty_cases', args.project_name, args.case)
+ref_path = os.path.join(cases_dir, 'ref', args.precision, args.rounding_mode)
+print("Looking for results in %s ..." % ref_path)
 
-if not os.path.isdir(case_path):
+if not os.path.isdir(ref_path):
     print("Can't file reference result directory.")
     sys.exit(1)
 
-if not os.path.isfile(os.path.join(case_path, 'rho.dat')):
+if not os.path.isfile(os.path.join(ref_path, 'rho.dat')):
     print("Can't file reference result file.")
     sys.exit(1)
 
 # Load quantities.
-quantityListName = ["rho", "rhou_x", "rhou_y", "rhoe"]
+sys.path.append(cases_dir)
+import chars
+quantityListName = chars.quantityList
+print quantityListName
+
 data = dict()
 uid_to_coords = dict()
-Nx, Ny, dx, dy = read_converter(case_path, uid_to_coords)
+Nx, Ny, dx, dy = read_converter(ref_path, uid_to_coords)
 
 for q in quantityListName:
     data[q] = np.zeros((Nx, Ny))
     start = timer()
-    read_quantity(data[q], case_path, uid_to_coords, q)
+    read_quantity(data[q], ref_path, uid_to_coords, q)
     end = timer()
     print("Time to load quantity", q, "%s second(s)" % int((end - start)))
 
@@ -45,12 +49,21 @@ for i in range(Nx):
         Ux[i][j] = data['rhou_x'][i][j] / data['rho'][i][j]
         Uy[i][j] = data['rhou_y'][i][j] / data['rho'][i][j]
         Ek[i][j] = np.sqrt(Ux[i][j]*Ux[i][j] + Uy[i][j]*Uy[i][j])
-        Ei[i][j] = data['rhoe'][i][j] / data['rho'][i][j]
+        Ei[i][j] = data['rhoE'][i][j] / data['rho'][i][j]
+
 
 gamma = 1.4
 npts = 500
-positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
+if args.solver == 'sod':
+    sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
+    from sod import solve
+    positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
                                            geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=npts)
+
+if args.solver == 'sedov':
+    sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
+    from sedov import solve
+    values = solve(t=1.2, gamma=gamma, npts=npts)
 
 # Now show them.
 fig = plt.figure(0, figsize=(9, 6))
@@ -68,21 +81,21 @@ ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
 plt.plot(values['x'], values['rho'], linewidth=1.5, color='r', linestyle='dashed', label="exact")
 ax1.set(xlabel='x', ylabel='density', title='Rho value on y = 0')
 ax1.grid()
-ax1.axis([0, 1, 0, 1.1])
+#ax1.axis([0, 1, 0, 1.1])
 #ax1.axis('tight')
 
 ########## internal energy ################
 ax2 = fig.add_subplot(222)
 cm = ax2.pcolormesh(Ei.transpose())
 fig.colorbar(cm, ax=ax2)
-ax2.set_title('rho pcolormesh with levels')
+ax2.set_title('Energy pcolormesh with levels')
 ax2.axis('tight')
 
 ########## velocity field ################
 ax3 = fig.add_subplot(224)
 #lw = 3 * Ek.transpose() / Ek.max()
 #strm = ax3.streamplot(x, y, Ux.transpose(), Uy.transpose(), color=Ek.transpose(), cmap='autumn', linewidth=lw)
-strm = ax3.streamplot(x, y, Ux.transpose(), Uy.transpose(),color=Ek.transpose())
+strm = ax3.streamplot(x, y, Ux.transpose(), Uy.transpose(), color=Ek.transpose())
 #strm = ax3.streamplot(x, y, Ux.transpose(), Uy.transpose())
 #fig.colorbar(strm.lines)
 #strm = ax3.contourf(Ux.transpose())

@@ -167,9 +167,18 @@ int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
         int iCoord;         iss >> iCoord;
         int jCoord;         iss >> jCoord;
         char BCtype;        iss >> BCtype;
-        real value;         iss >> value;
+        int qty_number;         iss >> qty_number;
 
-        domain.addBoundaryCoords(std::pair<int, int>(iCoord, jCoord), BCtype, value);
+        std::map<std::string, real> qtyValue;
+        if (qty_number > 0) {
+            assert(BCtype == 'D' or BCtype == 'N');
+            for (size_t i = 0; i < qty_number; ++i) {
+                std::string name; iss >> name;
+                real value; iss >> value;
+                qtyValue[name] = value;
+            }
+        }
+        domain.addBoundaryCoords(std::pair<int, int>(iCoord, jCoord), BCtype, qtyValue);
     }
     ifs.close();
 
@@ -182,24 +191,31 @@ int IO::writeQuantity(std::string directory, std::string quantityName, const Dom
     const SDDistributed& sdd = domain.getSDDconst();
 
     std::ostringstream oss;
-    oss << sdd.getId();
-    std::ofstream ofs(directory + "/sdd" + oss.str() + "/" + quantityName + ".dat",
-            std::ios::out);
-    if (!ofs)
-        std::cerr << "Failed to open file: " << std::endl;
+    oss << directory << "/sdd" << sdd.getId() << "/" << quantityName << ".dat";
+    std::ofstream ofs(oss.str(), std::ios::out);
+    if (!ofs) {
+        std::cerr << "Failed to open file: " << oss.str() << std::endl;
+        return 1;
+    }
+
+    // std::cout << "max float" << std::numeric_limits<float>::digits << std::endl;
+    // std::cout << "max float" << std::numeric_limits<float>::digits10 << std::endl;
+    // std::cout << "max float" << std::numeric_limits<float>::max_digits10 << std::endl;
+    // std::cout << "max double" << std::numeric_limits<double>::max_digits10 << std::endl;
+    // std::cout << std::scientific << std::hexfloat
+    #if defined(PRECISION_FLOAT)
+        ofs << std::setprecision(std::numeric_limits<float>::max_digits10);
+    #endif
+    #if defined(PRECISION_DOUBLE)
+        ofs << std::setprecision(std::numeric_limits<double>::max_digits10);
+    #endif
+    #if defined(PRECISION_LONG_DOUBLE)
+        ofs << std::setprecision(std::numeric_limits<long double>::max_digits10);
+    #endif
 
     for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
         for (unsigned int j = 0; j < sdd.getSizeY(); ++j) {
-            ofs << i << " " << j << " ";
-#if defined(PRECISION_FLOAT)
-            ofs << std::setprecision(std::numeric_limits<float>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
-#endif
-#if defined(PRECISION_DOUBLE)
-            ofs << std::setprecision(std::numeric_limits<double>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
-#endif
-#if defined(PRECISION_LONG_DOUBLE)
-            ofs << std::setprecision(std::numeric_limits<long double>::digits10 + 1) << sdd.getValue(quantityName, i, j) << std::endl;
-#endif
+            ofs << i << " " << j << " " << sdd.getValue(quantityName, i, j) << std::endl;
         }
     }
 

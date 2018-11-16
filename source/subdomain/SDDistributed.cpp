@@ -89,8 +89,8 @@ void SDDistributed::buildAllSDS(unsigned int nSDS, std::string geomType) {
     std::random_shuffle(_SDSVector.begin(), _SDSVector.end());
 }
 
-void SDDistributed::dispatchBoundaryCell(const std::map< std::pair<int, int>, real >& dirichletCellMap,
-        const std::map< std::pair<int, int>, std::pair<int, int> >& neumannCellMap) {
+void SDDistributed::dispatchBoundaryCell(const std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        const std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap) {
     if (_SDSVector.empty())
         exitfail("You must initialize the SDS list before splitting the boundary cell");
 
