@@ -80,10 +80,10 @@ class Engine:
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
         elif self._verrou is not None:
             if self._verrou == 'check':
-                cmd = cmd + ['valgrind', '--tool=none']
+                cmd = ['valgrind', '--tool=none'] + cmd
             else:
                 # --rounding-mode=<random|average|upward|downward|toward_zero|farthest|float|nearest>
-                cmd = cmd + ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex']
+                cmd = ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex'] + cmd
         '''
         # to add environment variable visible in this process + all children:
         os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
