@@ -172,7 +172,7 @@ int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
         std::map<std::string, real> qtyValue;
         if (qty_number > 0) {
             assert(BCtype == 'D' or BCtype == 'N');
-            for (size_t i = 0; i < qty_number; ++i) {
+            for (int i = 0; i < qty_number; ++i) {
                 std::string name; iss >> name;
                 real value; iss >> value;
                 qtyValue[name] = value;
