@@ -1,10 +1,9 @@
-##!/usr/bin/python3
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
 import sys
 import itertools
-from decimal import *
 from seek_common import *
 import script.compiler as compiler
 

@@ -33,7 +33,6 @@ int Engine::main(int argc, char** argv) {
     const int stringsize = 180;
     char initfile[ stringsize ];
     char outputpath[ stringsize ];
-    char mode[ stringsize ];
     bool outputpathSet = false;
     _testFlag = 0;
     _dryFlag = 0;
@@ -46,7 +45,7 @@ int Engine::main(int argc, char** argv) {
     std::map<std::string, int> perfResults;
 
     int option_index = 0;
-    while ((flag = getopt_long(argc, argv, "i:o:m:h", long_options, &option_index)) != EOF) {
+    while ((flag = getopt_long(argc, argv, "i:o:h", long_options, &option_index)) != EOF) {
         switch(flag){
 
             case 0:

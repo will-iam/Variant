@@ -1,10 +1,9 @@
-##!/usr/local/bin/python3
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
 import __future__
 import sys
 import itertools
-from decimal import *
 from seek_common import *
 import script.compiler as compiler
 
@@ -33,7 +32,7 @@ engineOptionDict['precision'] = 'float'
 #sizeList = [(32768, 1), (65536, 1), (131072, 1)]
 #sizeList = [(512, 1), (1024, 1), (2048, 1), (4096, 1), (8192, 1), (16384, 1), (32768, 1)]
 #sizeList = [(65536, 1), (131072, 1), (262144, 1)]
-sizeList = [(1048576, 1)]
+sizeList = [(64, 64)]
 #sizeList = [(1048576, 1), (2097152, 1), (4194304, 1)]
 #sizeList = [(6291456, 1)]
 
