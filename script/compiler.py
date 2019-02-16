@@ -83,14 +83,15 @@ class Engine:
                 cmd = ['valgrind', '--tool=none'] + cmd
             else:
                 # --rounding-mode=<random|average|upward|downward|toward_zero|farthest|float|nearest>
+                #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
+                #os.environ['VERROU_ROUNDING_MODE'] = "random"
+                #os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
                 cmd = ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex'] + cmd
         '''
         # to add environment variable visible in this process + all children:
         os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
         '''
-        #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
-        #os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
-
+        
         cmd = cmd + [self._binary_path, '-i', input_path, '-o', output_path] + run_option
         print(' '.join(cmd))
         subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))

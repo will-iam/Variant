@@ -113,7 +113,7 @@ if mymode == 'profile':
 	#mylinkflags.append('-pg')
 
 if mymode == 'release':   
-	mycflags.extend(['-W', '-Wall', '-Wfatal-errors', '-O3', '-DNDEBUG', '-g'])
+	mycflags.extend(['-W', '-Wall', '-Wfatal-errors', '-O0', '-DNDEBUG'])
 
 if mymode == 'optimized':
 	mycflags.extend(['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native'])
