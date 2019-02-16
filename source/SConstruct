@@ -112,14 +112,13 @@ if mymode == 'profile':
 	mycflags.extend(['-W','-Wall','-Wfatal-errors','-Wextra','-pg','-DNDEBUG', '-DPROFILE=1'])
 	#mylinkflags.append('-pg')
 
-if mymode == 'release':
-	mycflags.extend(['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-g'])
+if mymode == 'release':   
+	mycflags.extend(['-W', '-Wall', '-Wfatal-errors', '-O3', '-DNDEBUG', '-g'])
 
 if mymode == 'optimized':
 	mycflags.extend(['-W','-Wall','-Wfatal-errors','-O3', '-DNDEBUG', '-march=native'])
 
 if mymode == 'debug':
-   	#mycflags.extend(['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g'])
    	mycflags.extend(['-W','-Wfatal-errors','-Wall','-Wextra', '-pedantic', '-g'])
 	#if platform.system() == 'Linux':
 	#	mycflags = mycflags + ['-fp-model', 'precise' , '-fp-model', 'source', '-fimf-arch-consistency=true']

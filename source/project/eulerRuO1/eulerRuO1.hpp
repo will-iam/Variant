@@ -7,8 +7,6 @@
  */
 
 #include <memory>
-#include <cmath>
-
 #include "engine.hpp"
 #include "number/number.hpp"
 #include "exception/exception.hpp"

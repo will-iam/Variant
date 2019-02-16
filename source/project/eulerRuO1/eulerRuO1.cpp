@@ -12,7 +12,6 @@
 
 EulerRuO1::EulerRuO1():
     Engine() {
-
 }
 
 EulerRuO1::~EulerRuO1() {

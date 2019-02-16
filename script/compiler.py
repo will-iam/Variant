@@ -64,7 +64,7 @@ class Engine:
         # Command base: mpirun specified in config file.
         if self._compiler == 'mpi':
             cmd = cmd + config.mpi_RUN.split(' ')
-            cmd = cmd + ['-hostfile', 'hostfile', '-n', str(mpi_nprocs)]
+            cmd = cmd + ['-hostfile', 'hostfile', '-np', str(mpi_nprocs)]
 
         if self._gdb:
             #cmd = cmd + ['xterm', '-e', 'gdb', '--args']
@@ -88,6 +88,8 @@ class Engine:
         # to add environment variable visible in this process + all children:
         os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
         '''
+        #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
+        #os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
 
         cmd = cmd + [self._binary_path, '-i', input_path, '-o', output_path] + run_option
         print(' '.join(cmd))

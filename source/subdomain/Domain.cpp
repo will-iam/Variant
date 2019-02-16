@@ -120,8 +120,10 @@ void Domain::buildSubDomainsMPI(unsigned int neighbourHood, unsigned int boundar
     _SDD_BLandSize_List[_MPI_rank] = BLandSize;
 
     #ifndef SEQUENTIAL
-    for (unsigned int id = 0; id < _nSDD; ++id)
-        MPI_Bcast(&_SDD_BLandSize_List[id], 4, MPI_INT, id, MPI_COMM_WORLD);
+    for (unsigned int id = 0; id < _nSDD; ++id) {
+        //std::cerr << "MPI_Bcast(..., " << 4 << ", " << MPI_INT << ", " << id << ", " << MPI_COMM_WORLD << ");\n";
+        MPI_Bcast(&(_SDD_BLandSize_List[id]), 4, MPI_INT, id, MPI_COMM_WORLD);
+    }
     #endif
 }
 

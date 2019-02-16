@@ -27,6 +27,11 @@ int Engine::main(int argc, char** argv) {
     // Init MPI
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &_MPI_rank);
+        #ifndef NDEBUG
+        int mpi_comm_size(0);
+        MPI_Comm_size(MPI_COMM_WORLD, &mpi_comm_size);
+        std::cerr << "Hello world from process " << _MPI_rank << " of " << mpi_comm_size << std::endl;
+        #endif
     #endif
 
     int flag;
@@ -82,7 +87,8 @@ int Engine::main(int argc, char** argv) {
         cout << "\t- comment every class, function, method, member, variable with doxygen style." << endl;
         cout << "\t- commit regularly." << endl;
         cout << "\t- think simple." << endl;
-        cout << "\t- think modular: encapsulate as much as possible and put every member private." << Console::_normal << endl;
+        cout << "\t- think modular: encapsulate as much as possible and put every member private." << endl;
+        cout << "\t- and most important ......... think category theory." << Console::_normal << endl;
 #endif
 
         #if defined (PRECISION_FLOAT)

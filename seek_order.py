@@ -14,8 +14,8 @@ ratioThreadsCores = [1.0]
 SDSratioList = [1.0] #[1.0, 4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
-engineOptionDict['precision'] = 'float'
-#engineOptionDict['compiler'] = 'intel'
+engineOptionDict['precision'] = 'double'
+engineOptionDict['compiler'] = 'mpi'
 
 #xSizeList = [512]
 #xSizeList = [1024]
