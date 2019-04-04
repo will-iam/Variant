@@ -8,9 +8,7 @@ towatch = "rho" #"u"; # "rho"
 axis = args.axis
 
 # Check if refence results exist.
-cases_dir = os.path.join(config.workspace, 'empty_cases')
-case_path = os.path.join(cases_dir, args.project_name, args.case, 'ref', args.precision, args.rounding_mode)
-#case_path = "tmp/eulerRuO1/nSod8192/final/"
+case_path = os.path.join(config.cases_dir, args.project_name, args.case, 'ref', args.precision, args.rounding_mode)
 
 print("Looking for results in %s ..." % case_path)
 if not os.path.isdir(case_path):
@@ -46,6 +44,7 @@ for q in quantityListName:
     print("Time to load quantity", q, "%s second(s)" % int((end - start)))
 
 if axis == 'x':
+    axis_title="y = 0"
     Npoints = Nx
     x = np.linspace(0., Nx * float(dx), Nx)
     qty = np.zeros(Nx)
@@ -60,6 +59,7 @@ if axis == 'x':
             qty[i] = data['rho'][i][0]
 
 elif axis == 'y':
+    axis_title="x = 0"
     Npoints = Ny
     x = np.linspace(0., Ny * float(dy), Ny)
     qty = np.zeros(Ny)
@@ -74,6 +74,7 @@ elif axis == 'y':
             qty[i] = data['rho'][0][i]
 
 elif axis == 'r':
+    axis_title="y = x"
     Npoints = Ny
     x = np.linspace(0., Ny * float(dy), Ny)
     qty = np.zeros(Ny)
@@ -115,7 +116,7 @@ ax1.plot(x, values[towatch], linewidth=1.5, color=color, linestyle='dashed', lab
 ax1.set_ylabel(towatch, color=color)
 ax1.grid()
 #ax1.axis([0, 1, 0, 1.1])
-ax1.set(xlabel='x', title='%s value on y = 0' % towatch)
+ax1.set(xlabel='x', title='%s value on %s' % (towatch, axis_title))
 ax1.tick_params(axis='y', labelcolor=color)
 ax1.legend()
 
@@ -125,6 +126,8 @@ ax2.plot(x, np.abs(qty - values[towatch]), linewidth=1.5, color=color, label="er
 ax2.set_ylabel('err.', color=color)  # we already handled the x-label with ax1
 ax2.tick_params(axis='y', labelcolor=color)
 
+if not os.path.exists("plot"):
+    os.makedirs("plot")
 outputCurve("plot/simul-%s-%s-%s-%s.dat" % (args.project_name, args.case, args.precision, args.rounding_mode), x, qty)
 outputCurve("plot/exact-%s-%s-%s-%s.dat" % (args.project_name, args.case, args.precision, args.rounding_mode), x, qty)
 outputCurve("plot/err-%s-%s-%s-%s.dat" % (args.project_name, args.case, args.precision, args.rounding_mode), x, np.abs(qty - values[towatch]))

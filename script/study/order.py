@@ -5,7 +5,7 @@ sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
 import error_norm
 
 # Find all results you can get.
-cases_dir = os.path.join(config.workspace, 'empty_cases')
+cases_dir = config.cases_dir
 case_dir_path = os.path.join(cases_dir, args.project_name)
 
 print("Looking for results in %s for case like %s ..." % (case_dir_path, args.case))
@@ -14,7 +14,6 @@ rawCaseList = [d for d in os.listdir(case_dir_path)
     if os.path.isdir(os.path.join(case_dir_path, d)) and d.startswith(args.case)]
 
 q_name = "rho"
-
 
 # Compute order values
 rounding = ['average', 'upward', 'downward', 'toward_zero', 'farthest', 'nearest']
@@ -32,8 +31,8 @@ for m in rounding:
                 err = error_norm.compute(f, ["rho"], args.solver)
                 if err == None:
                     continue
-
-                print err
+                    
+                print("err =", err)
                 error_norm.save(f, err)
                 order[m][o][err['N']] = err['rho']
             else:
@@ -86,6 +85,10 @@ if len(sigma['float']) > 0 or  len(sigma['double']) > 0:
 '''
 
 p = 'float' if len(order['nearest']['float']) > len(order['nearest']['double']) else 'double'
+if len(order['nearest'][p]) == 0:
+    print("No results found.")
+    sys.exit(1)
+
 first_N = int(sorted(order['nearest'][p])[0])
 last_N = int(sorted(order['nearest'][p])[-1])
 first_value = float(order['nearest'][p][first_N])

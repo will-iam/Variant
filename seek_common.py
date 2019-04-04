@@ -32,10 +32,9 @@ vi_attrnames = [t[0] for t in vi_dtypes]
 
 parser = argparse.ArgumentParser(description="Performance measures", prefix_chars='-')
 parser.add_argument("project_name", type = str, help = "Name of scheme")
-parser.add_argument("-c", type = str, help = "Case to test", required=True)
+parser.add_argument("--case", type = str, help = "Case to test", required=True)
 parser.add_argument("--machine", type = str, help = "Hostname of the test", default='unknown')
-parser.add_argument("--core_per_node", type = int, help = "Number of procs per node", default=1)
-parser.add_argument("--max_core_number", type = int, help = "Max. number of procs", default=1)
+parser.add_argument("--core", type = int, help = "Max. number of cores available", default=1)
 parser.add_argument("--nocompile", action='store_true', default=False, help = "Never compiles project before calling it")
 parser.add_argument("--clean-compile", action='store_true', default=False, help = "Clean SCons compilation file")
 parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
@@ -54,7 +53,7 @@ parser.add_argument("--verrou", type = str, default='', help = "Enable verrou to
 args = parser.parse_args()
 
 # Get case names from all directories in case/project_name/
-case_name = args.c
+case_name = args.case
 engineOptionDict = {
 'project_name': args.project_name,
 'compiler': 'mpi',
@@ -65,16 +64,16 @@ engineOptionDict = {
 'vtune': args.vtune,
 'gdb' : args.gdb,
 'valgrind' : args.valgrind,
-'node_number' : int(np.ceil(float(args.max_core_number) /args.core_per_node)),
+'node_number' : int(np.ceil(float(args.core) /config.core_per_node)),
 'verrou' : None if not args.verrou else args.verrou
 }
 
 # Define execution parameters
-nTotalCores = args.max_core_number
-nCoresPerNode = args.core_per_node
+nTotalCores = args.core
+nCoresPerNode = config.core_per_node
 
 # Define les min/max SDDs
-minSdd = int(np.log2(nTotalCores // nCoresPerNode))
+minSdd = int(np.log2(nTotalCores // nCoresPerNode)) if nTotalCores >= nCoresPerNode else nTotalCores
 maxSdd = int(np.log2(nTotalCores)) + 1
 
 # Clean compile if requested.

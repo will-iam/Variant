@@ -17,9 +17,13 @@ parser.add_argument("project_name", type = str, help = "Name of scheme")
 parser.add_argument("--case", type = str, help = "Case to visualize", required=True)
 parser.add_argument("--rounding-mode", type = str, help = "Rounding mode searched", default='nearest', required=False)
 parser.add_argument("--precision", type = str, help = "Precision searched", default='double', required=False)
-parser.add_argument("--solver", type = str, help = "Exact Solver", default='sod', required=False)
+parser.add_argument("--solver", type = str, help = "Exact Solver", required=True)
 parser.add_argument("--axis", type = str, help = "Axis along which you expect the solution", default='x', required=False)
 args = parser.parse_args()
+
+if args.solver not in ['sod', 'sedov', 'noh']:
+    print("Cannot find exact solver %s" % args.solver)
+    sys.exit(1)
 
 def outputCurve(filename, x, y):
     if len(x) != len(y):

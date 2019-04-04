@@ -5,7 +5,7 @@ import __future__
 from common import *
 
 # Check if refence results exist.
-cases_dir = os.path.join(config.workspace, 'empty_cases', args.project_name, args.case)
+cases_dir = os.path.join(config.cases_dir, args.project_name, args.case)
 ref_path = os.path.join(cases_dir, 'ref', args.precision, args.rounding_mode)
 print("Looking for results in %s ..." % ref_path)
 
@@ -21,7 +21,7 @@ if not os.path.isfile(os.path.join(ref_path, 'rho.dat')):
 sys.path.append(cases_dir)
 import chars
 quantityListName = chars.quantityList
-print quantityListName
+print(quantityListName)
 
 data = dict()
 uid_to_coords = dict()
@@ -42,7 +42,6 @@ Ek = np.zeros((Nx, Ny))
 Ei = np.zeros((Nx, Ny))
 rho_1D = np.zeros(Nx)
 for i in range(Nx):
-    rho_1D[i] = data['rho'][i][0]
     for j in range(Ny):
         if data['rho'][i][j] == 0.:
             continue
@@ -55,15 +54,21 @@ for i in range(Nx):
 gamma = 1.4
 npts = 500
 if args.solver == 'sod':
+    for i in range(Nx):
+        rho_1D[i] = data['rho'][i][0]
+    exact_title='Rho value on y = 0'
     sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
     from sod import solve
     positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
                                            geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=npts)
 
 if args.solver == 'sedov':
+    for i in range(Nx):
+        rho_1D[i] = data['rho'][i][i]
+    exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
-    values = solve(t=1.2, gamma=gamma, npts=npts)
+    values = solve(t=1.2, gamma=gamma, xpos=x)
 
 # Now show them.
 fig = plt.figure(0, figsize=(9, 6))
@@ -75,11 +80,11 @@ fig.colorbar(cf, ax=ax0)
 ax0.set_title('rho contourf with levels')
 ax0.axis('tight')
 
-########## rho 1D border ################
+########## rho 1D vs exact ################
 ax1 = fig.add_subplot(223)
 ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
 plt.plot(values['x'], values['rho'], linewidth=1.5, color='r', linestyle='dashed', label="exact")
-ax1.set(xlabel='x', ylabel='density', title='Rho value on y = 0')
+ax1.set(xlabel='x', ylabel='density', title=exact_title)
 ax1.grid()
 #ax1.axis([0, 1, 0, 1.1])
 #ax1.axis('tight')

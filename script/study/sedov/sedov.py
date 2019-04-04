@@ -167,5 +167,5 @@ def solve(t, gamma, xpos):
 if __name__=='__main__':
     res = solve(1.0, 1.4, 100)
     for i in range(0,100):
-        print i, res['x'][i], res['rho'][i]
-    print res['r_s']
+        print(i, res['x'][i], res['rho'][i])
+    print(res['r_s'])
