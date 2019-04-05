@@ -8,5 +8,5 @@ python3 seek_order.py eulerRuO1 --case nSedov --core 2 --fastref
 
 // Some post-process script
 python3 script/study/visualize.py eulerRuO1 --case nSedov256x256 --solver sedov
-python3 script/study/precision.py eulerRuO1 --case nSedov256x256 --solver sedov --axis r
+python3 script/study/plot.py eulerRuO1 --case nSedov256x256 --solver sedov --axis r --quant energy
 python3 script/study/order.py eulerRuO1 --case nSedov --solver sedov

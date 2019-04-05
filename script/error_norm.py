@@ -30,7 +30,7 @@ def load(err_path):
     return err_list
 
 
-def compute(data_path, qty_name_list, solver = 'sod'):
+def compute(data_path, qty_name_list, solver):
     """
     Compute L^2 error between a solution in path and exact Sod solution 1D.
     """
@@ -61,7 +61,6 @@ def compute(data_path, qty_name_list, solver = 'sod'):
     result = {'N' : Nx*Ny}
     # Must load rho in any case.
     start = timer()
-
     rho = np.zeros(Nx)
     counter = 0
     with open(os.path.join(data_path, 'rho.dat'), 'r') as quantity_f:
@@ -103,5 +102,4 @@ def compute(data_path, qty_name_list, solver = 'sod'):
         print("Time to load quantity", q_name, "of %s elements" % (Nx * Ny), "%s second(s)" % int((end - start)))
         result[q_map[q_name]] = np.linalg.norm((q - values[q_map[q_name]]), ord=2) / Nx
     '''
-
     return result

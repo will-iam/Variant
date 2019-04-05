@@ -9,7 +9,7 @@ qname = "rho" #"u"; # "rho"
 floatType = np.float64 if args.precision == 'double' else np.float32
 
 # Check if refence results exist.
-cases_dir = os.path.join(config.workspace, 'empty_cases', args.project_name, args.case)
+cases_dir = os.path.join(config.cases_dir, args.project_name, args.case)
 case_path_ref = os.path.join(cases_dir, 'ref', args.precision, args.rounding_mode)
 case_path_tmp = os.path.join('tmp', args.project_name, args.case, 'final')
 

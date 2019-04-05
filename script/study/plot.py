@@ -4,7 +4,7 @@
 import __future__
 from common import *
 
-towatch = "rho" #"u"; # "rho"
+towatch = args.quant #"energy" #"u"; # "rho"
 axis = args.axis
 
 # Check if refence results exist.
@@ -85,7 +85,7 @@ elif axis == 'r':
             qty[i] = np.sqrt((ux**2. + uy**2.) / 2.)
     elif towatch == "energy":
         for i in range(Ny):
-            qty[i] = data['rhouE'][i][i] / data['rho'][i][i]
+            qty[i] = data['rhoE'][i][i] / data['rho'][i][i]
     elif towatch == "rho":
         for i in range(Ny):
             qty[i] = data['rho'][i][i]
@@ -100,12 +100,6 @@ if args.solver == 'sedov':
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
     values = solve(t=1.0, gamma=gamma, xpos=x)
-
-"""
-import error_norm
-err = error_norm.compute(case_path, ["rho"], args.solver)
-print 'err: ', err['rho']
-"""
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)
