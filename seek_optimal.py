@@ -5,7 +5,6 @@ import __future__
 import sys
 import itertools
 from seek_common import *
-import script.compiler as compiler
 
 
 testList = list()

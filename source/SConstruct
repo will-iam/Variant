@@ -96,8 +96,6 @@ if compiler == 'mpi':
 #   -I$MPI_INCDIR -L$MPI_LIBDIR
 #    mycflags.extend(['-I/opt/mpi/openmpi-icc/2.0.4/include'])
 #    mylinkflags.extend(['-L/opt/mpi/openmpi-icc/2.0.4/lib', '-lmpi', '-lmpi_cxx'])
-    # And... needed with intel too!
-    #if config.mpi_build == 'linux':
     mylinkflags.append('-pthread')
     print 'We compile with MPI compiler'
 

@@ -63,8 +63,15 @@ class Engine:
         cmd = list()
         # Command base: mpirun specified in config file.
         if self._compiler == 'mpi':
-            cmd = cmd + config.mpi_RUN.split(' ')
-            cmd = cmd + ['-hostfile', 'hostfile', '-np', str(mpi_nprocs)]
+            mpi_opt = []
+            for x in  config.mpi_RUN.split(' '):
+                if x == '$mpi_nprocs':
+                    mpi_opt.append(str(mpi_nprocs))
+                elif x == '$ncores':
+                    mpi_opt.append(str(ncores))
+                else:
+                    mpi_opt.append(x)
+            cmd = cmd + mpi_opt
 
         if self._gdb:
             #cmd = cmd + ['xterm', '-e', 'gdb', '--args']

@@ -19,7 +19,7 @@ import config
 from script.build_case import build_case
 import script.rio as io
 import script.sdd as sdd
-import script.compiler as compiler
+from script.engine import *
 from script.analytics import compare_data
 
 COLOR_BLUE = '\x1b[1;36m'
@@ -99,7 +99,7 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
 
     # Compile (if needed) engine and call it
     print(COLOR_BLUE + "Compiling engine" + COLOR_ENDC)
-    engine = compiler.Engine(engineOptionDict)
+    engine = Engine(engineOptionDict)
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
     engine.run(input_path, ref_path, 1, 1, 1)
@@ -166,7 +166,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     # Compile (if needed) engine and call it
     print(COLOR_BLUE + "Compiling engine" + COLOR_ENDC)
-    engine = compiler.Engine(engineOptionDict, engineOptionDict['must_compile'])
+    engine = Engine(engineOptionDict, engineOptionDict['must_compile'])
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
     run_option = [] if compare_with_ref == True or fastref == True or engineOptionDict['verrou'] != None else ['--dry']
