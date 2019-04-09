@@ -80,7 +80,7 @@ int Engine::main(int argc, char** argv) {
 
     if (_MPI_rank == 0) {
 
-#ifndef NDEBUG
+        #ifndef NDEBUG
         cout << Console::_yellow << "Rules for developer:" << endl;
         cout << "\t- no Warnings." << endl;
         cout << "\t- no cast of any sort (dynamic, static, const, reinterpret, ...)." << endl;
@@ -89,16 +89,26 @@ int Engine::main(int argc, char** argv) {
         cout << "\t- think simple." << endl;
         cout << "\t- think modular: encapsulate as much as possible and put every member private." << endl;
         cout << "\t- and most important ......... think category theory." << Console::_normal << endl;
-#endif
+        #endif
+
+        // std::cout << "max float" << std::numeric_limits<float>::digits << std::endl;
+        // std::cout << "max float" << std::numeric_limits<float>::digits10 << std::endl;
+        // std::cout << "max float" << std::numeric_limits<float>::max_digits10 << std::endl;
+        // std::cout << "max double" << std::numeric_limits<double>::max_digits10 << std::endl;
+        // std::cout << std::scientific << std::hexfloat
+
 
         #if defined (PRECISION_FLOAT)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "float." << Console::_normal << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "float(" << Number::max_digits10 << ")." << std::endl;
         #endif
         #if defined (PRECISION_DOUBLE)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "double." << Console::_normal << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "double(" << Number::max_digits10 << ")." << Console::_normal << std::endl;
         #endif
         #if defined (PRECISION_LONG_DOUBLE)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "long double." << Console::_normal << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "long double(" << Number::max_digits10 << ")." << Console::_normal << std::endl;
+        #endif
+        #if defined (PRECISION_QUAD)
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "quad(" << Number::max_digits10 << ")." << Console::_normal << std::endl;
         #endif
 
         std::cout << Console::_blue;

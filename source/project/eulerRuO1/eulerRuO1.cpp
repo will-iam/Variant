@@ -165,9 +165,9 @@ int EulerRuO1::start() {
     return 0;
 }
 
+// Kahan algorithm.
 void fastTwoSum(real a, real b, real& c, real& d) {
-    // Kahan algorithm.
-    if (std::abs(b) > std::abs(a))
+    if (rabs(b) > rabs(a))
         std::swap(a,b);
 
     c = a + b;
@@ -270,12 +270,14 @@ real EulerRuO1::computeSoundSpeed(const real& rho, const real& P) {
     real c = sqrt(_gamma * P / rho);
     assert(c >= 0.);
 
-    if (std::abs(c * c - _gamma * P / rho) > std::numeric_limits<real>::max_digits10) {
-        std::cout << std::scientific << std::setprecision(std::numeric_limits<real>::max_digits10);
+    /*
+    if (rabs(c * c - _gamma * P / rho) != 0.0) {
+        std::cout << std::scientific << std::setprecision(Number::max_digits10);
         std::cout << "c * c: " << c * c << ", _gamma * P / rho: " << _gamma * P / rho << std::endl;
         std::cout << "c: " << c << ", sqrt(_gamma * P / rho): " <<  sqrt(_gamma * P / rho) << std::endl;
         assert(c < 0.);
     }
+    */
 
     return c;
 }
@@ -324,10 +326,10 @@ void EulerRuO1::speed(const SDShared& sds, const std::map< std::string, Quantity
         pressure.set0(pressure_center, k_center);
         const real c = computeSoundSpeed(rho_center, pressure_center);
 
-        const real sx_center = std::max(std::abs(ux + c), std::abs(ux - c));
+        const real sx_center = std::max(rabs(ux + c), rabs(ux - c));
         sx.set0(sx_center, k_center);
 
-        const real sy_center = std::max(std::abs(uy + c), std::abs(uy - c));
+        const real sy_center = std::max(rabs(uy + c), rabs(uy - c));
         sy.set0(sy_center, k_center);
 
         if (sdsUxMax < sx_center)

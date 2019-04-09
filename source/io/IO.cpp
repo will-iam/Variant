@@ -5,18 +5,6 @@
 #include <iomanip>
 #include <limits>
 
-void stor(std::string tmpStr, float& target) {
-    target = std::stof(tmpStr);
-}
-
-void stor(std::string tmpStr, double& target) {
-    target = std::stod(tmpStr);
-}
-
-void stor(std::string tmpStr, long double& target) {
-    target = std::stold(tmpStr);
-}
-
 int IO::loadSDDInfo(std::string directory, Domain& domain) {
 
     #ifndef SEQUENTIAL
@@ -174,7 +162,9 @@ int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
             assert(BCtype == 'D' or BCtype == 'N');
             for (int i = 0; i < qty_number; ++i) {
                 std::string name; iss >> name;
-                real value; iss >> value;
+                // Read thrue string for quad.
+                std::string value_as_string; iss >> value_as_string;
+                real value; stor(value_as_string, value);
                 qtyValue[name] = value;
             }
         }
@@ -198,21 +188,7 @@ int IO::writeQuantity(std::string directory, std::string quantityName, const Dom
         return 1;
     }
 
-    // std::cout << "max float" << std::numeric_limits<float>::digits << std::endl;
-    // std::cout << "max float" << std::numeric_limits<float>::digits10 << std::endl;
-    // std::cout << "max float" << std::numeric_limits<float>::max_digits10 << std::endl;
-    // std::cout << "max double" << std::numeric_limits<double>::max_digits10 << std::endl;
-    // std::cout << std::scientific << std::hexfloat
-    #if defined(PRECISION_FLOAT)
-        ofs << std::setprecision(std::numeric_limits<float>::max_digits10);
-    #endif
-    #if defined(PRECISION_DOUBLE)
-        ofs << std::setprecision(std::numeric_limits<double>::max_digits10);
-    #endif
-    #if defined(PRECISION_LONG_DOUBLE)
-        ofs << std::setprecision(std::numeric_limits<long double>::max_digits10);
-    #endif
-
+    ofs << std::setprecision(std::numeric_limits<real>::max_digits10);
     for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
         for (unsigned int j = 0; j < sdd.getSizeY(); ++j) {
             ofs << i << " " << j << " " << sdd.getValue(quantityName, i, j) << std::endl;

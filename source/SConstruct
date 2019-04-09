@@ -138,14 +138,18 @@ elif precision == 'float':
 elif precision == 'long_double':
     mycflags.append('-DPRECISION_LONG_DOUBLE')
 
+elif precision == 'quad':
+	mycflags.append('-DPRECISION_QUAD')
+	env.Append(LIBS = ['quadmath'])
+
 # Add this flag to compile in pure sequential mode.
 if compiler != 'mpi':
     mycflags.append('-DSEQUENTIAL')
 
 env.Append(CXXFLAGS= '-std='+std)
 #append the user's additional compile flags
-env.Append(CXXFLAGS= mycflags)
-env.Append(LINKFLAGS= mylinkflags)
+env.Append(CXXFLAGS = mycflags)
+env.Append(LINKFLAGS = mylinkflags)
 
 #make sure the sconscripts can get to the variables
 Export('mymode','compiler','project','lib','precision')
