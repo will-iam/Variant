@@ -60,15 +60,22 @@ class Engine {
     real reduceMin(const real& v);
 
   protected:
+    void printStatus(bool force = false);
+    
     std::string _initpath;
     std::string _outputpath;
     int _testFlag;
     int _dryFlag;
 
-    real _T;
+    real _t, _T;
     real _CFL;
 
-    Timer _timer;
+
+    // Members for profiling
+    Timer _timerIteration;
+    Timer _timerComputation;
+    Timer _timerGlobal;
+
     int _MPI_rank;
 
     std::vector<real> _SDS_uxmax;
@@ -78,6 +85,8 @@ class Engine {
     real _Domain_uxmax;
     real _Domain_uymax;
     unsigned int _nIterations;
+  private:
+    int iPrintStatus = 0;
 };
 
 #endif

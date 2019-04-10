@@ -88,17 +88,12 @@ class Hydro4x1: public Engine {
     real _dx;
     real _dy;
     real _dt;
-    real _t;
 
     // Physical constants
     real _gamma;
 
     // The Famous Domain
     Domain* _domain;
-
-    // Members for profiling
-    Timer _timerIteration;
-    Timer _timerComputation;
 };
 
 #endif

@@ -75,7 +75,7 @@ class EulerRuO1: public Engine {
     real _dx;
     real _dy;
     real _dt;
-    real _t, _t_err;
+    real _t_err;
     real _last_dt;
     real _min_dt;
 
@@ -84,10 +84,6 @@ class EulerRuO1: public Engine {
 
     // The Famous Domain
     Domain* _domain;
-
-    // Members for profiling
-    Timer _timerIteration;
-    Timer _timerComputation;
 
     /*!
      * @brief Writes solution at given time to a text file

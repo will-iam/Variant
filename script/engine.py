@@ -91,8 +91,11 @@ class Engine:
             else:
                 # --rounding-mode=<random|average|upward|downward|toward_zero|farthest|float|nearest>
                 #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
-                #os.environ['VERROU_ROUNDING_MODE'] = "random"
-                #os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
+                
+                if self._precision != 'quad':
+                    os.environ['VERROU_ROUNDING_MODE'] = self._verrou
+                    os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
+
                 cmd = ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex'] + cmd
         '''
         # to add environment variable visible in this process + all children:

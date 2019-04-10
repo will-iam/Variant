@@ -99,22 +99,40 @@ int Engine::main(int argc, char** argv) {
 
 
         #if defined (PRECISION_FLOAT)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "float(" << Number::max_digits10 << ")." << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "float (" << Number::max_digits10 << " decimal digits)."  << Console::_normal << std::endl;
         #endif
         #if defined (PRECISION_DOUBLE)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "double(" << Number::max_digits10 << ")." << Console::_normal << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "double (" << Number::max_digits10 << " decimal digits)." << Console::_normal << std::endl;
         #endif
         #if defined (PRECISION_LONG_DOUBLE)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "long double(" << Number::max_digits10 << ")." << Console::_normal << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "long double (" << Number::max_digits10 << " decimal digits)." << Console::_normal << std::endl;
         #endif
         #if defined (PRECISION_QUAD)
-        std::cout << Console::_green << "Precision set to " << Console::_bold << "quad(" << Number::max_digits10 << ")." << Console::_normal << std::endl;
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "quad (" << Number::max_digits10 << " decimal digits)." << Console::_normal << std::endl;
         #endif
 
         std::cout << Console::_blue;
-        std::cout << "Show cosinus value to test libm exclusion: << -3.9998531498835127e-01 = " << std::scientific;
-        std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
-        std::cout << Console::_bold << cos(42.) << std::endl;
+        std::cout << "Show cosinus and sqrt values to test rounding mode:" << std::endl;
+        std::cout << std::setprecision(Number::max_digits10) << std::scientific;
+
+        #if defined (PRECISION_FLOAT)
+        std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(42.) << Console::_normal << std::endl;
+        std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(2.) << Console::_normal <<  std::endl;
+        #endif
+
+        #if defined (PRECISION_DOUBLE)
+        std::cout << Console::_blue << "-3.99985314988351270e-01" << Console::_bold << " = " << rcos(42.) << Console::_normal << std::endl;
+        std::cout << Console::_blue << "1.41421356237309515e+00" << Console::_bold << " = " << rsqrt(2.) << Console::_normal <<  std::endl;
+        #endif
+
+        #if defined (PRECISION_QUAD)
+        std::cout << Console::_blue << "-3.999853149883512939547073371772e-01" << Console::_bold << " = " << rcos(42.) << Console::_normal << std::endl;
+        std::cout << Console::_blue << "1.414213562373095048801688724210e+00" << Console::_bold << " = " << rsqrt(2.) << Console::_normal <<  std::endl;
+        #endif
+
+        for (real x = 0.; x < 17.0; x += 0.11)
+            std::cout << x << "-> " << rsqrt(x) << std::endl;
+
         std::cout << std::setprecision(2) << std::fixed << Console::_normal;
         //std::cout << std::setprecision(6) << std::defaultfloat << Console::_normal;
         /*
@@ -151,7 +169,7 @@ int Engine::main(int argc, char** argv) {
         TimeStamp::printLocalTime();
         cout << ": Initialize Engine" << Console::_normal << endl;
 
-        _timer.begin();
+        _timerGlobal.begin();
     }
 
     // Check return of initialize, if ok nothing to do
@@ -167,17 +185,17 @@ int Engine::main(int argc, char** argv) {
     #endif
     if (_MPI_rank == 0) {
 
-        _timer.end();
+        _timerGlobal.end();
 
-        _timer.reportLast();
+        _timerGlobal.reportLast();
 
-        perfResults["initTime"] = _timer.getLastSteadyDuration();
+        perfResults["initTime"] = _timerGlobal.getLastSteadyDuration();
 
         cout << Console::_green;
         TimeStamp::printLocalTime();
         cout << ": Engine starts" << Console::_normal << endl;
 
-        _timer.begin();
+        _timerGlobal.begin();
     }
 
     // Check return of start, if ok nothing to do
@@ -196,19 +214,19 @@ int Engine::main(int argc, char** argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     #endif
     if (_MPI_rank == 0) {
-        _timer.end();
+        _timerGlobal.end();
         cout << Console::_green;
         TimeStamp::printLocalTime();
         cout << ": Engine stopped normally." << endl;
-        _timer.reportLast();
+        _timerGlobal.reportLast();
 
-        perfResults["loopTime"] = _timer.getLastSteadyDuration();
+        perfResults["loopTime"] = _timerGlobal.getLastSteadyDuration();
         perfResults["nIterations"] = _nIterations;
 
 	    cout << Console::_green;
 	    TimeStamp::printLocalTime();
 	    cout << ": Engine finalizes" << Console::_normal << endl;
-	    _timer.begin();
+	    _timerGlobal.begin();
     }
 
     finalize();
@@ -217,9 +235,9 @@ int Engine::main(int argc, char** argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     #endif
     if (_MPI_rank == 0) {
-	    _timer.end();
-	    _timer.reportLast();
-	    perfResults["finalizeTime"] = _timer.getLastSteadyDuration();
+	    _timerGlobal.end();
+	    _timerGlobal.reportLast();
+	    perfResults["finalizeTime"] = _timerGlobal.getLastSteadyDuration();
 	    IO::writePerfResults(_outputpath, perfResults);
     }
 
@@ -281,3 +299,16 @@ real Engine::reduceMin(const real& v) {
     return v;
     #endif
 }
+
+void Engine::printStatus(bool force) {
+    if (_MPI_rank != 0)
+        return;
+
+    float p = _t / _T * 10.0;
+    if(p >= iPrintStatus || force == true) {
+        iPrintStatus = int(p) + 1;
+        std::cout << "[0] - " << _nIterations << ": Computation done = " << std::setprecision(0) << std::fixed << (10. * p) << "% ";
+        _timerIteration.reportTotal();
+    }
+}
+

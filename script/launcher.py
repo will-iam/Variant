@@ -9,7 +9,7 @@ import numpy as np
 
 sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sedov'))
 sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sod'))
-import script.error_norm
+from script.error_norm import *
 from shutil import copyfile, copytree, rmtree
 from timeit import default_timer as timer
 
@@ -119,6 +119,11 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
     
+    # Check possible tests
+    if engineOptionDict['precision'] == 'quad' and engineOptionDict['verrou'] != 'nearest':
+        print('Cannot change default rounding mode for quad precision (lib is excluded).')
+        sys.exit(1)
+
     # Define paths
     project_name = engineOptionDict['project_name']
     case_path = get_case_path(project_name, case_name)
@@ -212,10 +217,10 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             sdd.merge_quantity(output_path, ref_path, q_str)
 
         # Then compute the errors.
-        err = error_norm.compute(ref_path, qty_name_list, test['solver'])
+        err = compute(ref_path, qty_name_list, test['solver'])
     
         # Save errors in ref path.
         if err is not None:
-            error_norm.save(ref_path, err)
+            save(ref_path, err)
 
     return output_path, int((end - start) * 1000)

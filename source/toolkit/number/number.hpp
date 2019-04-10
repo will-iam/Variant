@@ -15,6 +15,8 @@
     typedef float real;
     typedef std::numeric_limits<float> oss_nl;
     constexpr auto rabs = fabsf;
+    constexpr auto rcos = cosf;
+    constexpr auto rsqrt = sqrtf;
     inline void stor(std::string tmpStr, float& target) {
         target = std::stof(tmpStr);
     }
@@ -27,6 +29,8 @@
     typedef double real;
     typedef std::numeric_limits<double> oss_nl;
     constexpr auto rabs = fabs;
+    constexpr auto rcos = cos;
+    constexpr auto rsqrt = sqrt;
     inline void stor(std::string tmpStr, double& target) {
         target = std::stod(tmpStr);
     }
@@ -39,11 +43,13 @@
     typedef long double real;
     typedef std::numeric_limits<long double> oss_nl;
     constexpr auto rabs = fabsl;
+    constexpr auto rcos = cosl;
+    constexpr auto rsqrt = sqrtl;
     inline void stor(std::string tmpStr, long double& target) {
         target = std::stold(tmpStr);
     }
     #ifndef SEQUENTIAL
-    const MPI_Datatype MPI_REALTYPE = MPI_LONGDOUBLE;
+    const MPI_Datatype MPI_REALTYPE = MPI_LONG_DOUBLE;
     #endif
 #endif
 
@@ -54,12 +60,14 @@
     typedef __float128 real;
     typedef std::numeric_limits<__float128> oss_nl;
     constexpr auto rabs = fabsq;
+    constexpr auto rcos = cosq;
+    constexpr auto rsqrt = sqrtq;
     inline void stor(std::string tmpStr, __float128& target) {
         target = strtoflt128 (tmpStr.c_str(), NULL);
     }
 
     #ifndef SEQUENTIAL
-    const MPI_Datatype MPI_REALTYPE = MPI_REAL4;
+    const MPI_Datatype MPI_REALTYPE = MPI_REAL16;
     #endif
 
     inline std::ostream& operator<< (std::ostream& out, const __float128& x) {

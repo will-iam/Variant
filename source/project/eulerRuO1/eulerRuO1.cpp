@@ -105,14 +105,9 @@ int EulerRuO1::start() {
     MPI_Barrier(MPI_COMM_WORLD);
     #endif
 
-    int iPrint = 0;
     _nIterations = 0;
     while (_t < _T) {
-        if (_MPI_rank == 0 && _t / _T * 10.0 >= iPrint) {
-            iPrint = int(_t / _T * 10.0) + 1;
-            std::cout << "[0] - " << _nIterations << ": Computation done = " <<  _t / _T * 100.0 << "% ";
-            _timerIteration.reportTotal();
-        }
+        printStatus();
 
         _timerIteration.begin();
         // ----------------------------------------------------------------------
@@ -157,11 +152,7 @@ int EulerRuO1::start() {
         _timerIteration.end();
     }
 
-    if (_MPI_rank == 0) {
-        std::cout << "[0] - " << _nIterations << ": Computation done = " <<  _t / _T * 100.0 << "%, time: ";
-        _timerIteration.reportTotal();
-    }
-
+    printStatus(true);
     return 0;
 }
 
@@ -267,7 +258,7 @@ real EulerRuO1::computeSoundSpeed(const real& rho, const real& P) {
     assert(rho > 0.);
     assert(P >= 0.);
 
-    real c = sqrt(_gamma * P / rho);
+    real c = rsqrt(_gamma * P / rho);
     assert(c >= 0.);
 
     /*
