@@ -69,6 +69,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+.vscode
 
 # pyenv
 .python-version
@@ -125,3 +126,4 @@ model/data
 model/rapport
 cases/*/*/ref
 cases/*/*/init
+list.ex
