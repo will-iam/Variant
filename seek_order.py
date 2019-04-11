@@ -14,7 +14,7 @@ SDSratioList = [1.0] #[1.0, 4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
 engineOptionDict['precision'] = 'double'
-engineOptionDict['compiler'] = 'mpi'
+engineOptionDict['compiler'] = 'gnu'
 
 #xSizeList = [512]
 #xSizeList = [1024]

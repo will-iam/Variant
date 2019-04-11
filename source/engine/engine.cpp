@@ -129,10 +129,10 @@ int Engine::main(int argc, char** argv) {
         std::cout << Console::_blue << "-3.999853149883512939547073371772e-01" << Console::_bold << " = " << rcos(42.) << Console::_normal << std::endl;
         std::cout << Console::_blue << "1.414213562373095048801688724210e+00" << Console::_bold << " = " << rsqrt(2.) << Console::_normal <<  std::endl;
         #endif
-
+        /*
         for (real x = 0.; x < 17.0; x += 0.11)
             std::cout << x << "-> " << rsqrt(x) << std::endl;
-
+        */
         std::cout << std::setprecision(2) << std::fixed << Console::_normal;
         //std::cout << std::setprecision(6) << std::defaultfloat << Console::_normal;
         /*

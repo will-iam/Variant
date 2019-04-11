@@ -125,3 +125,5 @@ model/data
 model/rapport
 cases/*/*/ref
 cases/*/*/init
+list.ex
+
