@@ -115,13 +115,14 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
 def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref, forceref):
     # Check values for pure sequential test.
     if engineOptionDict['compiler'] != 'mpi':
-        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
+        #if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
+        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1:
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
     
     # Check possible tests
-    if engineOptionDict['precision'] == 'quad' and engineOptionDict['verrou'] != 'nearest':
-        print('Cannot change default rounding mode for quad precision (lib is excluded).')
+    if engineOptionDict['precision'] == 'quad' and engineOptionDict['verrou'] not in [None, 'nearest']:
+        print('Cannot change default rounding mode for %s with quad precision (lib is excluded).' % engineOptionDict['verrou'])
         sys.exit(1)
 
     # Define paths
