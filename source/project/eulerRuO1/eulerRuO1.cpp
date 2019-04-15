@@ -365,7 +365,6 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
     // Flux speed
     // s_x = a^n_{i+1/2, j} = max(max(|u_x^n_{i,j} + c^n_{i,j}|, |u_x^n_{i,j} - c^n_{i,j}|), max(|u_x^n_{i+1,j} + c^n_{i+1,j}|, |u_x^n_{i+1,j} - c^n_{i+1,j}|))
     // s_y = a^n_{i, j+1/2} = max(max(|u_y^n_{i,j} + c^n_{i,j}|, |u_y^n_{i,j} - c^n_{i,j}|), max(|u_y^n_{i,j+1} + c^n_{i,j+1}|, |u_y^n_{i,j+1} - c^n_{i,j+1}|))
-
    
     // Compute flux X
     const real kx = 0.5 * _dt / _dx;
@@ -471,8 +470,8 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
         rhou_y.set1(rhou_y_center - kx * rhou_y_flux_x - ky * rhou_y_flux_y, k_center);
         rhoE.set1(rhoE_center - kx * rhoE_flux_x  - ky * rhoE_flux_y, k_center);
 
-        /*
-        if (rhou_y.get1(k_center) != 0.) {
+        
+        if (rho.get1(k_center) < 0.) {
             std::cout << std::scientific << std::setprecision(std::numeric_limits<real>::max_digits10);
             std::cout << "ux_right: " <<  ux_right << ", rhou_y_right: " <<  rhou_y_right << " = " << ux_right * rhou_y_right  << std::endl;
             std::cout << "ux_left: " <<  ux_left << ", rhou_y_left: " <<  rhou_y_left << " = " << ux_left * rhou_y_left  << std::endl;
@@ -495,11 +494,16 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
             std::cout << "rhou_y_center: " <<  rhou_y_center << std::endl;
             std::cout << "rhou_y_bottom: " <<  rhou_y_bottom << std::endl;
             std::cout << "rhou_y_flux_y: " <<  rhou_y_flux_y << std::endl;
+            
+            std::cout << "rho_center: " <<  rho_center << std::endl;
+            std::cout << "kx * rho_flux_x: " <<  kx * rho_flux_x << std::endl;
+            std::cout << "ky * rho_flux_y: " <<  ky * rho_flux_y << std::endl;
+            std::cout << "rho.get1(k_center): " <<  rho.get1(k_center) << std::endl;
 
             std::cout << _nIterations << " - i: " <<  i << ", j:" << j << std::endl;
             std::cout << sds.getNumberBoundaryCells() << std::endl;
             exitfail(1);
-        } */
+        }
         
         /*
         if (rhou_y_flux_y > 0.) {
