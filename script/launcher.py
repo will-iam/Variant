@@ -9,7 +9,7 @@ import numpy as np
 
 sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sedov'))
 sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sod'))
-from script.error_norm import *
+import script.error_norm
 from shutil import copyfile, copytree, rmtree
 from timeit import default_timer as timer
 
@@ -115,16 +115,10 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
 def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref, forceref):
     # Check values for pure sequential test.
     if engineOptionDict['compiler'] != 'mpi':
-        #if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
-        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1:
+        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
     
-    # Check possible tests
-    if engineOptionDict['precision'] == 'quad' and engineOptionDict['verrou'] not in [None, 'nearest']:
-        print('Cannot change default rounding mode for %s with quad precision (lib is excluded).' % engineOptionDict['verrou'])
-        sys.exit(1)
-
     # Define paths
     project_name = engineOptionDict['project_name']
     case_path = get_case_path(project_name, case_name)
@@ -218,10 +212,10 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             sdd.merge_quantity(output_path, ref_path, q_str)
 
         # Then compute the errors.
-        err = compute(ref_path, qty_name_list, test['solver'])
+        err = error_norm.compute(ref_path, qty_name_list, test['solver'])
     
         # Save errors in ref path.
         if err is not None:
-            save(ref_path, err)
+            error_norm.save(ref_path, err)
 
     return output_path, int((end - start) * 1000)

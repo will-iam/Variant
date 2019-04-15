@@ -176,10 +176,11 @@ def write_quantity(output_dir, quant_name, uid_to_val):
     x = np.arange(len(uid_to_val))
     np.savetxt(os.path.join(output_dir, quant_name + '.dat'), np.c_[x, uid_to_val], fmt='%d\t%16.16g')
 
-def write_scheme_info(output_dir, T, CFL):
+def write_scheme_info(output_dir, T, CFL, gamma):
     with open(os.path.join(output_dir, 'scheme_info.dat'), 'w+') as f:
         f.write(str(T) + " ")
-        f.write(str(CFL) + "\n")
+        f.write(str(CFL) + " ")
+        f.write(str(gamma) + "\n")
 
 def write_exec_options(output_dir, nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads, nCommonSDS, nCoresPerSDD):
     with open(os.path.join(output_dir, 'exec_options.dat'), 'w+') as f:

@@ -79,9 +79,6 @@ class EulerRuO1: public Engine {
     real _last_dt;
     real _min_dt;
 
-    // Physical constants
-    real _gamma;
-
     // The Famous Domain
     Domain* _domain;
 

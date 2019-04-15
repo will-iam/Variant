@@ -52,7 +52,7 @@ class Engine {
      * @param T final time
      * @param CFL Courant-Friedrichs-Levy condition
      */
-    void setOptions(real T, real CFL);
+    void setOptions(real T, real CFL, real _gamma);
 
     void updateDomainUmax();
     void updateDomainUxmax();
@@ -69,7 +69,7 @@ class Engine {
 
     real _t, _T;
     real _CFL;
-
+    real _gamma;
 
     // Members for profiling
     Timer _timerIteration;

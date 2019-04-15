@@ -248,10 +248,11 @@ int Engine::main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-void Engine::setOptions(real T, real CFL) {
+void Engine::setOptions(real T, real CFL, real gamma) {
 
     _T = T;
     _CFL = CFL;
+    _gamma = gamma;
 }
 
 void Engine::updateDomainUmax() {

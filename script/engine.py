@@ -24,7 +24,7 @@ class Engine:
         if clean:
             self._clean(self._project_name, self._compiler, self._mode, self._precision, self._std)
         elif build:
-            self._build(self._project_name, self._compiler, self._mode, self._precision, self._std)
+            self._binary_path = self._build(self._project_name, self._compiler, self._mode, self._precision, self._std)
 
         program_file = self._project_name + '-' + self._mode + '-' + self._compiler + '-' + self._precision + '.exec'
         self._binary_path = os.path.join(config.workspace, program_file)
@@ -91,25 +91,8 @@ class Engine:
             else:
                 # --rounding-mode=<random|average|upward|downward|toward_zero|farthest|float|nearest>
                 #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
-                
-                if self._precision != 'quad': 
-                    f = open("list.ex", "w")
-                    ldd = subprocess.check_output(["ldd", self._binary_path])
-                    for lib in ldd.split():
-                        if 'libm' in str(lib) and "/" in str(lib):
-                            f.write("*\t%s\n" % lib.decode("utf-8"))
-                    
-                    ldd = subprocess.check_output(["ldd", "./lib/interlibmath.so"])
-                    for lib in ldd.split():
-                        if 'libquad' in str(lib) and "/" in str(lib):
-                            f.write("*\t%s\n" % lib.decode("utf-8"))
-
-                    f.close()
-                
-                    os.environ['VERROU_ROUNDING_MODE'] = self._verrou
-                    os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
-
-
+                #os.environ['VERROU_ROUNDING_MODE'] = "random"
+                #os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
                 cmd = ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex'] + cmd
         '''
         # to add environment variable visible in this process + all children:

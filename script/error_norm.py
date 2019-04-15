@@ -55,7 +55,15 @@ def compute(data_path, qty_name_list, solver):
         x = np.linspace(0., Nx * float(dx), Nx)
         values = solve(t=1.0, gamma=gamma, xpos=x)
 
+    if solver == 'noh':
+        from noh import solve
+        x = np.linspace(0., Nx * float(dx), Nx)
+        if Ny==1:
+            values = solve(t=0.6, gamma=5./3., ndim=1,npts=Nx)
+        if Ny>1:
+            values = solve(t=0.6, gamma=5./3., ndim=2,npts=Nx)
     end = timer()
+    
     print("Time to compute exact solution of %s elements" % len(values['rho']), "%s second(s)" % int((end - start)))
 
     result = {'N' : Nx*Ny}

@@ -64,12 +64,13 @@ int IO::loadSchemeInfo(std::string directory, Engine& engine) {
 
     std::getline(ifs, tmpStr, ' ');
     real T; stor(tmpStr, T);
-    std::getline(ifs, tmpStr);
+    std::getline(ifs, tmpStr, ' ');
     real CFL; stor(tmpStr, CFL);
-
+    std::getline(ifs, tmpStr);
+    real gamma; stor(tmpStr, gamma);
     ifs.close();
 
-    engine.setOptions(T, CFL);
+    engine.setOptions(T, CFL, gamma);
 
     return 0;
 }

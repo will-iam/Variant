@@ -43,7 +43,7 @@ def build_case(case_path, output_dir, force_build = False):
     io.make_sure_path_exists(output_dir)
 
     # Write scheme info
-    io.write_scheme_info(output_dir, case.T, case.CFL)
+    io.write_scheme_info(output_dir, case.T, case.CFL, case.gamma)
 
     # Write domain
     io.write_domain(output_dir, case.lx, case.ly, case.Nx, case.Ny, case.coords_to_uid, case.BClayer)

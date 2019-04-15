@@ -31,11 +31,8 @@ int EulerRuO1::init() {
     _dx = _domain->getdx();
     _dy = _domain->getdy();
 
-    // Physical constants
-    _gamma = 1.4;
-
     // Load scheme info and exec options
-    // (T, CFL, nSDD, nSDS)
+    // (T, CFL, _gamma, nSDD, nSDS)
     IO::loadSchemeInfo(_initpath, *this);
     IO::loadExecOptions(_initpath, *_domain);
     IO::loadSDDInfo(_initpath, *_domain);
