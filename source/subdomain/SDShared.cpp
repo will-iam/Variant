@@ -54,8 +54,7 @@ void SDShared::updateDirichletCells(Quantity<real>* quantity) const {
     const std::unordered_map< size_t, real>& dirichletValue = it->second;
 
     // This cannot be.
-    assert(!dirichletValue.size());
-
+    assert(dirichletValue.size() != 0);
 
     for (auto it = dirichletValue.begin(); it != dirichletValue.end(); ++it)
         qty.set0(it->second, it->first);
