@@ -48,7 +48,7 @@ for i in range(Nx):
         Ux[i][j] = data['rhou_x'][i][j] / data['rho'][i][j]
         Uy[i][j] = data['rhou_y'][i][j] / data['rho'][i][j]
         Ek[i][j] = np.sqrt(Ux[i][j]*Ux[i][j] + Uy[i][j]*Uy[i][j])
-        Ei[i][j] = data['rhoE'][i][j] / data['rho'][i][j]
+        Ei[i][j] = data['rhoE'][i][j] / data['rho'][i][j]-Ek[i][j]
 
 
 gamma = 1.4
@@ -69,6 +69,24 @@ if args.solver == 'sedov':
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
     values = solve(t=1.2, gamma=gamma, xpos=x)
+
+if args.solver == 'noh':
+    if Ny==1: 
+        for i in range(Nx):
+            rho_1D[i] = data['rho'][i][0]
+    if Ny>1:
+        for i in range(Nx):
+            rho_1D[i] = data['rho'][i][0]
+    exact_title='Rho value on y = x'
+    sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
+    from noh import solve
+    if Ny==1: 
+        values = solve(t=0.6, gamma=5./3., ndim=1,npts=Nx)
+    if Ny>1:
+       values = solve(t=0.6, gamma=5./3., ndim=2,npts=Nx)
+
+print("intégrale de rho sur tout le domaine (simulation) : ", sum(sum(data['rho'])/(Nx*Ny)))
+#print("intégrale de rho exacte : ", sum(sum(values['rho'])/(Nx*Ny)))
 
 # Now show them.
 fig = plt.figure(0, figsize=(9, 6))

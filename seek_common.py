@@ -435,7 +435,7 @@ def runTestBattery(engineOptionDict, testBattery):
     # Checkt that all cases do exist
     for cn in testBattery:
         if not case_exist(project_name, cn):
-            print('Test ', project_name, cn, "doesn't exist")
+            print('Test', project_name, cn, "doesn't exist")
             sys.exit(1)
 
     for cn, testList in testBattery.items():

@@ -127,3 +127,5 @@ model/rapport
 cases/*/*/ref
 cases/*/*/init
 list.ex
+caseinput
+caseref

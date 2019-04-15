@@ -2,6 +2,7 @@ import __future__
 from common import *
 sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
 sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
+sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
 import error_norm
 
 # Find all results you can get.

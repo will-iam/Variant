@@ -37,18 +37,18 @@ def get_ref_name(precision, rounding_mode):
 
     return os.path.join('ref', precision, rounding_mode)
 
-def get_case_path(project_name, case_name):
-    return os.path.join(config.cases_dir, project_name, case_name)
+def get_case_path_suffix(project_name, case_name):
+    return os.path.join(project_name, case_name)
 
 def case_exist(project_name, case_name):
-    case_path = get_case_path(project_name, case_name)
-    if not os.path.isdir(case_path):
+    case_ic = os.path.join(config.case_ic, get_case_path_suffix(project_name, case_name))
+    if not os.path.isdir(case_ic):
         return False
 
-    if not os.path.isfile(os.path.join(case_path, 'init.py')):
+    if not os.path.isfile(os.path.join(case_ic, 'init.py')):
         return False
 
-    if not os.path.isfile(os.path.join(case_path, 'chars.py')):
+    if not os.path.isfile(os.path.join(case_ic, 'chars.py')):
         return False
 
     return True
@@ -64,7 +64,7 @@ def check_test(test_path, ref_path, qties_to_compare, precision):
         print("Max error: %s" % np.max(results[2][2]))
     return results
 
-def create_ref(engineOptionDict, case_path, init_path, ref_path):
+def create_ref(engineOptionDict, icond_path, input_path, ref_path):
     '''
     test = dict()
     test['nSDD'] = (1, 1)
@@ -81,28 +81,28 @@ def create_ref(engineOptionDict, case_path, init_path, ref_path):
 
     # Build case.
     print(COLOR_BLUE + "Building reference case data" + COLOR_ENDC)
-    qty_name_list = build_case(case_path, init_path)
+    qty_name_list = build_case(icond_path, input_path)
 
     # Split case for SDDs
     print(COLOR_BLUE + "Splitting case data 1x1" + COLOR_ENDC)
-    input_path = sdd.split_case(init_path, 1, 1, qty_name_list)
+    split_path = sdd.split_case(input_path, 1, 1, qty_name_list)
 
     # Add exec options
-    io.write_exec_options(input_path, 1, 1, 1, 1, 'line', 1, 0, 1)
+    io.write_exec_options(split_path, 1, 1, 1, 1, 'line', 1, 0, 1)
 
     # Copying exec_options and scheme_info in input path too
-    copyfile(os.path.join(init_path, 'scheme_info.dat'), os.path.join(input_path, 'scheme_info.dat'))
+    copyfile(os.path.join(input_path, 'scheme_info.dat'), os.path.join(split_path, 'scheme_info.dat'))
 
     # Building output paths (the engine cannot create them itself)
     rmtree(ref_path, ignore_errors=True)
-    copytree(input_path, ref_path) # To get the same SDD directories.
+    copytree(split_path, ref_path) # To get the same SDD directories.
 
     # Compile (if needed) engine and call it
     print(COLOR_BLUE + "Compiling engine" + COLOR_ENDC)
     engine = Engine(engineOptionDict)
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    engine.run(input_path, ref_path, 1, 1, 1)
+    engine.run(split_path, ref_path, 1, 1, 1)
 
     # Merge back
     io.make_sure_path_exists(ref_path)
@@ -121,9 +121,10 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
     
     # Define paths
     project_name = engineOptionDict['project_name']
-    case_path = get_case_path(project_name, case_name)
-    init_path = os.path.join(case_path, "init")
-    ref_path = os.path.join(case_path, get_ref_name(engineOptionDict['precision'], engineOptionDict['verrou']))
+    case_path_suffix = get_case_path_suffix(project_name, case_name)
+    icond_path = os.path.join(config.case_ic, case_path_suffix)
+    input_path = os.path.join(config.case_input, case_path_suffix, "init")
+    refer_path = os.path.join(config.case_ref, case_path_suffix, get_ref_name(engineOptionDict['precision'], engineOptionDict['verrou']))
 
     # Delete reference to trigger a new computation.
     if forceref == True:
@@ -132,7 +133,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
     if fastref == True:
         # Don't check if you want only to build the ref.
         compare_with_ref = False
-        if os.path.isdir(ref_path):
+        if os.path.isdir(refer_path):
             print("Reference for case does exist already, return.")
             return None, 0
 
@@ -147,7 +148,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
-    qty_name_list = build_case(case_path, init_path)
+    qty_name_list = build_case(icond_path, input_path)
 
     # Manage number of SDD
     nSDD_X = test['nSDD'][0]
@@ -155,18 +156,18 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     # Split case for SDDs into tmp directory
     print(COLOR_BLUE + "Splitting case data " + str(nSDD_X) + "x" + str(nSDD_Y) + COLOR_ENDC)
-    input_path = sdd.split_case(init_path, nSDD_X, nSDD_Y, qty_name_list)
+    split_path = sdd.split_case(input_path, nSDD_X, nSDD_Y, qty_name_list)
 
     # Add exec options
-    io.write_exec_options(input_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], test['nCommonSDS'], test['nCoresPerSDD'])
+    io.write_exec_options(split_path, nSDD_X * nSDD_Y, nSDD_X, nSDD_Y, test['nSDS'], test['SDSgeom'], test['nThreads'], test['nCommonSDS'], test['nCoresPerSDD'])
 
     # Copying exec_options and scheme_info in input path too
-    copyfile(os.path.join(init_path, 'scheme_info.dat'), os.path.join(input_path, 'scheme_info.dat'))
+    copyfile(os.path.join(input_path, 'scheme_info.dat'), os.path.join(split_path, 'scheme_info.dat'))
 
     # Building output paths (the engine cannot create them itself)
     output_path = os.path.join(tmp_dir, project_name, case_name, "final")
     rmtree(output_path, ignore_errors=True)
-    copytree(input_path, output_path)
+    copytree(split_path, output_path)
 
     # Compile (if needed) engine and call it
     print(COLOR_BLUE + "Compiling engine" + COLOR_ENDC)
@@ -175,7 +176,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
     run_option = [] if compare_with_ref == True or fastref == True or engineOptionDict['verrou'] != None else ['--dry']
 
-    engine.run(input_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
+    engine.run(split_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
     end = timer()
 
     # Now, look for differences, if any.
@@ -186,10 +187,10 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             sdd.merge_quantity(output_path, output_path, q_str)
 
         # Getting/building reference for the case
-        create_ref(engineOptionDict, case_path, init_path, ref_path)
+        create_ref(engineOptionDict, icond_path, input_path, refer_path)
 
         # Now actually compare.
-        result, qty, error_data = check_test(output_path, ref_path, qty_name_list, engineOptionDict['precision'])
+        result, qty, error_data = check_test(output_path, refer_path, qty_name_list, engineOptionDict['precision'])
         if result:
             print("Compared with reference: OK.")
         else:
@@ -198,24 +199,24 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     if fastref == True:
         print(COLOR_BLUE + "Merging final data" + COLOR_ENDC)
-        io.make_sure_path_exists(ref_path)
-        sdd.merge_domain(output_path, ref_path)
+        io.make_sure_path_exists(refer_path)
+        sdd.merge_domain(output_path, refer_path)
         for q_str in qty_name_list:
-            sdd.merge_quantity(output_path, ref_path, q_str)
+            sdd.merge_quantity(output_path, refer_path, q_str)
 
     # Export error norm
     if engineOptionDict['verrou'] != None and engineOptionDict['verrou'] != 'nearest':
         print(COLOR_BLUE + "Merging final data" + COLOR_ENDC)
-        sdd.merge_domain(output_path, ref_path)
+        sdd.merge_domain(output_path, refer_path)
         # Merge everything first.
         for q_str in qty_name_list:
-            sdd.merge_quantity(output_path, ref_path, q_str)
+            sdd.merge_quantity(output_path, refer_path, q_str)
 
         # Then compute the errors.
-        err = error_norm.compute(ref_path, qty_name_list, test['solver'])
+        err = error_norm.compute(refer_path, qty_name_list, test['solver'])
     
         # Save errors in ref path.
         if err is not None:
-            error_norm.save(ref_path, err)
+            error_norm.save(refer_path, err)
 
     return output_path, int((end - start) * 1000)

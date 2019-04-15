@@ -29,7 +29,7 @@ if towatch == "u":
     else:
         quantityListName = ["rho", "rhou_" + axis] 
 elif towatch == "energy":
-    quantityListName = ["rho", "rhoE"] 
+    quantityListName = ["rho", "rhoE","rhou_x","rhou_y"] 
 
 
 data = dict()
@@ -53,7 +53,8 @@ if axis == 'x':
             qty[i] = data['rhou_x'][i][0] / data['rho'][i][0]
     elif towatch == "energy":
         for i in range(Nx):
-            qty[i] = data['rhoE'][i][0] / data['rho'][i][0]
+            #qty[i] = (data['rhoE'][i][0]) / data['rho'][i][0]
+            qty[i] = data['rhoE'][i][0] / data['rho'][i][0] -(data['rhou_x'][i][0] / data['rho'][i][0])**2/2
     elif towatch == "rho":
         for i in range(Nx):
             qty[i] = data['rho'][i][0]
@@ -68,7 +69,7 @@ elif axis == 'y':
             qty[i] = data['rhou_y'][0][i] / data['rho'][0][i]
     elif towatch == "energy":
         for i in range(Ny):
-            qty[i] = data['rhouE'][0][i] / data['rho'][0][i]
+            qty[i] = data['rhoE'][i][0] / data['rho'][i][0] -(data['rhou_y'][0][i] / data['rho'][i][0])**2/2
     elif towatch == "rho":
         for i in range(Ny):
             qty[i] = data['rho'][0][i]
@@ -85,7 +86,7 @@ elif axis == 'r':
             qty[i] = np.sqrt((ux**2. + uy**2.) / 2.)
     elif towatch == "energy":
         for i in range(Ny):
-            qty[i] = data['rhoE'][i][i] / data['rho'][i][i]
+            qty[i] = data['rhoE'][i][i] / data['rho'][i][i] -(data['rhou_y'][i][i] + data['rhou_y'][i][i] / data['rho'][i][i])**2/2
     elif towatch == "rho":
         for i in range(Ny):
             qty[i] = data['rho'][i][i]
@@ -100,6 +101,18 @@ if args.solver == 'sedov':
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
     values = solve(t=1.0, gamma=gamma, xpos=x)
+
+if args.solver == 'noh':
+    sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
+    from noh import solve
+    if Ny==1:
+        ndim=1
+    if Ny>1:
+        ndim=2
+    values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=ndim)
+
+print("intégrale exacte de",towatch," : ", sum(values[towatch]/Nx))
+print("intégrale simulation de",towatch," : ", sum(qty/Nx))
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)
