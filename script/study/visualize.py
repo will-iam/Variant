@@ -5,8 +5,8 @@ import __future__
 from common import *
 
 # Check if refence results exist.
-cases_dir = os.path.join(config.cases_dir, args.project_name, args.case)
-ref_path = os.path.join(cases_dir, 'ref', args.precision, args.rounding_mode)
+case_py = os.path.join(config.case_ic, args.project_name, args.case)
+ref_path = os.path.join(config.case_ref, args.project_name, args.case, "ref", args.precision, args.rounding_mode)
 print("Looking for results in %s ..." % ref_path)
 
 if not os.path.isdir(ref_path):
@@ -18,7 +18,7 @@ if not os.path.isfile(os.path.join(ref_path, 'rho.dat')):
     sys.exit(1)
 
 # Load quantities.
-sys.path.append(cases_dir)
+sys.path.append(case_py)
 import chars
 quantityListName = chars.quantityList
 print(quantityListName)
@@ -51,8 +51,6 @@ for i in range(Nx):
         Ei[i][j] = data['rhoE'][i][j] / data['rho'][i][j]-Ek[i][j]
 
 
-gamma = 1.4
-npts = 500
 if args.solver == 'sod':
     for i in range(Nx):
         rho_1D[i] = data['rho'][i][0]
@@ -60,7 +58,7 @@ if args.solver == 'sod':
     sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
     from sod import solve
     positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                                           geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=npts)
+                                           geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=500)
 
 if args.solver == 'sedov':
     for i in range(Nx):
@@ -68,23 +66,27 @@ if args.solver == 'sedov':
     exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
-    values = solve(t=1.2, gamma=gamma, xpos=x)
+    values = solve(t=1.2, gamma=1.4, xpos=x)
 
 if args.solver == 'noh':
+    if Nx==1: 
+        for i in range(Ny):
+            rho_1D[i] = data['rho'][0][i]
     if Ny==1: 
         for i in range(Nx):
             rho_1D[i] = data['rho'][i][0]
-    if Ny>1:
+    if Nx>1 and Ny>1:      #2D, with Nx=Ny
         for i in range(Nx):
-            rho_1D[i] = data['rho'][i][0]
+            rho_1D[i] = data['rho'][i][i]
     exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
     from noh import solve
-    if Ny==1: 
-        values = solve(t=0.6, gamma=5./3., ndim=1,npts=Nx)
-    if Ny>1:
-       values = solve(t=0.6, gamma=5./3., ndim=2,npts=Nx)
-
+    if Nx==1:
+        values = solve(t=0.6, gamma=5./3., ndim=1,npts=Ny,axis='y')
+    if Ny==1:
+        values = solve(t=0.6, gamma=5./3., ndim=1,npts=Nx,axis='x')
+    if Nx>1 and Ny>1:     #2D, with Nx=Ny
+        values = solve(t=0.6, gamma=5./3., ndim=2,npts=Nx)
 print("intégrale de rho sur tout le domaine (simulation) : ", sum(sum(data['rho'])/(Nx*Ny)))
 #print("intégrale de rho exacte : ", sum(sum(values['rho'])/(Nx*Ny)))
 

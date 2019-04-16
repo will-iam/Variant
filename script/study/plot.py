@@ -91,28 +91,28 @@ elif axis == 'r':
         for i in range(Ny):
             qty[i] = data['rho'][i][i]
 
-gamma = 1.4
 if args.solver == 'sod':
     sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
     from sod import solve
     positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                        geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=Npoints)
+                        geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=Npoints)
 if args.solver == 'sedov':
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
-    values = solve(t=1.0, gamma=gamma, xpos=x)
+    values = solve(t=1.0, gamma=1.4, xpos=x)
 
 if args.solver == 'noh':
     sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
     from noh import solve
+    if Nx==1:
+        values = solve(t=0.6, gamma=5./3., npts=Ny, ndim=1, axis='y')
     if Ny==1:
-        ndim=1
-    if Ny>1:
-        ndim=2
-    values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=ndim)
+        values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=1, axis='x')
+    if Nx>1 and Ny>1:      #2D, Nx=Ny
+        values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=2)
 
-print("intégrale exacte de",towatch," : ", sum(values[towatch]/Nx))
-print("intégrale simulation de",towatch," : ", sum(qty/Nx))
+print("intégrale exacte de",towatch," : ", sum(values[towatch]/max(Nx,Ny)))
+print("intégrale simulation de",towatch," : ", sum(qty/max(Nx,Ny)))
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)

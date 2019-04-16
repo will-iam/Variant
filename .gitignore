@@ -119,8 +119,6 @@ source/.sconsign.dblite
 *.exec
 
 # Data and Results
-ref3
-ref2
 results/
 model/data
 model/rapport

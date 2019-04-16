@@ -9,6 +9,7 @@ import numpy as np
 
 sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sedov'))
 sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'sod'))
+sys.path.insert(1, os.path.join(sys.path[0], 'script', 'study', 'noh'))
 import script.error_norm
 from shutil import copyfile, copytree, rmtree
 from timeit import default_timer as timer
@@ -115,7 +116,7 @@ def create_ref(engineOptionDict, icond_path, input_path, ref_path):
 def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref, forceref):
     # Check values for pure sequential test.
     if engineOptionDict['compiler'] != 'mpi':
-        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1 or test['nThreads'] != 1.0:
+        if test['nSDD'][0] != 1 or test['nSDD'][1] != 1:
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
     

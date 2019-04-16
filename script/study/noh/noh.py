@@ -4,16 +4,24 @@ based on https://github.com/gandalfcode/gandalf/blob/master/analysis/analytical.
 from scipy.special import gamma as Gamma
 from numpy import float64, pi, zeros, ones, sqrt, linspace, array
 
-def solve(t, gamma, ndim, npts):
+def solve(t, gamma, ndim, npts, axis='x'):
     '''1, 2, 3 dimensions'''
 
-    radius=1
-    Nx=npts
-    Ny=npts 
-    x = linspace(0.0,radius,Nx)
-    X = linspace(0.0,radius,Nx)
-    Y = linspace(0.0,radius,Ny)
-    r=array([sqrt(X[i]**2+Y[i]**2)/sqrt(2.0) for i in range(Nx)])
+    radius=1.0
+    if ndim==1:
+        if axis=='x':
+            Nx=npts
+            Ny=1
+        if axis=='y':
+            Nx=1
+            Ny=npts
+    if ndim==2:
+        Nx=npts
+        Ny=npts
+ 
+    X = linspace(0.0,radius,max(Nx,Ny))
+    Y = linspace(0.0,radius,max(Nx,Ny))
+    r=array([sqrt(X[i]**2+Y[i]**2)/sqrt(2.0) for i in range(max(Nx,Ny))])
     rho = zeros(npts, dtype=float)
     p = zeros(npts, dtype=float)
     u = zeros(npts, dtype=float)
@@ -23,7 +31,7 @@ def solve(t, gamma, ndim, npts):
         rho0=1.0
         r_s = 1.0/2.0*(gamma-1.0)*t*u0
         inside = r<r_s
-        outside = (r>r_s)
+        outside = (r>=r_s)
         rho[inside]=(gamma+1.0)**ndim/(gamma-1.0)**ndim*rho0
         p[inside]=(gamma+1.0)**ndim/(gamma-1.0)**(ndim-1.0)*rho0*u0**2/2.0
         u[inside]=0.0
