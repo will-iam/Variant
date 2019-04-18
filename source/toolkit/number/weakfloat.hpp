@@ -1,8 +1,22 @@
 #ifndef WEAKFLOAT_HPP
 #define WEAKFLOAT_HPP
+#include <iostream>
+#include <cmath>
+
 
 static_assert(PRECISION_WEAK_FLOAT < 32);
-static_assert(PRECISION_WEAK_FLOAT > 1);
+static_assert(PRECISION_WEAK_FLOAT > 7);
+
+const unsigned int _trunc[] = {
+    0xff000000,
+    0xff000000, 0xff000000, 0xff000000, 0xff000000,
+    0xff000000, 0xff000000, 0xff000000, 0xff000000,
+    0xff800000, 0xffc00000, 0xffe00000, 0xfff00000,
+    0xfff80000, 0xfffc0000, 0xfffe0000, 0xffff0000,
+    0xffff8000, 0xffffc000, 0xffffe000, 0xfffff000,
+    0xfffff800, 0xfffffc00, 0xfffffe00, 0xffffff00,
+    0xffffff80, 0xffffffc0, 0xffffffe0, 0xfffffff0,
+    0xfffffff8, 0xfffffffc, 0xfffffffe, 0xffffffff };
 
 template<int N>
 class weakfloat {
@@ -14,13 +28,19 @@ class weakfloat {
     //weakfloat(const float&& f) : _f(f){}
 
     void trunc(float& f) {
-        unsigned char *c = reinterpret_cast<unsigned char *>(&f);
-        // 0xff000000 
-        *c &= 0xff000000;
+        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+        *c &= _trunc[N];
+    }
+
+    bool truncated() {
+        float f(_f);
+        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+        *c &= ~_trunc[N];
+        return (*c == 0);
     }
 
     friend bool operator< (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
-        return lhs._f < rhs._f;   
+        return lhs._f < rhs._f;
     }
 
     friend bool operator> (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
@@ -80,5 +100,7 @@ class weakfloat {
   private:
     float _f;
 };
+
+void test_weak_float();
 
 #endif

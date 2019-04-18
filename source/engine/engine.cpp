@@ -120,6 +120,8 @@ int Engine::main(int argc, char** argv) {
         #if defined (PRECISION_WEAK_FLOAT)
         std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(real(42.f)) << Console::_normal << std::endl;
         std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(real(2.f)) << Console::_normal <<  std::endl;
+        test_weak_float();
+        return 0;
         #endif
 
         #if defined (PRECISION_FLOAT)
@@ -320,4 +322,3 @@ void Engine::printStatus(bool force) {
         _timerIteration.reportTotal();
     }
 }
-
