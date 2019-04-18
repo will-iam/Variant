@@ -1,10 +1,11 @@
-#!/usr/local/bin/python3
+#!/bin/env python3
 # -*- coding:utf-8 -*-
 
 import __future__
+import math
 from common import *
 
-# Check if refence results exist.
+# Check if reference results exist.
 case_py = os.path.join(config.case_ic, args.project_name, args.case)
 ref_path = os.path.join(config.case_ref, args.project_name, args.case, "ref", args.precision, args.rounding_mode)
 print("Looking for results in %s ..." % ref_path)
@@ -36,6 +37,7 @@ for q in quantityListName:
 
 x = np.linspace(0., Nx * float(dx), Nx)
 y = np.linspace(0., Ny * float(dy), Ny)
+x_1D = np.linspace(0., max(Nx,Ny) * float(min(dx,dy)), math.floor(max(Nx,Ny)/np.sqrt(2.0))+1)
 Ux = np.zeros((Nx, Ny))
 Uy = np.zeros((Nx, Ny))
 Ek = np.zeros((Nx, Ny))
@@ -72,13 +74,21 @@ if args.solver == 'noh':
     if Nx==1: 
         for i in range(Ny):
             rho_1D[i] = data['rho'][0][i]
+        exact_title='Rho value on x = 0'
     if Ny==1: 
         for i in range(Nx):
             rho_1D[i] = data['rho'][i][0]
+        exact_title='Rho value on y = 0'
     if Nx>1 and Ny>1:      #2D, with Nx=Ny
         for i in range(Nx):
-            rho_1D[i] = data['rho'][i][i]
-    exact_title='Rho value on y = x'
+            rho_1D = np.zeros(math.floor(max(Nx,Ny)/np.sqrt(2.0))+1)
+            rho_1D_normed = np.zeros(max(Nx,Ny))
+            for i in range(Nx):
+                rho_1D_normed[i] = data['rho'][i][i]
+            for i in range(len(rho_1D_normed)):
+                if i/len(rho_1D_normed)<=1.0/np.sqrt(2.0):
+                    rho_1D[i] = rho_1D_normed[i]
+        exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
     from noh import solve
     if Nx==1:
@@ -102,7 +112,12 @@ ax0.axis('tight')
 
 ########## rho 1D vs exact ################
 ax1 = fig.add_subplot(223)
-ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
+if Nx==1:
+    ax1.plot(y, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
+if Ny==1:
+    ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
+else:
+    ax1.plot(x_1D, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
 plt.plot(values['x'], values['rho'], linewidth=1.5, color='r', linestyle='dashed', label="exact")
 ax1.set(xlabel='x', ylabel='density', title=exact_title)
 ax1.grid()

@@ -11,13 +11,23 @@
 
 #define positiveModulo(a, b) (((a) % (b)) + (b)) % (b)
 
+#if defined(PRECISION_WEAK_FLOAT)
+    #include "weakfloat.hpp"
+    typedef weakfloat<PRECISION_WEAK_FLOAT> real;
+    inline void stor(std::string tmpStr, real& target) {
+        target = std::stof(tmpStr);
+    }
+    #ifndef SEQUENTIAL
+    const MPI_Datatype MPI_REALTYPE = MPI_FLOAT;
+    #endif
+#endif
+
 #if defined(PRECISION_FLOAT)
     typedef float real;
-    typedef std::numeric_limits<float> oss_nl;
     constexpr auto rabs = fabsf;
     constexpr auto rcos = cosf;
     constexpr auto rsqrt = sqrtf;
-    inline void stor(std::string tmpStr, float& target) {
+    inline void stor(std::string tmpStr, real& target) {
         target = std::stof(tmpStr);
     }
     #ifndef SEQUENTIAL
@@ -27,11 +37,10 @@
 
 #if defined(PRECISION_DOUBLE)
     typedef double real;
-    typedef std::numeric_limits<double> oss_nl;
     constexpr auto rabs = fabs;
     constexpr auto rcos = cos;
     constexpr auto rsqrt = sqrt;
-    inline void stor(std::string tmpStr, double& target) {
+    inline void stor(std::string tmpStr, real& target) {
         target = std::stod(tmpStr);
     }
     #ifndef SEQUENTIAL
@@ -41,11 +50,10 @@
 
 #if defined(PRECISION_LONG_DOUBLE)
     typedef long double real;
-    typedef std::numeric_limits<long double> oss_nl;
     constexpr auto rabs = fabsl;
     constexpr auto rcos = cosl;
     constexpr auto rsqrt = sqrtl;
-    inline void stor(std::string tmpStr, long double& target) {
+    inline void stor(std::string tmpStr, real& target) {
         target = std::stold(tmpStr);
     }
     #ifndef SEQUENTIAL
@@ -58,11 +66,10 @@
         #include <quadmath.h>
     }
     typedef __float128 real;
-    typedef std::numeric_limits<__float128> oss_nl;
     constexpr auto rabs = fabsq;
     constexpr auto rcos = cosq;
     constexpr auto rsqrt = sqrtq;
-    inline void stor(std::string tmpStr, __float128& target) {
+    inline void stor(std::string tmpStr, real& target) {
         target = strtoflt128 (tmpStr.c_str(), NULL);
     }
 
@@ -70,7 +77,7 @@
     const MPI_Datatype MPI_REALTYPE = MPI_REAL16;
     #endif
 
-    inline std::ostream& operator<< (std::ostream& out, const __float128& x) {
+    inline std::ostream& operator<< (std::ostream& out, const real& x) {
         char buf[128];
         const int charPrinted = quadmath_snprintf (buf, 128, "%.30Qe", x);
         if (static_cast<size_t> (charPrinted) >= 128) {
@@ -84,10 +91,20 @@
 #endif
 
 namespace Number {
+#if defined (PRECISION_WEAK_FLOAT)
+    //constexpr int max_digits10 = std::ceil((PRECISION_WEAK_FLOAT - 8) * std::log10(2) + 1); //log(PRECISION_WEAK_FLOAT - 8);
+    const int max_digits10 = std::numeric_limits<float>::max_digits10;
+    const real maxprecision = powf(10.0f, max_digits10);
+    const real unit = real(1.0f);
+    const real zero = real(0.0f);
+    const real half = real(1.f / 2.f);
+#endif
+
 #if defined (PRECISION_FLOAT)
     const real maxprecision = 1.0e-7f;
     const real unit = 1.0f;
     const real zero = 0.0f;
+    const real half = 1.f / 2.f;
     const int max_digits10 = std::numeric_limits<real>::max_digits10;
 #endif
 
@@ -95,6 +112,7 @@ namespace Number {
     const real maxprecision = 1.0e-15;
     const real unit = 1.0;
     const real zero = 0.0;
+    const real half = 1. / 2.;
     const int max_digits10 = std::numeric_limits<real>::max_digits10;
 #endif
 
@@ -102,13 +120,15 @@ namespace Number {
     const real maxprecision = 1.0e-20l;
     const real unit = 1.0l;
     const real zero = 0.0l;
+    const real half = 1.l / 2.l;
     const int max_digits10 = std::numeric_limits<real>::max_digits10;
 #endif
 
 #if defined (PRECISION_QUAD)
     const real maxprecision = 1.0e-30;
-    const real unit = 1.0;
-    const real zero = 0.0;
+    const real unit = 1.0l;
+    const real zero = 0.0l;
+    const real half = 1.l / 2.l;
     const int max_digits10 = FLT128_DIG;
 #endif
 

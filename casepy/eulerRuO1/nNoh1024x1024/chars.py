@@ -1,5 +1,3 @@
-from numpy import sqrt
-
 # Domain properties
 lx = 1.0
 ly = 1.0

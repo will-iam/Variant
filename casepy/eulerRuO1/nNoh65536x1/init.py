@@ -31,21 +31,21 @@ rhou_x_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
 rhou_y_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
 rhoE_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
 
-u0=1
-rho0=1
+u0=1.0
+rho0=1.0
 
 for i in range(1,Nx):
     coords = coords_to_uid[(i, 0)]
     rho_uid_to_val[coords] = rho0
     rhou_x_uid_to_val[coords] = -1.0*u0*rho0
     rhou_y_uid_to_val[coords] = 0.0
-    rhoE_uid_to_val[coords] = 1/2*u0**2*rho0          #energie cinétique au démarrage
+    rhoE_uid_to_val[coords] = 1.0/2.0*u0**2*rho0          #Kinetic energy at t=0
 
 
 coords = coords_to_uid[(0, 0)]
-rhou_x_uid_to_val[coords] =-1*u0*rho0
+rhou_x_uid_to_val[coords] =-1.0*u0*rho0
 rho_uid_to_val[coords] = rho0
-rhoE_uid_to_val[coords] = 1/2*u0**2*rho0          #energie cinétique au démarrage
+rhoE_uid_to_val[coords] = 1.0/2.0*u0**2*rho0          #Kinetic energy at t=0
 
 # ------------------------------------------------------------------------------
 # Boundary conditions

@@ -91,13 +91,15 @@ int Engine::main(int argc, char** argv) {
         cout << "\t- and most important ......... think category theory." << Console::_normal << endl;
         #endif
 
-        // std::cout << "max float" << std::numeric_limits<float>::digits << std::endl;
-        // std::cout << "max float" << std::numeric_limits<float>::digits10 << std::endl;
-        // std::cout << "max float" << std::numeric_limits<float>::max_digits10 << std::endl;
+        // std::cout << "float::digits = " << std::numeric_limits<float>::digits << std::endl;
+        // std::cout << "float::digits10 = " << std::numeric_limits<float>::digits10 << std::endl;
+        // std::cout << "float::max_digits10 = " << std::numeric_limits<float>::max_digits10 << std::endl;
         // std::cout << "max double" << std::numeric_limits<double>::max_digits10 << std::endl;
         // std::cout << std::scientific << std::hexfloat
 
-
+        #if defined (PRECISION_WEAK_FLOAT)
+        std::cout << Console::_green << "Precision set to " << Console::_bold << "weak float " << PRECISION_WEAK_FLOAT << " (" << Number::max_digits10 << " decimal digits)."  << Console::_normal << std::endl;
+        #endif
         #if defined (PRECISION_FLOAT)
         std::cout << Console::_green << "Precision set to " << Console::_bold << "float (" << Number::max_digits10 << " decimal digits)."  << Console::_normal << std::endl;
         #endif
@@ -115,9 +117,14 @@ int Engine::main(int argc, char** argv) {
         std::cout << "Show cosinus and sqrt values to test rounding mode:" << std::endl;
         std::cout << std::setprecision(Number::max_digits10) << std::scientific;
 
+        #if defined (PRECISION_WEAK_FLOAT)
+        std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(real(42.f)) << Console::_normal << std::endl;
+        std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(real(2.f)) << Console::_normal <<  std::endl;
+        #endif
+
         #if defined (PRECISION_FLOAT)
-        std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(42.) << Console::_normal << std::endl;
-        std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(2.) << Console::_normal <<  std::endl;
+        std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(42.f) << Console::_normal << std::endl;
+        std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(2.f) << Console::_normal <<  std::endl;
         #endif
 
         #if defined (PRECISION_DOUBLE)
@@ -305,7 +312,8 @@ void Engine::printStatus(bool force) {
     if (_MPI_rank != 0)
         return;
 
-    float p = _t / _T * 10.0;
+    float p = _t / _T;
+    p *= 10.0;
     if(p >= iPrintStatus || force == true) {
         iPrintStatus = int(p) + 1;
         std::cout << "[0] - " << _nIterations << ": Computation done = " << std::setprecision(0) << std::fixed << (10. * p) << "% ";

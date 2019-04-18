@@ -1,3 +1,6 @@
+#!/bin/env python3
+# -*- coding:utf-8 -*-
+
 import __future__
 from common import *
 sys.path.insert(1, os.path.join(sys.path[0], 'sod'))

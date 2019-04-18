@@ -6,6 +6,7 @@ objs = SConscript('timestamp/SConscript', exports = 'localenv')
 objs.append(SConscript('timer/SConscript', exports = 'localenv'))
 objs.append(SConscript('exception/SConscript', exports = 'localenv'))
 objs.append(SConscript('threadpool/SConscript', exports = 'localenv'))
+objs.append(SConscript('number/SConscript', exports = 'localenv'))
 
 # build sources
 srcs = Glob('*.cpp')

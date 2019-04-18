@@ -129,6 +129,9 @@ if mymode == 'debug':
 #	env.Append(LIBPATH = [currentPath + '/common/lib/mac'])
 
 # Computing precision
+if precision.startswith('weak'):
+    mycflags.append('-DPRECISION_WEAK_FLOAT=%s' % precision[4:])
+
 if precision == 'double':
     mycflags.append('-DPRECISION_DOUBLE')
 
