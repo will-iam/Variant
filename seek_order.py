@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/env python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -13,7 +13,7 @@ ratioThreadsCores = [1.0]
 SDSratioList = [1.0] #[1.0, 4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
-engineOptionDict['precision'] = 'float'
+engineOptionDict['precision'] = 'double'
 engineOptionDict['compiler'] = 'gnu'
 
 #xSizeList = [512]
@@ -28,7 +28,7 @@ engineOptionDict['compiler'] = 'gnu'
 #sizeList = [(64, 64), (128, 128), (256, 256)]
 #sizeList = [(256, 256)]
 #sizeList = [(64,64)]
-sizeList = [(1,64)]
+sizeList = [(64,1)]
 #sizeList = [(512, 512), (1024, 1024)]
 #sizeList = [(64, 1), (128, 1), (256, 1), (512, 1), (1024, 1), (2048, 1), (4096, 1), (8192, 1), (16384, 1)]
 #sizeList = [(32768, 1), (65536, 1), (131072, 1)]
@@ -56,8 +56,8 @@ for size in sizeList:
 
 #    for p in range(maxSdd - 1, maxSdd):
 #    for p in range(minSdd, maxSdd):
-#    for p in range(minSdd - 1, minSdd):
-    for p in range(minSdd, minSdd + 1):
+    for p in range(minSdd - 1, minSdd):
+#    for p in range(minSdd, minSdd + 1):
         for SDSratio in SDSratioList:
             nSDD_X = 2**(p)
             test['nSDD'] = (nSDD_X, 1)

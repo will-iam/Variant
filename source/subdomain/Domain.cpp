@@ -88,7 +88,7 @@ void Domain::addBoundaryCoords(std::pair<int, int> coordsOnSDD, char BCtype, con
 }
 
 void Domain::addQuantity(std::string quantityName) {
-    _sdd->addQuantity<real>(quantityName);
+    _sdd->addQuantity<real>(quantityName, Number::zero);
 }
 
 void Domain::addEquation(std::string eqName, eqType eqFunc) {
@@ -293,7 +293,7 @@ void SDDistributed::buildRecvMap(const Domain& domain,
             _MPIRecv_map[*it] = SDDandCoords;
 
             // Adding the SDD to the list of neighbours
-            if (_nSDD > 1 && SDDandCoords.first != _id && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
+            if (_nSDD > 1 && SDDandCoords.first != (int)_id && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoords.first) == _neighbourSDDVector.end())
                 _neighbourSDDVector.push_back(SDDandCoords.first);
         }
 
@@ -382,7 +382,7 @@ void SDDistributed::buildRecvMap(const Domain& domain,
                     //std::cerr <<  "targetCell.first: " << targetCell.first << ", targetCell.second: " << targetCell.second << std::endl;
                     //std::cerr <<  "SDDandCoordsOfTargetCell.first: " << SDDandCoordsOfTargetCell.first << std::endl;
                     // Adding the SDD to the list of neighbours
-                    if (_nSDD > 1 && SDDandCoordsOfTargetCell.first != _id && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoordsOfTargetCell.first) == _neighbourSDDVector.end())
+                    if (_nSDD > 1 && SDDandCoordsOfTargetCell.first != (int)_id && find(_neighbourSDDVector.begin(), _neighbourSDDVector.end(), SDDandCoordsOfTargetCell.first) == _neighbourSDDVector.end())
                         _neighbourSDDVector.push_back(SDDandCoordsOfTargetCell.first);
                 }
             }

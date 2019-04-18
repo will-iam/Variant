@@ -236,17 +236,17 @@ real EulerRuO1::computePressure(real Ek, real E) {
     // Cannot divide by zero.
     real e = (E - Ek);
 
-    real P = (_gamma - 1) * e;
+    real P = (_gamma - Number::unit) * e;
 
 
     // To ensure Positivity in random mode.
-    if (P < 0.) {
+    if (P < Number::zero) {
 //        std::cout << std::scientific << std::setprecision(std::numeric_limits<real>::max_digits10);
 //        std::cout << Console::_red << "P: " << P << " -> " << 0. << std::endl << Console::_normal << std::setprecision(2) << std::fixed;
-        P = 0.;
+        P = Number::zero;
     }
 
-    assert(P >= 0.);
+    assert(P >= Number::zero);
     return P; 
 }
 
@@ -286,17 +286,17 @@ void EulerRuO1::speed(const SDShared& sds, const std::map< std::string, Quantity
     // s_x = a^n_{i+1/2, j} = max(max(|u_x^n_{i,j} + c^n_{i,j}|, |u_x^n_{i,j} - c^n_{i,j}|), max(|u_x^n_{i+1,j} + c^n_{i+1,j}|, |u_x^n_{i+1,j} - c^n_{i+1,j}|))
     // s_y = a^n_{i, j+1/2} = max(max(|u_y^n_{i,j} + c^n_{i,j}|, |u_y^n_{i,j} - c^n_{i,j}|), max(|u_y^n_{i,j+1} + c^n_{i,j+1}|, |u_y^n_{i,j+1} - c^n_{i,j+1}|))
 
-    real sdsUxMax(0.), sdsUyMax(0.);
+    real sdsUxMax(Number::zero), sdsUyMax(Number::zero);
     for (const auto& coords: sds) {
         const int i = coords.first;
         const int j = coords.second;
         size_t k_center = sds.convert(i, j);
 
         const real rho_center = rho.get0(k_center);
-        if (rho_center == 0.) {
-            pressure.set0(0., k_center);
-            sx.set0(0., k_center);
-            sy.set0(0., k_center);
+        if (rho_center == Number::zero) {
+            pressure.set0(Number::zero, k_center);
+            sx.set0(Number::zero, k_center);
+            sy.set0(Number::zero, k_center);
             continue;
         }
 
@@ -309,7 +309,7 @@ void EulerRuO1::speed(const SDShared& sds, const std::map< std::string, Quantity
 
         const real ux = rhou_x_center / rho_center;
         const real uy = rhou_y_center / rho_center;
-        const real Ek = (1. / 2.) * (ux * rhou_x_center + uy * rhou_y_center);
+        const real Ek = Number::half * (ux * rhou_x_center + uy * rhou_y_center);
         const real pressure_center = computePressure(Ek, rhoE_center);
         pressure.set0(pressure_center, k_center);
         const real c = computeSoundSpeed(rho_center, pressure_center);
@@ -367,8 +367,8 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
     // s_y = a^n_{i, j+1/2} = max(max(|u_y^n_{i,j} + c^n_{i,j}|, |u_y^n_{i,j} - c^n_{i,j}|), max(|u_y^n_{i,j+1} + c^n_{i,j+1}|, |u_y^n_{i,j+1} - c^n_{i,j+1}|))
    
     // Compute flux X
-    const real kx = 0.5 * _dt / _dx;
-    const real ky = 0.5 * _dt / _dy;
+    const real kx = Number::half * _dt / _dx;
+    const real ky = Number::half * _dt / _dy;
 
     for (const auto& coords: sds) {
 
@@ -428,11 +428,11 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
         real sy_top  = std::max(cell_sy_top, cell_sy_center);
         real sy_bottom = std::max(cell_sy_bottom, cell_sy_center);
 
-        real ux_left = (rho_left == 0.) ? 0. : rhou_x_left / rho_left;
-        real ux_right = (rho_right == 0.) ? 0. : rhou_x_right / rho_right;
+        real ux_left = (rho_left == Number::zero) ? Number::zero : rhou_x_left / rho_left;
+        real ux_right = (rho_right == Number::zero) ? Number::zero : rhou_x_right / rho_right;
         
-        real uy_top = (rho_top == 0.) ? 0. : rhou_y_top / rho_top;
-        real uy_bottom = (rho_bottom == 0.) ? 0. : rhou_y_bottom / rho_bottom;
+        real uy_top = (rho_top == Number::zero) ? Number::zero : rhou_y_top / rho_top;
+        real uy_bottom = (rho_bottom == Number::zero) ? Number::zero : rhou_y_bottom / rho_bottom;
         
         real pressure_left = pressure.get0(k_left);
         real pressure_right = pressure.get0(k_right);
@@ -471,7 +471,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
         rhoE.set1(rhoE_center - kx * rhoE_flux_x  - ky * rhoE_flux_y, k_center);
 
         
-        if (rho.get1(k_center) < 0.) {
+        if (rho.get1(k_center) < Number::zero) {
             std::cout << std::scientific << std::setprecision(std::numeric_limits<real>::max_digits10);
             std::cout << "ux_right: " <<  ux_right << ", rhou_y_right: " <<  rhou_y_right << " = " << ux_right * rhou_y_right  << std::endl;
             std::cout << "ux_left: " <<  ux_left << ", rhou_y_left: " <<  rhou_y_left << " = " << ux_left * rhou_y_left  << std::endl;

@@ -197,7 +197,7 @@ class SDDistributed {
      * @param name name of the quantity to add, used as reference when getting
      * and setting a value, or when getting the whole quantity data
      */
-    template<typename T> void addQuantity(std::string name);
+    template<typename T> void addQuantity(std::string name, const T& default_value);
 
     /*!
      * @brief Build subdomains on shared memory based on
@@ -347,8 +347,8 @@ class SDDistributed {
     std::unordered_map<size_t, size_t> _selfIndexMap;
 };
 
-template<typename T> void SDDistributed::addQuantity(std::string name) {
-    _quantityMap[name] = new Quantity<T>(name, (_sizeX + 2 * _boundaryThickness) * (_sizeY + 2 * _boundaryThickness), _coordConverter);
+template<typename T> void SDDistributed::addQuantity(std::string name, const T& default_value) {
+    _quantityMap[name] = new Quantity<T>(name, (_sizeX + 2 * _boundaryThickness) * (_sizeY + 2 * _boundaryThickness), _coordConverter, default_value);
 }
 
 #endif

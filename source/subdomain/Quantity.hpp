@@ -36,7 +36,7 @@ template<typename T> class Quantity {
      * @param coordConverter : tool linking coordinates of a 
      * cell/node to the corresponding memory index
      */
-    Quantity(std::string, unsigned int size, const CoordConverter & coordConverter);
+    Quantity(std::string, unsigned int size, const CoordConverter & coordConverter, const T& default_value);
 
     /*!
      * @brief Returns desired data available for reading
@@ -124,10 +124,10 @@ template<typename T> class Quantity {
 
 template<typename T>
 Quantity<T>::Quantity(std::string name, unsigned int size,
-        const CoordConverter & coordConverter):_size(size), _coordConverter(coordConverter)
+        const CoordConverter & coordConverter, const T& default_value):_size(size), _coordConverter(coordConverter)
 {
-    _dataLeft.resize(_size, 0.);
-    _dataRight.resize(_size, 0.);
+    _dataLeft.resize(_size, default_value);
+    _dataRight.resize(_size, default_value);
 
     _prev = &_dataLeft;
     _next = &_dataRight;
