@@ -60,7 +60,7 @@ engineOptionDict = {
 'compiler': 'mpi',
 'mode': 'release' if not args.debug else 'debug',
 'precision': 'double',
-'std': 'c++14',
+'std': 'c++17',
 'must_compile': not args.nocompile,
 'vtune': args.vtune,
 'gdb' : args.gdb,
@@ -356,7 +356,7 @@ def make_perf_data(perfPath, execTime, perf_info, endTime):
         print("There is more iteration time vallues than computation time values. You didn't get what an iteration time is.")
         sys.exit(1)
     ratioCperI = len(computeTimeDict[0]) // len(iterationTimeDict[0])
- 
+
     for sdd in iterationTimeDict:
         # First Sum the compute time to make a new array.
         if len(computeTimeDict[sdd]) // ratioCperI !=  len(iterationTimeDict[sdd]):

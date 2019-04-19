@@ -196,16 +196,17 @@ def write_exec_options(output_dir, nSDD, nSDD_X, nSDD_Y, nSDS, SDSgeom, nThreads
 def write_bc(output_dir, coords_to_uid_and_bc):
     with open(os.path.join(output_dir, 'bc.dat'), 'w+') as f:
         for bcc, (uid, bc) in coords_to_uid_and_bc.items():
-            f.write(str(uid) + " ")
-            f.write(str(bcc[0]) + " " + str(bcc[1]) + " ")   # (i, j) coords
-            # boundary condition
-            if bc[1] == 0:
-                f.write(str(bc[0]) + " 0\n")   
-            else:
-                f.write(str(bc[0]) + " " + str(len(bc[1])))
-                for qty, value in bc[1].items():
-                    f.write(" " + str(qty) + " " + str(value))
-                f.write("\n")
+            for bctype, bcdata in bc.items():
+                f.write(str(uid) + " ")
+                f.write(str(bcc[0]) + " " + str(bcc[1]) + " ")   # (i, j) coords
+                # boundary condition
+                if len(bcdata) == 0:
+                    f.write(bctype + " 0\n")
+                else:
+                    f.write(bctype + " " + str(len(bcdata)))
+                    for qty, value in bcdata.items():
+                        f.write(" " + str(qty) + " " + str(value))
+                    f.write("\n")
 
 def read_variant_info(data_dir, nSDD):
     whole_data = []

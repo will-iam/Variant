@@ -16,12 +16,8 @@ SDDSizeList = range(minSdd, maxSdd)
 engineOptionDict['precision'] = 'double'
 engineOptionDict['compiler'] = 'gnu'
 
-#xSizeList = [512]
-#xSizeList = [1024]
-#xSizeList = [64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072]
-#xSizeList = [131072, 262144, 524288, 1048576, 2097152, 4194304, 6291456, 8388608]
 #sizeList = [(64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024)]
-#sizeList = [(64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]
+#sizeList = [(256, 256), (512, 512), (1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]
 #sizeList = [(64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024), (2048, 2048)]
 #sizeList = [(1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]
 #sizeList = [(4096, 4096), (8192, 8192)]
@@ -30,7 +26,7 @@ engineOptionDict['compiler'] = 'gnu'
 #sizeList = [(1, 64)]
 #sizeList = [(64, 64)]
 #sizeList = [(256,256)]
-sizeList = [(48,48)]
+sizeList = [(128,128)]
 #sizeList = [(1024,1024)]
 #sizeList = [(256, 1)]
 #sizeList = [(1024, 1)]
@@ -51,9 +47,7 @@ testBattery = dict()
 for size in sizeList:
     xSize = size[0]
     ySize = size[1]
-
     cn = "%s%sx%s" % (case_name, str(xSize), str(ySize))
-
     test = dict()
 
     if case_name == 'nSod':

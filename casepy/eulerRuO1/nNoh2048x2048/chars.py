@@ -2,8 +2,8 @@
 lx = 1.0
 ly = 1.0
 
-Nx = 64
-Ny = 64
+Nx = 2048
+Ny = 2048
 
 # Scheme execution options
 T = 0.6

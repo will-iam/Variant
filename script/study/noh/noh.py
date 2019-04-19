@@ -3,6 +3,7 @@ based on https://github.com/gandalfcode/gandalf/blob/master/analysis/analytical.
 """
 from scipy.special import gamma as Gamma
 from numpy import float64, pi, zeros, ones, sqrt, linspace, array
+from math import floor
 
 def solve(t, gamma, ndim, npts, axis='x'):
     '''1, 2, 3 dimensions'''
@@ -18,10 +19,12 @@ def solve(t, gamma, ndim, npts, axis='x'):
     if ndim==2:
         Nx=npts
         Ny=npts
- 
-    X = linspace(0.0,radius,max(Nx,Ny))
-    Y = linspace(0.0,radius,max(Nx,Ny))
-    r=array([sqrt(X[i]**2+Y[i]**2)/sqrt(2.0) for i in range(max(Nx,Ny))])
+
+    Npoints = floor(max(Nx,Ny)/sqrt(2.0))+1
+
+    X = linspace(0.0,radius,npts)
+    Y = linspace(0.0,radius,npts)
+    r=array([sqrt((X[i]**2+Y[i]**2)/2.0) for i in range(npts)])
     rho = zeros(npts, dtype=float)
     p = zeros(npts, dtype=float)
     u = zeros(npts, dtype=float)

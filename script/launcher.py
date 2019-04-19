@@ -119,7 +119,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
         if test['nSDD'][0] != 1 or test['nSDD'][1] != 1:
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
-    
+
     # Define paths
     project_name = engineOptionDict['project_name']
     case_path_suffix = get_case_path_suffix(project_name, case_name)
@@ -129,7 +129,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     # Delete reference to trigger a new computation.
     if forceref == True:
-        rmtree(ref_path, ignore_errors=True)
+        rmtree(refer_path, ignore_errors=True)
 
     if fastref == True:
         # Don't check if you want only to build the ref.
@@ -215,7 +215,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
         # Then compute the errors.
         err = error_norm.compute(refer_path, qty_name_list, test['solver'])
-    
+
         # Save errors in ref path.
         if err is not None:
             error_norm.save(refer_path, err)
