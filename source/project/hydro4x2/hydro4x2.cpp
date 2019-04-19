@@ -184,7 +184,7 @@ void Hydro4x2::advection(const SDShared& sds, const std::map< std::string, Quant
 
         const int i = coords.first;
         const int j = coords.second;
-        
+
         // Get values from quantity.
         unsigned int k_bottom = sds.convert(i, j - 1);
         unsigned int k_top = sds.convert(i, j + 1);
@@ -341,8 +341,8 @@ void Hydro4x2::source(const SDShared& sds, const std::map< std::string, Quantity
 void Hydro4x2::updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
     // update BoundaryCells
     sds.updateBoundaryCells(quantityMap.at("rho"));
-    sds.updateBoundaryCells(quantityMap.at("rhou_x"), true);
-    sds.updateBoundaryCells(quantityMap.at("rhou_y"), true);
+    sds.updateBoundaryCells(quantityMap.at("rhou_x"));
+    sds.updateBoundaryCells(quantityMap.at("rhou_y"));
     sds.updateBoundaryCells(quantityMap.at("rhoe"));
 }
 
