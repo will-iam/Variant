@@ -3,8 +3,8 @@
 import sys
 import os
 for p in sys.path:
-    if "hydro4x1/pSod" in p:
+    if "hydro4x2" in p and "Sod" in p:
         sys.path.insert(0, os.path.join(p, '../'))
         break
 
-from nSod import *
+from xSod import *
