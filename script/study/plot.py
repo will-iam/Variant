@@ -8,7 +8,7 @@ import math
 towatch = args.quant #"energy" #"u"; # "rho"
 axis = args.axis
 
-# Check if refence results exist.
+# Check if reference results exist.
 case_py = os.path.join(config.case_ic, args.project_name, args.case)
 ref_path = os.path.join(config.case_ref, args.project_name, args.case, "ref", args.precision, args.rounding_mode)
 print("Looking for results in %s ..." % ref_path)
@@ -79,6 +79,7 @@ elif axis == 'xy':
     axis_title="y = x"
     Npoints = math.floor(max(Nx,Ny)/np.sqrt(2.0))+1
     x = np.linspace(0., max(Nx,Ny) * float(min(dx,dy)), Npoints)
+    #x = np.linspace(0., np.sqrt(2.0)*Ny * float(dy), Ny)
     qtynormed = np.zeros(max(Nx,Ny))
     if towatch == "u":
         for i in range(max(Nx,Ny)):
@@ -126,7 +127,7 @@ if args.solver == 'noh':
         values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=1, axis='x')
     if Nx>1 and Ny>1:      #2D, Nx=Ny
         if axis=='xy':
-            values = solve(t=0.6, gamma=5./3., npts=math.floor(max(Nx,Ny)/np.sqrt(2.0))+1, ndim=2)
+            values = solve(t=0.6, gamma=5./3., npts=Npoints, ndim=2)
         else:
             values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=2)
 print("intégrale exacte de",towatch," : ", sum(values[towatch]/max(Nx,Ny)))
@@ -146,10 +147,10 @@ ax1.tick_params(axis='y', labelcolor=color)
 ax1.legend()
 
 color = 'red'
-#ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-#ax2.plot(x, np.abs(qty - values[towatch]), linewidth=1.5, color=color, label="err.")
-#ax2.set_ylabel('err.', color=color)  # we already handled the x-label with ax1
-#ax2.tick_params(axis='y', labelcolor=color)
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+ax2.plot(x[0:511], np.abs(qty[0:511] - values[towatch][0:511]), linewidth=1.5, color=color, label="err.")
+ax2.set_ylabel('err.', color=color)  # we already handled the x-label with ax1
+ax2.tick_params(axis='y', labelcolor=color)
 
 if not os.path.exists("plot"):
     os.makedirs("plot")

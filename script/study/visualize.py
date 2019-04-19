@@ -37,12 +37,14 @@ for q in quantityListName:
 
 x = np.linspace(0., Nx * float(dx), Nx)
 y = np.linspace(0., Ny * float(dy), Ny)
-x_1D = np.linspace(0., max(Nx,Ny) * float(min(dx,dy)), math.floor(max(Nx,Ny)/np.sqrt(2.0))+1)
+Npoints = math.floor(max(Nx,Ny)/np.sqrt(2.0))+1
+x_1D = np.linspace(0., max(Nx,Ny) * float(min(dx,dy)), Npoints)
 Ux = np.zeros((Nx, Ny))
 Uy = np.zeros((Nx, Ny))
 Ek = np.zeros((Nx, Ny))
 Ei = np.zeros((Nx, Ny))
-rho_1D = np.zeros(Nx)
+rho_1D = np.zeros(Npoints)
+
 for i in range(Nx):
     for j in range(Ny):
         if data['rho'][i][j] == 0.:
@@ -60,10 +62,10 @@ if args.solver == 'sod':
     sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
     from sod import solve
     positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                                           geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=500)
+                                           geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=max(Nx,Ny))
 
 if args.solver == 'sedov':
-    for i in range(Nx):
+    for i in range(Npoints):
         rho_1D[i] = data['rho'][i][i]
     exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
@@ -114,7 +116,7 @@ ax0.axis('tight')
 ax1 = fig.add_subplot(223)
 if Nx==1:
     ax1.plot(y, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
-if Ny==1:
+elif Ny==1:
     ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
 else:
     ax1.plot(x_1D, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")

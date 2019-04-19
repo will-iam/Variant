@@ -3,9 +3,13 @@
 #include <iostream>
 #include <cmath>
 
-
+#ifndef PRECISION_WEAK_FLOAT
+    // Compile with a weak_float as precise as a standard float
+    #define PRECISION_WEAK_FLOAT 32
+#else
 static_assert(PRECISION_WEAK_FLOAT < 32);
 static_assert(PRECISION_WEAK_FLOAT > 7);
+#endif
 
 const unsigned int _trunc[] = {
     0xff000000,
