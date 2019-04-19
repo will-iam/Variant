@@ -7,7 +7,6 @@ void test_weak_float() {
 
     srand (time(NULL));
     float f = static_cast <float> (rand());
-    //unsigned char *c = reinterpret_cast<unsigned char *>(&f);
     float m = std::numeric_limits<float>::max();
     weakfloat<32> w32(m);
 

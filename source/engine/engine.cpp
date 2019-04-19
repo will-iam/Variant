@@ -270,7 +270,7 @@ void Engine::updateDomainUmax() {
     _SDD_uxmax = *std::max_element(_SDS_uxmax.begin(), _SDS_uxmax.end());
     _SDD_uymax = *std::max_element(_SDS_uymax.begin(), _SDS_uymax.end());
     real _SDD_umax[] = {_SDD_uxmax, _SDD_uymax};
-    real _Domain_umax[] = {0., 0.};
+    real _Domain_umax[] = {Number::zero, Number::zero};
     MPI_Allreduce(&_SDD_umax, &_Domain_umax, 2, MPI_REALTYPE, MPI_MAX, MPI_COMM_WORLD);
     _Domain_uxmax = _Domain_umax[0];
     _Domain_uymax = _Domain_umax[1];
@@ -302,7 +302,7 @@ void Engine::updateDomainUymax() {
 
 real Engine::reduceMin(const real& v) {
     #ifndef SEQUENTIAL
-    real min_value(0.);
+    real min_value(Number::zero);
     MPI_Allreduce(&v, &min_value, 1, MPI_REALTYPE, MPI_MIN, MPI_COMM_WORLD);
     return min_value;
     #else
