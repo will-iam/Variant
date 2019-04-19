@@ -127,3 +127,4 @@ cases/*/*/init
 list.ex
 caseinput
 caseref
+plot

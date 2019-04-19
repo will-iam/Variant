@@ -47,19 +47,19 @@ coords_to_bc = dict()
 for k in range(1, BClayer + 1):
     # Left border
     for j in range(-k, Ny - 1 + k):
-        coords_to_bc[(-k, j)] = (BCtype, {"rho": 1.0, "rhoE" : 1.0 / (gamma - 1.0), "pressure" : 1.0})
+        coords_to_bc[(-k, j)] = {BCtype: {"rho": 1.0, "rhoE" : 1.0 / (gamma - 1.0), "pressure" : 1.0}}
 
     # Top border
     for i in range(-k, Nx - 1 + k):
-        coords_to_bc[(i, Ny - 1 + k)] = (BCtype, {"rho": 0.125, "rhoE" : 0.1 / (gamma - 1.0), "pressure" : 0.1})
+        coords_to_bc[(i, Ny - 1 + k)] = {BCtype: {"rho": 0.125, "rhoE" : 0.1 / (gamma - 1.0), "pressure" : 0.1}}
 
     # Right border
     for j in range(Ny, -k, -1):
-        coords_to_bc[(Nx - 1 + k, j)] = (BCtype, {"rho": 0.125, "rhoE" : 0.1 / (gamma - 1.0), "pressure" : 0.1})
+        coords_to_bc[(Nx - 1 + k, j)] = {BCtype: {"rho": 0.125, "rhoE" : 0.1 / (gamma - 1.0), "pressure" : 0.1}}
 
     # Bottom border
     for i in range(Nx, -k, -1):
-        coords_to_bc[(i, -k)] = (BCtype, {"rho": 1.0, "rhoE" : 1.0 / (gamma - 1.0), "pressure" : 1.0})
+        coords_to_bc[(i, -k)] = {BCtype: {"rho": 1.0, "rhoE" : 1.0 / (gamma - 1.0), "pressure" : 1.0}}
 
 
 # Merging uid and bc dictionaries
