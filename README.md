@@ -17,7 +17,7 @@ Variant comes with two helper scripts that compile, build and run cases.
 
 ```
 python3 seek_optimal.py hydro4x1 --case nSod --core 2
-python3 seek_order.py eulerRuO1 --case nSedov --core 2 --fastref
+python3 seek_order.py eulerRuO1 --case Noh --core 2 --fastref
 ```
 
 ## Read the results
