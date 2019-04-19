@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
 import __future__
@@ -14,7 +14,7 @@ SDSratioList = [1.0] #[1.0, 4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
 engineOptionDict['precision'] = 'double'
-engineOptionDict['compiler'] = 'mpi'
+engineOptionDict['compiler'] = 'gnu'
 
 #xSizeList = [512]
 #xSizeList = [1024]
@@ -30,7 +30,7 @@ engineOptionDict['compiler'] = 'mpi'
 #sizeList = [(1, 64)]
 #sizeList = [(64, 64)]
 #sizeList = [(256,256)]
-sizeList = [(512,512)]
+sizeList = [(48,48)]
 #sizeList = [(1024,1024)]
 #sizeList = [(256, 1)]
 #sizeList = [(1024, 1)]
@@ -52,7 +52,7 @@ for size in sizeList:
     xSize = size[0]
     ySize = size[1]
 
-    cn = "%s%sx%s" % (case_name, str(xSize), str(ySize)) 
+    cn = "%s%sx%s" % (case_name, str(xSize), str(ySize))
 
     test = dict()
 
