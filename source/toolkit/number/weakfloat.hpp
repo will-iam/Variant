@@ -105,6 +105,6 @@ class weakfloat {
     float _f;
 };
 
-void test_weak_float();
+bool test_weak_float();
 
 #endif

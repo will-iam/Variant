@@ -13,8 +13,15 @@ ratioThreadsCores = [1.0]
 SDSratioList = [1.0] #[1.0, 4.0]
 SDScommonDivider = [0.0]
 SDDSizeList = range(minSdd, maxSdd)
-engineOptionDict['precision'] = 'double'
+#engineOptionDict['precision'] = 'weak25'
 engineOptionDict['compiler'] = 'gnu'
+
+precisionList = ['weak8', 'weak9', 'weak10', 'weak11', 'weak12', 'weak13',
+             'weak14', 'weak15', 'weak16', 'weak17', 'weak18', 'weak19',
+             'weak20', 'weak21', 'weak22', 'weak23', 'weak24', 'weak25',
+             'weak26', 'weak27', 'weak28', 'weak29', 'weak30', 'weak31',
+             'float', 'double', 'long_double', 'quad'
+            ]
 
 #sizeList = [(64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024)]
 #sizeList = [(256, 256), (512, 512), (1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]
@@ -22,11 +29,11 @@ engineOptionDict['compiler'] = 'gnu'
 #sizeList = [(1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]
 #sizeList = [(4096, 4096), (8192, 8192)]
 #sizeList = [(64, 64), (128, 128), (256, 256)]
-#sizeList = [(64, 1)]
 #sizeList = [(1, 64)]
 #sizeList = [(64, 64)]
-#sizeList = [(256,256)]
-sizeList = [(128,128)]
+sizeList = [(64, 1)]
+#sizeList = [(64,1), (128,1), (256,1), (512,1), (1024,1), (2048,1), (4096,1)]
+#sizeList = [(128,128)]
 #sizeList = [(1024,1024)]
 #sizeList = [(256, 1)]
 #sizeList = [(1024, 1)]
@@ -44,34 +51,36 @@ sizeList = [(128,128)]
 #sizeList = [(6291456, 1)]
 
 testBattery = dict()
-for size in sizeList:
-    xSize = size[0]
-    ySize = size[1]
-    cn = "%s%sx%s" % (case_name, str(xSize), str(ySize))
+for precision in reversed(precisionList):
     test = dict()
+    test['precision'] = precision
+    for size in sizeList:
+        xSize = size[0]
+        ySize = size[1]
+        cn = "%s%sx%s" % (case_name, str(xSize), str(ySize))
 
-    if case_name == 'nSod':
-        test['solver'] = 'sod'
-    if case_name == 'nSedov':
-        test['solver'] = 'sedov'
-    if case_name == 'nNoh':
-        test['solver'] = 'noh'
+        if case_name == 'nSod':
+            test['solver'] = 'sod'
+        if case_name == 'nSedov':
+            test['solver'] = 'sedov'
+        if case_name == 'nNoh':
+            test['solver'] = 'noh'
 
-#    for p in range(minSdd, maxSdd):
-    for p in range(maxSdd - 1, maxSdd):
-#    for p in range(minSdd - 1, minSdd):
-#    for p in range(minSdd, minSdd + 1):
-        for SDSratio in SDSratioList:
-            nSDD_X = 2**(p)
-            test['nSDD'] = (nSDD_X, 1)
-            nSDD = test['nSDD'][0] * test['nSDD'][1]
-            test['nCoresPerSDD'] = float(nTotalCores / nSDD)
-            test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratioThreadsCores[0])])
-            test['nSDS'] = int(test['nThreads'] * SDSratio)
-            test['nCommonSDS'] = int(test['nSDS'] * SDScommonDivider[0])
-            if test['nSDS'] > (xSize * ySize / nSDD):
-                raise ValueError("Not enough cell in your case: %s > %s" % (test['nSDS'], xSize * ySize / nSDD))
-            testBattery.setdefault(cn, list()).append(copy.copy(test))
+    #    for p in range(minSdd, maxSdd):
+    #    for p in range(maxSdd - 1, maxSdd):
+    #    for p in range(minSdd - 1, minSdd):
+        for p in range(minSdd, minSdd + 1):
+            for SDSratio in SDSratioList:
+                nSDD_X = 2**(p)
+                test['nSDD'] = (nSDD_X, 1)
+                nSDD = test['nSDD'][0] * test['nSDD'][1]
+                test['nCoresPerSDD'] = float(nTotalCores / nSDD)
+                test['nThreads'] = np.max([1, int(test['nCoresPerSDD'] * ratioThreadsCores[0])])
+                test['nSDS'] = int(test['nThreads'] * SDSratio)
+                test['nCommonSDS'] = int(test['nSDS'] * SDScommonDivider[0])
+                if test['nSDS'] > (xSize * ySize / nSDD):
+                    raise ValueError("Not enough cell in your case: %s > %s" % (test['nSDS'], xSize * ySize / nSDD))
+                testBattery.setdefault(cn, list()).append(copy.copy(test))
 
 battery = compileTestBattery([testBattery], SDSgeom, nruns)
 runTestBattery(engineOptionDict, battery)

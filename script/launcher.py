@@ -120,6 +120,9 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
 
+    # Set the engine options from the test
+    engineOptionDict['precision'] = test['precision']
+
     # Define paths
     project_name = engineOptionDict['project_name']
     case_path_suffix = get_case_path_suffix(project_name, case_name)

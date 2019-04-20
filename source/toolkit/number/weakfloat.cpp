@@ -2,7 +2,7 @@
 #include <limits>
 #include <iomanip>
 
-void test_weak_float() {
+bool test_weak_float() {
     std::cout << "TEST WEAK FLOAT: " << PRECISION_WEAK_FLOAT << std::endl;
 
     srand (time(NULL));
@@ -51,8 +51,10 @@ void test_weak_float() {
     std::cout << PRECISION_WEAK_FLOAT << ": " << std::hexfloat << w << " = " << std::defaultfloat << w << std::endl;
     auto w2 = w + w;
     if (w2.truncated() == false)
-        std::cout << "EXIT." << std::endl;
+        return false;
+
     std::cout << PRECISION_WEAK_FLOAT << " + : " << std::hexfloat << w2 << " = " << std::defaultfloat << w2 << std::endl;
 
     std::cout << std::endl;
+    return true;
 }

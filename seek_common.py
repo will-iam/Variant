@@ -59,7 +59,6 @@ engineOptionDict = {
 'project_name': args.project_name,
 'compiler': 'mpi',
 'mode': 'release' if not args.debug else 'debug',
-'precision': 'double',
 'std': 'c++17',
 'must_compile': not args.nocompile,
 'vtune': args.vtune,
