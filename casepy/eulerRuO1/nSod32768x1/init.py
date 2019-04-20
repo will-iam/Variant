@@ -1,7 +1,6 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-import __future__
 import numpy as np
 from math import sqrt, sin
 import sys
@@ -27,23 +26,17 @@ quantityDict = dict()
 # rho initial state
 # ------------------------------------------------------------------------------
 rho_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
-rhou_x_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
-rhou_y_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
-rhoE_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
-
-u0=1.0
-rho0=1.0
-
+rhoe_uid_to_val = np.zeros((Nx*Ny), dtype = np.dtype(Decimal))
 for i in range(Nx):
     for j in range(Ny):
-        x=(i+1.0/2.0)*dx
-        y=(j+1.0/2.0)*dy
         coords = coords_to_uid[(i, j)]
-        rho_uid_to_val[coords] = rho0
-        if i>0 or j>0:
-            rhou_x_uid_to_val[coords] = -u0*x/sqrt(x**2+y**2)*rho0
-            rhou_y_uid_to_val[coords] = -u0*y/sqrt(x**2+y**2)*rho0
-            rhoE_uid_to_val[coords] = 1.0/2.0*u0**2*rho0          #Kinetic energy at t=0
+        P = 1.0
+        if i <= Nx / 2 and j <= Ny / 2:
+            rho_uid_to_val[coords] = 1#float(i) / Nx
+        else:
+            P = 0.1
+            rho_uid_to_val[coords] = 0.125
+        rhoe_uid_to_val[coords] = P / (gamma - 1.0)
 
 # ------------------------------------------------------------------------------
 # Boundary conditions
@@ -53,23 +46,23 @@ coords_to_bc = dict()
 for k in range(1, BClayer + 1):
     # Left border
     for j in range(-k, Ny - 1 + k):
-        coords_to_bc[(-k, j)] = {BCtype: {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": -1, "rhou_y": 1}}
+        uy = 1 if j >= 0 and j < Ny else -1
+        coords_to_bc[(-k, j)] = {BCtype: {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": -1, "rhou_y": uy}}
 
     # Top border
     for i in range(-k, Nx - 1 + k):
-        x=(i+1.0/2.0)*dx
-        y=(Ny+1.0/2.0)*dy
-        coords_to_bc[(i, Ny - 1 + k)] = {'D': {"rho": rho0, "rhoE": 1/2*u0**2*rho0, "pressure": 0,"rhou_x": -u0*x/sqrt(x**2+y**2)*rho0, "rhou_y": -u0*y/sqrt(x**2+y**2)*rho0}}
+        ux = 1 if i >= 0 and i < Nx else -1
+        coords_to_bc[(i, Ny - 1 + k)] = {BCtype: {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": ux, "rhou_y": -1}}
 
     # Right border
     for j in range(Ny, -k, -1):
-        x=(Nx+1.0/2.0)*dx
-        y=(j+1.0/2.0)*dy
-        coords_to_bc[(Nx - 1 + k, j)] = {'D': {"rho": rho0, "rhoE": 1/2*u0**2*rho0, "pressure": 0,"rhou_x": -u0*x/sqrt(x**2+y**2)*rho0, "rhou_y": -u0*y/sqrt(x**2+y**2)*rho0}}
+        uy = 1 if j >= 0 and j < Ny else -1
+        coords_to_bc[(Nx - 1 + k, j)] = {BCtype: {"rho": 1, "rhoE": 1, "pressure": 1,"rhou_x": -1, "rhou_y": uy}}
 
     # Bottom border
     for i in range(Nx, -k, -1):
-        coords_to_bc[(i, -k)] = {BCtype: {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": 1, "rhou_y": -1}}
+        ux = 1 if i >= 0 and i < Nx else -1
+        coords_to_bc[(i, -k)] = {BCtype: {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": ux, "rhou_y": -1}}
 
 
 # Merging uid and bc dictionaries
@@ -84,10 +77,5 @@ for coord in coords_to_bc:
 # ------------------------------------------------------------------------------
 
 # Add quantities to the quantity dictionary
-
-
-
 quantityDict['rho'] = rho_uid_to_val
-quantityDict['rhou_x'] = rhou_x_uid_to_val
-quantityDict['rhou_y'] = rhou_y_uid_to_val
-quantityDict['rhoE'] = rhoE_uid_to_val
+quantityDict['rhoE'] = rhoe_uid_to_val

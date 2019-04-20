@@ -189,7 +189,7 @@ int IO::writeQuantity(std::string directory, std::string quantityName, const Dom
         return 1;
     }
 
-    ofs << std::setprecision(std::numeric_limits<real>::max_digits10);
+    ofs << std::setprecision(Number::max_digits10);
     for (unsigned int i = 0; i < sdd.getSizeX(); ++i) {
         for (unsigned int j = 0; j < sdd.getSizeY(); ++j) {
             ofs << i << " " << j << " " << sdd.getValue(quantityName, i, j) << std::endl;

@@ -16,12 +16,18 @@ SDDSizeList = range(minSdd, maxSdd)
 #engineOptionDict['precision'] = 'weak25'
 engineOptionDict['compiler'] = 'gnu'
 
-precisionList = ['weak8', 'weak9', 'weak10', 'weak11', 'weak12', 'weak13',
-             'weak14', 'weak15', 'weak16', 'weak17', 'weak18', 'weak19',
-             'weak20', 'weak21', 'weak22', 'weak23', 'weak24', 'weak25',
-             'weak26', 'weak27', 'weak28', 'weak29', 'weak30', 'weak31',
-             'float', 'double', 'long_double', 'quad'
+precisionList = [
+            #'weak8', 'weak9', 'weak10', // failed on nSod64x1
+            #'weak11', // failed on nSod256x1
+            #'weak12', // failed on nSod512x1
+            #'weak13', // failed on nSod2048
+            #'weak14', // failed on nSod4096
+            'weak15', 'weak16', 'weak17', 'weak18', 'weak19',
+            'weak20', 'weak21', 'weak22', 'weak23', 'weak24', 'weak25',
+            'weak26', 'weak27', 'weak28', 'weak29', 'weak30', 'weak31',
+            'weak32', 'float', 'double', 'long_double', 'quad'
             ]
+#precisionList = ['weak32']
 
 #sizeList = [(64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024)]
 #sizeList = [(256, 256), (512, 512), (1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]
@@ -31,8 +37,9 @@ precisionList = ['weak8', 'weak9', 'weak10', 'weak11', 'weak12', 'weak13',
 #sizeList = [(64, 64), (128, 128), (256, 256)]
 #sizeList = [(1, 64)]
 #sizeList = [(64, 64)]
-sizeList = [(64, 1)]
+#sizeList = [(64, 1)]
 #sizeList = [(64,1), (128,1), (256,1), (512,1), (1024,1), (2048,1), (4096,1)]
+sizeList = [(4096,1), (8192,1), (16384, 1), (32768, 1)]
 #sizeList = [(128,128)]
 #sizeList = [(1024,1024)]
 #sizeList = [(256, 1)]

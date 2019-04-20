@@ -7,7 +7,7 @@
     // Compile with a weak_float as precise as a standard float
     #define PRECISION_WEAK_FLOAT 32
 #else
-    static_assert(PRECISION_WEAK_FLOAT < 32);
+    static_assert(PRECISION_WEAK_FLOAT < 33);
     static_assert(PRECISION_WEAK_FLOAT > 7);
 #endif
 
@@ -34,6 +34,11 @@ class weakfloat {
     void trunc(float& f) {
         unsigned int *c = reinterpret_cast<unsigned int*>(&f);
         *c &= _trunc[N];
+
+        // Here set the different rounding modes:
+        // upward:   if f & 0x00...01 then f += 0x000...01
+        // downward: if f & 0x00...01 then f -= 0x000...01
+        // etc.
     }
 
     bool truncated() {

@@ -91,12 +91,6 @@ int Engine::main(int argc, char** argv) {
         cout << "\t- and most important ......... think category theory." << Console::_normal << endl;
         #endif
 
-        // std::cout << "float::digits = " << std::numeric_limits<float>::digits << std::endl;
-        // std::cout << "float::digits10 = " << std::numeric_limits<float>::digits10 << std::endl;
-        // std::cout << "float::max_digits10 = " << std::numeric_limits<float>::max_digits10 << std::endl;
-        // std::cout << "max double" << std::numeric_limits<double>::max_digits10 << std::endl;
-        // std::cout << std::scientific << std::hexfloat
-
         #if defined (PRECISION_WEAK_FLOAT)
         std::cout << Console::_green << "Precision set to " << Console::_bold << "weak float " << PRECISION_WEAK_FLOAT << " (" << Number::max_digits10 << " decimal digits)."  << Console::_normal << std::endl;
         #endif

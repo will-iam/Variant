@@ -26,6 +26,6 @@ And finally to visualize the results.
 
 ```
 python3 script/study/visualize.py eulerRuO1 --case nSedov256x256 --solver sedov
-python3 script/study/plot.py eulerRuO1 --case nSedov256x256 --solver sedov --axis r --quant energy
-python3 script/study/order.py eulerRuO1 --case nSedov --solver sedov
+python3 script/study/plot.py eulerRuO1 --case nSedov256x256 --solver sedov --axis xy --quant energy
+python3 script/study/order.py eulerRuO1 --case nSod --solver sod
 ```

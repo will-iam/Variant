@@ -92,8 +92,8 @@
 
 namespace Number {
 #if defined (PRECISION_WEAK_FLOAT)
-    //constexpr int max_digits10 = std::ceil((PRECISION_WEAK_FLOAT - 8) * std::log10(2) + 1); //log(PRECISION_WEAK_FLOAT - 8);
-    const int max_digits10 = std::numeric_limits<float>::max_digits10;
+    constexpr int max_digits10 = std::ceil((PRECISION_WEAK_FLOAT - 8) * std::log10(2) + 1.1);
+    //const int max_digits10 = std::numeric_limits<float>::max_digits10;
     const real maxprecision = powf(10.0f, max_digits10);
     const real unit = real(1.0f);
     const real zero = real(0.0f);

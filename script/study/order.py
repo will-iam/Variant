@@ -1,7 +1,6 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-import __future__
 from common import *
 sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
 sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
@@ -9,24 +8,29 @@ sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
 import error_norm
 
 # Find all results you can get.
-cases_dir = config.cases_dir
-case_dir_path = os.path.join(cases_dir, args.project_name)
+ref_path = os.path.join(config.case_ref, args.project_name)
 
-print("Looking for results in %s for case like %s ..." % (case_dir_path, args.case))
+print("Looking for results in %s for case like %s ..." % (ref_path, args.case))
+rawCaseList = [d for d in os.listdir(ref_path) if os.path.isdir(os.path.join(ref_path, d)) and d.startswith(args.case)]
+q_name =  "rho" # args.quant # energy, u, rho
 
-rawCaseList = [d for d in os.listdir(case_dir_path)
-    if os.path.isdir(os.path.join(case_dir_path, d)) and d.startswith(args.case)]
-
-q_name = "rho"
+precisionList = [ 'weak8', 'weak9', 'weak10', 'weak11', 'weak12', 'weak13',
+                  'weak14', 'weak15', 'weak16', 'weak17', 'weak18', 'weak19',
+                  'weak20', 'weak21', 'weak22', 'weak23', 'weak24', 'weak25',
+                  'weak26', 'weak27', 'weak28', 'weak29', 'weak30', 'weak31',
+                  'weak32', 'float', 'double', 'long_double', 'quad']
 
 # Compute order values
 rounding = ['average', 'upward', 'downward', 'toward_zero', 'farthest', 'nearest']
 order = dict()
 for m in rounding:
-    order[m] = {'float': dict(), 'double': dict()}
+    order[m] = {}
+    for pr in precisionList:
+        order[m][pr] = dict()
+
     for o in order[m]:
         for d in rawCaseList:
-            f = os.path.join(case_dir_path, d, 'ref', o, m)
+            f = os.path.join(ref_path, d, 'ref', o, m)
             if not os.path.isdir(f):
                 continue
             if not os.path.isfile(os.path.join(f, 'error.dat')):
@@ -35,7 +39,7 @@ for m in rounding:
                 err = error_norm.compute(f, ["rho"], args.solver)
                 if err == None:
                     continue
-                    
+
                 print("err =", err)
                 error_norm.save(f, err)
                 order[m][o][err['N']] = err['rho']
@@ -47,28 +51,32 @@ for m in rounding:
     print("%s: found %s references in simple precision, %s in double precision for the nearest rounding mode." % (m, len(order[m]['float']), len(order[m]['double'])))
 
 # Compute order values
-random = {'float': dict(), 'double': dict()}
-sigma = {'float': dict(), 'double': dict()}
+random = dict()
+sigma = dict()
+for pr in precisionList:
+    random[pr] = dict()
+    sigma[pr] = dict()
+
 for o in random:
     for d in rawCaseList:
-        f = os.path.join(case_dir_path, d, 'ref', o, 'random')
+        f = os.path.join(ref_path, d, 'ref', o, 'random')
         if not os.path.isdir(f):
             continue
 
         if not os.path.isfile(os.path.join(f, 'error.dat')):
             continue
-        
+
         err_list = error_norm.load(f)
         for err in err_list:
             random[o].setdefault(int(err['N']), list()).append(err['rho'])
-        
+
         for N in random[o]:
             std = np.std(random[o][N])
             if std > 1e-10: #beyond it's neglectible.
                 sigma[o][N] = np.std(random[o][N])
 
 for o in random:
-    for N in sigma[o]:        
+    for N in sigma[o]:
         print("%s - N: %s (%s), std-deviation = %s, random point number: %s %s" % (o, N, np.sqrt(N), sigma[o][N], len(random[o][N]), '< 33' if len(random[o][N]) < 33 else ''))
 
 print("Found %s references in simple precision, %s in double precision for the random rounding mode." % (len(random['float']), len(random['double'])))
@@ -102,10 +110,9 @@ y = first_value / (x / first_N)
 ax1.plot(x, y,linewidth=1.5, linestyle='dashed', color='black', label="extrap.")
 
 for m in rounding:
-    if len(order[m]['float']):
-        ax1.plot(sorted(order[m]['float']), [order[m]['float'][v] for v in sorted(order[m]['float'])], marker='+', linewidth=1.0, label="float " + m)
-    if len(order[m]['double']):
-        ax1.plot(sorted(order[m]['double']), [order[m]['double'][v] for v in sorted(order[m]['double'])], marker='+', linewidth=1.1, label="double " + m)
+    for pr in precisionList:
+        if len(order[m][pr]):
+            ax1.plot(sorted(order[m][pr]), [order[m][pr][v] for v in sorted(order[m][pr])], marker='+', linewidth=1.0, label="%s %s" % (pr, m))
 
 for N in random['float']:
     ax1.plot(np.ones(len(random['float'][N])) * N, random['float'][N] , 'bx')
