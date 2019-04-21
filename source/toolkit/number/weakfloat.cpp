@@ -12,8 +12,8 @@ bool test_weak_float() {
     std::cout << "\tXX | " << std::defaultfloat << m << " | " << std::hexfloat << m << std::endl;
     std::cout << "\t" << PRECISION_WEAK_FLOAT << " | " << std::defaultfloat << w1 << " | " << std::hexfloat << w1 << std::endl;
 
-    float f1 = static_cast <float> (rand() / (float)RAND_MAX);
-    float f2 = static_cast <float> (rand() / (float)RAND_MAX);
+    float f1 = static_cast <float> (100. * rand() / (float)RAND_MAX);
+    float f2 = static_cast <float> (100. * rand() / (float)RAND_MAX);
     unsigned int u = rand();
 
     w1 = f1;
@@ -90,8 +90,20 @@ bool test_weak_float() {
         return false;
 
     std::cout << std::defaultfloat;
-    std::cout << "\t" << PRECISION_WEAK_FLOAT << " | " << std::setprecision(max_digits10) << w1 << "(" << max_digits10 << ") | " << std::setprecision(std::numeric_limits<float>::max_digits10) << w1 << "(" << max_digits10 << ")" << std::endl;
-    std::cout << "\t" << PRECISION_WEAK_FLOAT << " | " << std::setprecision(max_digits10) << w1 << "(" << max_digits10 << ") | " << std::setprecision(std::numeric_limits<float>::max_digits10) << w1 << "(" << max_digits10 << ")" << std::endl;
+    std::cout << "\t" << PRECISION_WEAK_FLOAT << " | " << std::setprecision(max_digits10) << w1 << "(" << max_digits10 << ") | " << std::setprecision(std::numeric_limits<float>::max_digits10) << w1 << "(" << std::numeric_limits<float>::max_digits10 << ")" << std::endl;
+    std::cout << "\t" << PRECISION_WEAK_FLOAT << " | " << std::setprecision(max_digits10) << w2 << "(" << max_digits10 << ") | " << std::setprecision(std::numeric_limits<float>::max_digits10) << w2 << "(" << std::numeric_limits<float>::max_digits10 << ")" << std::endl;
+
+    float fa(31.999999);
+    float fb(32.000003);
+    float fc = 32.0 + pow(2, (8 - PRECISION_WEAK_FLOAT));
+
+    std::cout << "\tROUNDING<" << PRECISION_WEAK_FLOAT << ">: " << std::setprecision(std::numeric_limits<float>::max_digits10) << fa << " -> " << std::setprecision(max_digits10) << weakfloat<PRECISION_WEAK_FLOAT>(fa) << std::endl;
+    std::cout << "\tROUNDING<" << PRECISION_WEAK_FLOAT << ">: " << std::setprecision(std::numeric_limits<float>::max_digits10) << fb << " -> " << std::setprecision(max_digits10) << weakfloat<PRECISION_WEAK_FLOAT>(fb) << std::endl;
+    std::cout << "\tROUNDING<" << PRECISION_WEAK_FLOAT << ">: " << std::setprecision(std::numeric_limits<float>::max_digits10) << fc << " -> " << std::setprecision(max_digits10) << weakfloat<PRECISION_WEAK_FLOAT>(fc) << std::endl;
+
+    std::cout << "\tROUNDING<" << PRECISION_WEAK_FLOAT << ">: " << std::setprecision(std::numeric_limits<float>::max_digits10) << -fa << " -> " << std::setprecision(max_digits10) << weakfloat<PRECISION_WEAK_FLOAT>(-fa) << std::endl;
+    std::cout << "\tROUNDING<" << PRECISION_WEAK_FLOAT << ">: " << std::setprecision(std::numeric_limits<float>::max_digits10) << -fb << " -> " << std::setprecision(max_digits10) << weakfloat<PRECISION_WEAK_FLOAT>(-fb) << std::endl;
+    std::cout << "\tROUNDING<" << PRECISION_WEAK_FLOAT << ">: " << std::setprecision(std::numeric_limits<float>::max_digits10) << -fc << " -> " << std::setprecision(max_digits10) << weakfloat<PRECISION_WEAK_FLOAT>(-fc) << std::endl;
 
     std::cout << std::endl;
 

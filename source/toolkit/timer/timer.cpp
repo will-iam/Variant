@@ -57,7 +57,7 @@ void pretty(double ms) {
                 std::cout << h << "." << m << "'" << s << "''" << ms;
             }
         }
-    } 
+    }
 }
 
 void Timer::reportLast() {
@@ -82,7 +82,7 @@ void Timer::reportTotal() {
 
     pretty(ms);
     if (_lastTotalPrinted > 0.) {
-        std::cout << "(+";
+        std::cout << " (+";
         pretty(ms - _lastTotalPrinted);
         std::cout << ")";
     }

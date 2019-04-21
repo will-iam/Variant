@@ -41,7 +41,7 @@ void showbits(T n) {
 void TimeStamp::printLocalTime(time_t t) {
     tm thread_safe;
     tm *now=localtime_r(&t, &thread_safe);
-    printf("[%i/%i/%i, %i:%i:%i %s]", now->tm_mday, now->tm_mon+1, now->tm_year+1900,  now->tm_hour, now->tm_min, now->tm_sec, now->tm_zone);
+    printf("[%02d/%02d/%i, %02d:%02d:%02d %s]", now->tm_mday, now->tm_mon+1, now->tm_year+1900,  now->tm_hour, now->tm_min, now->tm_sec, now->tm_zone);
 
     assert(thread_safe.tm_year == now->tm_year);
     assert(thread_safe.tm_mon == now->tm_mon);
@@ -59,7 +59,7 @@ void TimeStamp::printLocalTime(time_t t) {
 void TimeStamp::printGmtTime(time_t t) {
     tm thread_safe;
     tm *now=gmtime_r(&t, &thread_safe);
-    printf("[%i/%i/%i, %i:%i:%i %s]", now->tm_mday, now->tm_mon+1, now->tm_year+1900,  now->tm_hour, now->tm_min, now->tm_sec, now->tm_zone);
+    printf("[%02d/%02d/%i, %02d:%02d:%02d %s]", now->tm_mday, now->tm_mon+1, now->tm_year+1900,  now->tm_hour, now->tm_min, now->tm_sec, now->tm_zone);
 
     assert(thread_safe.tm_year == now->tm_year);
     assert(thread_safe.tm_mon == now->tm_mon);

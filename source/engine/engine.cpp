@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <cfenv>
 #include "timestamp/timestamp.hpp"
 #include "exception/exception.hpp"
 #include "IO.hpp"
@@ -38,26 +39,41 @@ int Engine::main(int argc, char** argv) {
     const int stringsize = 180;
     char initfile[ stringsize ];
     char outputpath[ stringsize ];
+    char roundingmode[ stringsize ];
     bool outputpathSet = false;
     _testFlag = 0;
     _dryFlag = 0;
     struct option long_options[] = {
-        {"test", 0, &_testFlag, true},
-        {"dry", 0, &_dryFlag, true},
+        {"test", no_argument, nullptr, 't'},
+        {"dry", no_argument, nullptr, 'd'},
+        {"rounding", required_argument, nullptr, 'r'},
+        {"output", required_argument, nullptr, 'o'},
+        {"input", required_argument, nullptr, 'i'},
+        {"help", no_argument, nullptr, 'h'},
         {NULL, 0, NULL, 0}
     };
 
     std::map<std::string, int> perfResults;
 
     int option_index = 0;
-    while ((flag = getopt_long(argc, argv, "i:o:h", long_options, &option_index)) != EOF) {
+    while ((flag = getopt_long(argc, argv, "tdr:i:o:h", long_options, &option_index)) != EOF) {
         switch(flag){
-
             case 0:
                 //printf ("option %s", long_options[option_index].name);
                 //if (optarg)
                 //    printf (" with arg %s", optarg);
                 //printf ("\n");
+                break;
+            case 't':
+                _testFlag = 1;
+                break;
+
+            case 'd':
+                _dryFlag = 1;
+                break;
+
+            case 'r':
+                strlcpy(roundingmode, optarg, stringsize);
                 break;
 
             case 'i':
@@ -77,6 +93,40 @@ int Engine::main(int argc, char** argv) {
                 return EXIT_SUCCESS;
         }
     }
+
+    if (std::string(roundingmode) == "upward")
+        fesetround(FE_UPWARD);
+
+    if (std::string(roundingmode) == "downward")
+        fesetround(FE_DOWNWARD);
+
+    if (std::string(roundingmode) == "toward_zero")
+        fesetround(FE_TOWARDZERO);
+
+    int rmode = fegetround();
+    printf ("rounding using ");
+    switch (rmode) {
+        case FE_DOWNWARD:
+            printf ("downward (%i)\n", FE_DOWNWARD);
+            break;
+        case FE_TONEAREST:
+            printf ("to-nearest (%i)\n", FE_TONEAREST);
+            break;
+        case FE_TOWARDZERO:
+            printf ("toward-zero (%i)\n", FE_TOWARDZERO);
+            break;
+        case FE_UPWARD:
+            printf ("upward (%i)\n", FE_UPWARD);
+            break;
+        default:
+            printf ("unknown\n");
+            return EXIT_FAILURE;
+    }
+
+    #if defined (PRECISION_WEAK_FLOAT)
+        // rounding mode must be initialized.
+        weakfloat<PRECISION_WEAK_FLOAT>::init(rmode);
+    #endif
 
     if (_MPI_rank == 0) {
 
@@ -108,7 +158,7 @@ int Engine::main(int argc, char** argv) {
         #endif
 
         std::cout << Console::_blue;
-        std::cout << "Show cosinus and sqrt values to test rounding mode:" << std::endl;
+        std::cout << "Show cosinus and sqrt values to test rounding mode and precision:" << std::endl;
         std::cout << std::setprecision(Number::max_digits10) << std::scientific;
 
         #if defined (PRECISION_WEAK_FLOAT)

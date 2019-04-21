@@ -120,15 +120,18 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             print('Cannot start a test in pure sequential mode with these options.')
             sys.exit(1)
 
-    # Set the engine options from the test
-    engineOptionDict['precision'] = test['precision']
+    # If specific options are given, they replace the default ones.
+    if 'precision' in test:
+        engineOptionDict['precision'] = test['precision']
+    if 'rounding' in test:
+        engineOptionDict['rounding'] = test['rounding']
 
     # Define paths
     project_name = engineOptionDict['project_name']
     case_path_suffix = get_case_path_suffix(project_name, case_name)
     icond_path = os.path.join(config.case_ic, case_path_suffix)
     input_path = os.path.join(config.case_input, case_path_suffix, "init")
-    refer_path = os.path.join(config.case_ref, case_path_suffix, get_ref_name(engineOptionDict['precision'], engineOptionDict['verrou']))
+    refer_path = os.path.join(config.case_ref, case_path_suffix, get_ref_name(engineOptionDict['precision'], engineOptionDict['rounding']))
 
     # Delete reference to trigger a new computation.
     if forceref == True:
@@ -143,7 +146,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     # Don't create or compare with reference if rounding mode is random: non sense.
     if fastref == True or compare_with_ref == True:
-        if engineOptionDict['verrou'] == 'random' or engineOptionDict['verrou'] == 'average':
+        if engineOptionDict['rounding'] == 'random' or engineOptionDict['rounding'] == 'average':
             print('Rounding mode not allowed to create a reference.')
             sys.exit(1)
 
@@ -178,7 +181,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
     engine = Engine(engineOptionDict, engineOptionDict['must_compile'])
 
     print(COLOR_BLUE + "Calling engine" + COLOR_ENDC)
-    run_option = [] if compare_with_ref == True or fastref == True or engineOptionDict['verrou'] != None else ['--dry']
+    run_option = [] if compare_with_ref == True or fastref == True or engineOptionDict['rounding'] != None else ['--dry']
 
     engine.run(split_path, output_path, engineOptionDict['node_number'], nSDD_X * nSDD_Y, int(np.ceil(test['nCoresPerSDD'])), run_option)
     end = timer()
@@ -209,7 +212,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             sdd.merge_quantity(output_path, refer_path, q_str)
 
     # Export error norm
-    if engineOptionDict['verrou'] != None and engineOptionDict['verrou'] != 'nearest':
+    if engineOptionDict['rounding'] != None and engineOptionDict['rounding'] != 'nearest':
         print(COLOR_BLUE + "Merging final data" + COLOR_ENDC)
         sdd.merge_domain(output_path, refer_path)
         # Merge everything first.
@@ -217,10 +220,10 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
             sdd.merge_quantity(output_path, refer_path, q_str)
 
         # Then compute the errors.
-        err = error_norm.compute(refer_path, qty_name_list, test['solver'])
+        err = script.error_norm.compute(refer_path, qty_name_list, test['solver'])
 
         # Save errors in ref path.
         if err is not None:
-            error_norm.save(refer_path, err)
+            script.error_norm.save(refer_path, err)
 
     return output_path, int((end - start) * 1000)

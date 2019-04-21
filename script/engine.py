@@ -19,7 +19,7 @@ class Engine:
         self._gdb = engineOptionDict['gdb']
         self._vtune = engineOptionDict['vtune']
         self._valgrind = engineOptionDict['valgrind']
-        self._verrou = engineOptionDict['verrou']
+        self._rounding = engineOptionDict['rounding']
 
         if clean:
             self._clean(self._project_name, self._compiler, self._mode, self._precision, self._std)
@@ -85,38 +85,47 @@ class Engine:
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ma', '-collect', 'memory-access']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-mc', '-collect', 'memory-consumption']
             #cmd = cmd + ['amplxe-cl', '-r', 'report-vtune-ge', '-collect', 'general-exploration']
-        elif self._verrou is not None:
-            if self._verrou == 'check':
+        elif self._rounding is not None:
+            if self._rounding == 'check':
                 cmd = ['valgrind', '--tool=none'] + cmd
             else:
                 # --rounding-mode=<random|average|upward|downward|toward_zero|farthest|float|nearest>
-                #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
-                
-                if self._precision != 'quad': 
+                if self._precision == 'quad' or self._precision.startswith('weak'):
+                    if self._rounding not in ['nearest', 'upward', 'downward', 'toward_zero']:
+                        print("Precision %s and rounding mode %s are not compatible." % (self._precision, self._rounding))
+                        sys.exit(1)
+
+                # For the specific verrou rounding modes, we must use verrou
+                if self._rounding not in ['nearest', 'upward', 'downward', 'toward_zero']:
                     f = open("list.ex", "w")
                     ldd = subprocess.check_output(["ldd", self._binary_path])
                     for lib in ldd.split():
                         if 'libm' in str(lib) and "/" in str(lib):
                             f.write("*\t%s\n" % lib.decode("utf-8"))
-                    
+
                     ldd = subprocess.check_output(["ldd", "./lib/interlibmath.so"])
                     for lib in ldd.split():
                         if 'libquad' in str(lib) and "/" in str(lib):
                             f.write("*\t%s\n" % lib.decode("utf-8"))
 
                     f.close()
-                
-                    os.environ['VERROU_ROUNDING_MODE'] = self._verrou
+                    #os.environ['VERROU_LIBM_ROUNDING_MODE'] = "nearest"
+                    os.environ['VERROU_ROUNDING_MODE'] = self._rounding
                     os.environ['LD_PRELOAD'] = "./lib/interlibmath.so"
-
-
-                cmd = ['valgrind', '--tool=verrou', '--rounding-mode=' + self._verrou, '--demangle=no', '--exclude=list.ex'] + cmd
+                    cmd = ['valgrind', '--tool=verrou', '--rounding-mode=' + self._rounding, '--demangle=no', '--exclude=list.ex'] + cmd
+                else:
+                    # we simply use the environment variable
+                    if self._rounding == 'upward':
+                        run_option += ['--rounding', 'upward']
+                    if self._rounding == 'downward':
+                        run_option += ['--rounding', 'downward']
+                    if self._rounding == 'toward_zero':
+                        run_option += ['--rounding', 'toward_zero']
         '''
         # to add environment variable visible in this process + all children:
         os.environ['SCOREP_EXPERIMENT_DIRECTORY'] = project + 'weak.SDD' + str(mpi_nprocs) + '.r1'
         '''
-        
+
         cmd = cmd + [self._binary_path, '-i', input_path, '-o', output_path] + run_option
         print(' '.join(cmd))
         subprocess.check_call(cmd, env=dict(os.environ, SQSUB_VAR="visible in this subprocess"))
-

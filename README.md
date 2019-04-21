@@ -4,7 +4,7 @@
 
 Please fill in the config.py with your workspace directory, compiler commands and machine specifications.
 
-The verrou option will require [Verrou on GitHub](https://github.com/edf-hpc/verrou) which requires Valgrind.
+Some rouding modes are emulated with verrou [Verrou on GitHub](https://github.com/edf-hpc/verrou) which requires Valgrind.
 
 Requires:
 1. morden C++ compilers
@@ -16,7 +16,7 @@ Requires:
 Variant comes with two helper scripts that compile, build and run cases.
 
 ```
-python3 seek_optimal.py hydro4x1 --case nSod --core 2
+python3 seek_optimal.py hydro4x1 --case nSod --core 2 --rouding upward
 python3 seek_order.py eulerRuO1 --case Noh --core 2 --fastref
 ```
 

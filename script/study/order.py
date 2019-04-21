@@ -79,7 +79,8 @@ for o in random:
     for N in sigma[o]:
         print("%s - N: %s (%s), std-deviation = %s, random point number: %s %s" % (o, N, np.sqrt(N), sigma[o][N], len(random[o][N]), '< 33' if len(random[o][N]) < 33 else ''))
 
-print("Found %s references in simple precision, %s in double precision for the random rounding mode." % (len(random['float']), len(random['double'])))
+for pr in random:
+    print("Found %s references in %s precision for the random rounding mode." % (len(random[pr]), pr))
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)

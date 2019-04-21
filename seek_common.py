@@ -46,10 +46,10 @@ parser.add_argument("--gdb", action='store_true', default=False, help = "Enable 
 parser.add_argument("--test", action='store_true', default=False, help = "Show test to be run")
 parser.add_argument("--jobname", type = str, help = "On script to rule them all (the jobs).", default='unknown')
 parser.add_argument("--valgrind", action='store_true', default=False, help = "Run with valgrind memory check")
-parser.add_argument("--verrou", type = str, default='', help = "Enable verrou tool: nearest \
-    (default), upward, downward, toward zero are IEEE-754 compliant modes,\
+parser.add_argument("--rounding", type = str, default='nearest', help = "Switch rounding mode \
+    nearest (default), upward, downward, toward zero are IEEE-754 compliant modes,\
     random (asynchronous CESTAC method), average \"uniform_absolute output randomization\"\
-    in the MCA literature")
+    in the MCA literature, are emulated with verrou.")
 
 args = parser.parse_args()
 
@@ -65,7 +65,8 @@ engineOptionDict = {
 'gdb' : args.gdb,
 'valgrind' : args.valgrind,
 'node_number' : int(np.ceil(float(args.core) /config.core_per_node)),
-'verrou' : None if not args.verrou else args.verrou
+'precision': 'double',
+'rounding' : None if not args.rounding else args.rounding
 }
 
 # Define execution parameters
