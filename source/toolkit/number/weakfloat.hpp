@@ -37,7 +37,210 @@ const unsigned int _trunc_table[] = {
     0xffffff80, 0xffffffc0, 0xffffffe0, 0xfffffff0,
     0xfffffff8, 0xfffffffc, 0xfffffffe, 0xffffffff };
 
+
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+
+template<int N, int R>
+struct Trunc {
+    Trunc() = default;
+    Trunc(const Trunc&) = default;
+    void operator()(float &) const;
+};
+
+template<int N, int R>
+void Trunc<N, R>::operator()(float& f) const{
+    std::cout << "Warning...";
+    /*
+    // nothing to do here.
+    if (f == 0.f)
+        return;
+
+    unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+
+    // Truncate the same way whatever the sign is.
+    // case FE_TOWARDZERO: break;
+    if (R == FE_DOWNWARD) {
+        if (f > 0.f) {
+            *c &= _trunc_table[N];
+            return;
+        }
+
+        const unsigned int r = *c & (~_trunc_table[N]);
+        if (r == 0)
+            return;
+
+        float tmpf1(f);
+        unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
+        *tmpc1 &= _trunc_table[0]; // to get the order only
+        float tmpf2(tmpf1);
+        unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
+        *tmpc2 |= _ulp_table[N-1]; // gets the order and the ulp to add.
+        f += tmpf2;
+        f -= tmpf1;
+
+        *c &= _trunc_table[N];
+        return;
+    }
+
+    if (R == FE_UPWARD) {
+        if (f < 0.f) {
+            *c &= _trunc_table[N];
+            return;
+        }
+
+        const unsigned int r = *c & (~_trunc_table[N]);
+        if (r == 0)
+            return;
+
+        float tmpf1(f);
+        unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
+        *tmpc1 &= _trunc_table[0]; // to get the order only
+        float tmpf2(tmpf1);
+        unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
+        *tmpc2 |= _ulp_table[N-1]; // gets the order and the ulp to add.
+        f += tmpf2;
+        f -= tmpf1;
+        *c &= _trunc_table[N];
+        return;
+    }
+
+    if (R == FE_TONEAREST) {
+       const unsigned int r = *c & (~_trunc_table[N]);
+        if (r == 0)
+            return;
+
+        if (r >= _ulp_table[N]) {
+            float tmpf1(f);
+            unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
+            *tmpc1 &= _trunc_table[0]; // to get the order only
+            float tmpf2(tmpf1);
+            unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
+            *tmpc2 |= _ulp_table[N]; // gets the order and the ulp to add.
+            f += tmpf2;
+            f -= tmpf1;
+        }
+
+        *c &= _trunc_table[N];
+        return;
+    }
+
+    // This must be done for all.
+    *c &= _trunc_table[N];
+    */
+}
+
 template<int N>
+struct Trunc<N, FE_UPWARD> {
+    void operator()(float &f) const {
+        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+        if (f <= 0.f) {
+            *c &= _trunc_table[N];
+            return;
+        }
+
+        const unsigned int r = *c & (~_trunc_table[N]);
+        if (r == 0)
+            return;
+
+        float tmpf1(f);
+        unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
+        *tmpc1 &= 0xff800000; // to get the order only
+        float tmpf2(tmpf1);
+        unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
+        *tmpc2 |= _ulp_table[N-1]; // gets the order and the ulp to add.
+        f -= tmpf1;
+        f += tmpf2;
+        *c &= _trunc_table[N];
+    }
+};
+
+template<int N>
+struct Trunc<N, FE_DOWNWARD> {
+    void operator()(float &f) const {
+        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+        if (f >= 0.f) {
+            *c &= _trunc_table[N];
+            return;
+        }
+
+        const unsigned int r = *c & (~_trunc_table[N]);
+        if (r == 0)
+            return;
+
+        float tmpf1(f);
+        unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
+        *tmpc1 &= 0xff800000; // to get the order only
+        float tmpf2(tmpf1);
+        unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
+        *tmpc2 |= _ulp_table[N-1]; // gets the order and the ulp to add.
+        f -= tmpf1;
+        f += tmpf2;
+        *c &= _trunc_table[N];
+    }
+};
+
+template<int N>
+struct Trunc<N, FE_TOWARDZERO> {
+    void operator()(float &f) const {
+        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+        *c &= _trunc_table[N];
+    }
+};
+
+template<int N>
+struct Trunc<N, FE_TONEAREST> {
+    void operator()(float &f) const {
+
+        // nothing to do here.
+        //if (f == 0.f)
+        //    return;
+
+        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
+        const unsigned int r = *c & (~_trunc_table[N]);
+
+        if (r < _ulp_table[N]) {
+            *c &= _trunc_table[N];
+            return;
+        }
+
+        float tmpf1(f);
+        unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
+        *tmpc1 &= 0xff800000; // to get the order only
+        float tmpf2(tmpf1);
+        unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
+        *tmpc2 |= _ulp_table[N]; // gets the order and the ulp to add.
+        f -= tmpf1;
+        f += tmpf2;
+        *c &= _trunc_table[N];
+    }
+};
+
+/*
+template<>
+struct Trunc<32, FE_UPWARD> {
+    void operator()(float &) const {}
+};
+
+template<>
+struct Trunc<32, FE_DOWNWARD> {
+    void operator()(float &) const {}
+};
+
+template<>
+struct Trunc<32, FE_TOWARDZERO> {
+    void operator()(float &) const {}
+};
+
+template<>
+struct Trunc<32, FE_TONEAREST> {
+    void operator()(float &) const {}
+};
+*/
+#pragma GCC pop_options
+
+
+template<int N, int R>
 class weakfloat {
   public:
     weakfloat() : _f(0.f){}
@@ -45,104 +248,11 @@ class weakfloat {
     weakfloat(const int& i) : _f(i) { _trunc(_f); }
     weakfloat(const unsigned int& u) : _f(u) { _trunc(_f); }
     //weakfloat(const float&& f) : _f(f){}
-    weakfloat<N>& operator=(const float& f) {
+    weakfloat<N, R>& operator=(const float& f) {
       _f = f;
       _trunc(_f);
       return *this;
     }
-
-    static void init(int rounding_mode) {
-        rmode = rounding_mode;
-    }
-
-
-
- //static int getRoundingMode() {return rmode;}
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-    void _trunc(float& f) {
-        // nothing to do here.
-        if (f == 0.f)
-            return;
-
-        unsigned int *c = reinterpret_cast<unsigned int*>(&f);
-        // Here set the different rounding modes:
-        // upward:   if f & 0x00...01 then f += 0x000...01
-        // downward: if f & 0x00...01 then f -= 0x000...01
-        // etc.
-           
-
-        // Truncate the same way whatever the sign is.
-        // case FE_TOWARDZERO: break;
-        if (rmode == FE_DOWNWARD) {
-            if (f > 0.f) {
-                *c &= _trunc_table[N];
-                return;
-            }
-
-            const unsigned int r = *c & (~_trunc_table[N]);
-            if (r == 0)
-                return;
-
-            float tmpf1(f);
-            unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
-            *tmpc1 &= _trunc_table[0]; // to get the order only
-            float tmpf2(tmpf1);
-            unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
-            *tmpc2 |= _ulp_table[N-1]; // gets the order and the ulp to add.
-            f += tmpf2;
-            f -= tmpf1;
-
-            *c &= _trunc_table[N]; 
-            return;
-        } 
-
-        if (rmode == FE_UPWARD) {
-            if (f < 0.f) {
-                *c &= _trunc_table[N];
-                return;
-            }
-
-            const unsigned int r = *c & (~_trunc_table[N]);
-            if (r == 0)
-                return;
-
-            float tmpf1(f);
-            unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
-            *tmpc1 &= _trunc_table[0]; // to get the order only
-            float tmpf2(tmpf1);
-            unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
-            *tmpc2 |= _ulp_table[N-1]; // gets the order and the ulp to add.
-            f += tmpf2;
-            f -= tmpf1;
-            *c &= _trunc_table[N];
-            return;
-        }
-
-        if (rmode == FE_TONEAREST) {
-           const unsigned int r = *c & (~_trunc_table[N]);
-            if (r == 0)
-                return;
-
-            if (r >= _ulp_table[N]) {
-                float tmpf1(f);
-                unsigned int *tmpc1 = reinterpret_cast<unsigned int*>(&tmpf1);
-                *tmpc1 &= _trunc_table[0]; // to get the order onlyi
-                float tmpf2(tmpf1);
-                unsigned int *tmpc2 = reinterpret_cast<unsigned int*>(&tmpf2);
-                *tmpc2 |= _ulp_table[N]; // gets the order and the ulp to add.
-                f += tmpf2;
-                f -= tmpf1;
-            }
-
-            *c &= _trunc_table[N];
-            return;
-        }
-
-        // This must be done for all.
-        *c &= _trunc_table[N];
-    }
-#pragma GCC pop_options
 
     bool truncated() {
         float f(_f);
@@ -158,66 +268,66 @@ class weakfloat {
         return (*c == 0);
     }
 
-    friend bool operator< (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
+    friend bool operator< (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
         return lhs._f < rhs._f;
     }
 
-    friend bool operator> (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
+    friend bool operator> (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
         return lhs._f > rhs._f;
     }
 
-    friend bool operator== (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
+    friend bool operator== (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
         return lhs._f == rhs._f;
     }
 
-    friend weakfloat<N> operator+ (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
-        return weakfloat<N>(lhs._f + rhs._f);
+    friend weakfloat<N, R> operator+ (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
+        return weakfloat<N, R>(lhs._f + rhs._f);
     }
 
-    friend weakfloat<N> operator- (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
-        return weakfloat<N>(lhs._f - rhs._f);
+    friend weakfloat<N, R> operator- (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
+        return weakfloat<N, R>(lhs._f - rhs._f);
     }
 
-    friend weakfloat<N> operator* (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
-        return weakfloat<N>(lhs._f * rhs._f);
+    friend weakfloat<N, R> operator* (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
+        return weakfloat<N, R>(lhs._f * rhs._f);
     }
 
-    friend weakfloat<N> operator/ (const weakfloat<N>& lhs, const weakfloat<N>& rhs){
-        return weakfloat<N>(lhs._f / rhs._f);
+    friend weakfloat<N, R> operator/ (const weakfloat<N, R>& lhs, const weakfloat<N, R>& rhs){
+        return weakfloat<N, R>(lhs._f / rhs._f);
     }
 
-    friend weakfloat<N> operator/ (const weakfloat<N>& lhs, const unsigned int& rhs){
-        return lhs / weakfloat<N>(rhs);
+    friend weakfloat<N, R> operator/ (const weakfloat<N, R>& lhs, const unsigned int& rhs){
+        return lhs / weakfloat<N, R>(rhs);
     }
 
-    friend weakfloat<N> rabs(weakfloat<N> w) {
-        return weakfloat<N>(fabsf(w._f));
+    friend weakfloat<N, R> rabs(weakfloat<N, R> w) {
+        return weakfloat<N, R>(fabsf(w._f));
     }
 
-    friend weakfloat<N> rsqrt(weakfloat<N> w) {
-        return weakfloat<N>(sqrtf(w._f));
+    friend weakfloat<N, R> rsqrt(weakfloat<N, R> w) {
+        return weakfloat<N, R>(sqrtf(w._f));
     }
 
-    friend weakfloat<N> rcos(weakfloat<N> w) {
-        return weakfloat<N>(cosf(w._f));
+    friend weakfloat<N, R> rcos(weakfloat<N, R> w) {
+        return weakfloat<N, R>(cosf(w._f));
     }
 
     operator float () const {
         return _f;
     }
 
-    friend std::ostream& operator<< (std::ostream& out, const weakfloat<N>& x) {
+    friend std::ostream& operator<< (std::ostream& out, const weakfloat<N, R>& x) {
         out << x._f;
         return out;
     }
 
   private:
-    static int rmode;
+    Trunc<N, R> _trunc;
     float _f;
 };
 
-template<int N>
-int weakfloat<N>::rmode = FE_TONEAREST;
+
+
 bool test_weak_float();
 
 #endif

@@ -1,7 +1,7 @@
 import glob
 import os
 
-Import('env','mymode','compiler','project','precision')
+Import('env', 'mymode', 'compiler', 'project', 'precision', 'rounding')
 localenv = env.Clone()
 
 #flags
@@ -28,10 +28,10 @@ localenv.Append(CCFLAGS= mycflags)
 localenv.Append(CPPPATH=['#io', '#toolkit', '#subdomain', '#engine'])
 
 #holds the root of the build directory tree
-builddir = os.path.join(localenv['workspace'], '.build', project, compiler, mymode, precision)
+builddir = os.path.join(localenv['workspace'], '.build', project, compiler, mymode, precision, rounding)
 
 #holds the path to the executable in the build directory
-targetpath = '../' + project + '-' + mymode + '-' + compiler + '-' + precision + '.exec'
+targetpath = '../' + project + '-' + mymode + '-' + compiler + '-' + precision + '-' + rounding + '.exec'
 
 #specify the build directory
 localenv.VariantDir(builddir, ".", duplicate=0)

@@ -37,10 +37,9 @@ int Engine::main(int argc, char** argv) {
     #endif
 
     int flag;
-    const int stringsize = 180;
-    char initfile[ stringsize ];
-    char outputpath[ stringsize ];
-    char roundingmode[ stringsize ];
+    std::string initfile;
+    std::string outputpath;
+    std::string roundingmode;
     bool outputpathSet = false;
     _testFlag = 0;
     _dryFlag = 0;
@@ -74,15 +73,15 @@ int Engine::main(int argc, char** argv) {
                 break;
 
             case 'r':
-                strncpy(roundingmode, optarg, stringsize);
+                roundingmode.assign(optarg);
                 break;
 
             case 'i':
-                strncpy(initfile, optarg, stringsize);
+                initfile.assign(optarg);
                 break;
 
             case 'o':
-                strncpy(outputpath, optarg, stringsize);
+                outputpath.assign(optarg);
                 outputpathSet = true;
                 break;
 
@@ -95,13 +94,13 @@ int Engine::main(int argc, char** argv) {
         }
     }
 
-    if (std::string(roundingmode) == "upward")
+    if (roundingmode == "upward")
         fesetround(FE_UPWARD);
 
-    if (std::string(roundingmode) == "downward")
+    if (roundingmode == "downward")
         fesetround(FE_DOWNWARD);
 
-    if (std::string(roundingmode) == "toward_zero")
+    if (roundingmode == "toward_zero")
         fesetround(FE_TOWARDZERO);
 
     int rmode = fegetround();
@@ -123,10 +122,16 @@ int Engine::main(int argc, char** argv) {
             printf ("unknown\n");
             return EXIT_FAILURE;
     }
-
-    #if defined (PRECISION_WEAK_FLOAT)
-        // rounding mode must be initialized.
-        weakfloat<PRECISION_WEAK_FLOAT>::init(rmode);
+    #ifndef ROUNDING
+        if (rmode != FE_TONEAREST){
+            std::cout << "Compilation rounding mode and run-time rounding mode are different.\n";
+            return EXIT_FAILURE;
+        }
+    #else
+        if (rmode != ROUNDING) {
+            std::cout << "Compilation rounding mode and run-time rounding mode are different.\n";
+            return EXIT_FAILURE;
+        }
     #endif
 
     if (_MPI_rank == 0) {

@@ -22,6 +22,8 @@ precision = ARGUMENTS.get('precision', 'double') #computing digit precision
 
 std = ARGUMENTS.get('std', 'c++14') # C++ standard
 
+rounding = ARGUMENTS.get('rounding', '') # C++ standard
+
 #check if the user has been naughty: only path must exist
 if not os.path.exists(workspace):
 	print "path", workspace, " does not exist, cannot compile.";
@@ -141,6 +143,17 @@ elif precision == 'quad':
 	mycflags.append('-DPRECISION_QUAD')
 	env.Append(LIBS = ['quadmath'])
 
+if rounding == 'nearest':
+    mycflags.append('-DROUNDING=0')
+elif rounding == 'toward_zero':
+    mycflags.append('-DROUNDING=3072')
+elif rounding == 'downward':
+    mycflags.append('-DROUNDING=1024')
+elif rounding == 'upward':
+    mycflags.append('-DROUNDING=2048')
+else:
+    rounding = 'nearest'
+
 # Add this flag to compile in pure sequential mode.
 if compiler != 'mpi':
     mycflags.append('-DSEQUENTIAL')
@@ -151,13 +164,13 @@ env.Append(CXXFLAGS = mycflags)
 env.Append(LINKFLAGS = mylinkflags)
 
 #make sure the sconscripts can get to the variables
-Export('mymode','compiler','project','lib','precision')
+Export('mymode', 'compiler', 'project', 'lib', 'precision', 'rounding')
 
 #put all .sconsign files in one place
 env.SConsignFile()
 
 #specify the sconscript for the project
 prog = SConscript('SConscript', exports = 'env')
-execpath = os.path.join(workspace, '.build', project + '-' + mymode + '-' + compiler + '-' + precision)
+execpath = os.path.join(workspace, '.build', project + '-' + mymode + '-' + compiler + '-' + precision + '-' + rounding)
 inst = env.Install(execpath, prog)
 Default(inst)

@@ -13,7 +13,12 @@
 
 #if defined(PRECISION_WEAK_FLOAT)
     #include "weakfloat.hpp"
-    typedef weakfloat<PRECISION_WEAK_FLOAT> real;
+
+    #ifndef ROUNDING
+        typedef weakfloat<PRECISION_WEAK_FLOAT, FE_TONEAREST> real;
+    #else
+        typedef weakfloat<PRECISION_WEAK_FLOAT, ROUNDING> real;
+    #endif
     inline void stor(std::string tmpStr, real& target) {
         target = std::stof(tmpStr);
     }
@@ -92,7 +97,7 @@
 
 namespace Number {
 #if defined (PRECISION_WEAK_FLOAT)
-    constexpr int max_digits10 = std::ceil((PRECISION_WEAK_FLOAT - 8) * std::log10(2) + 1.1);
+    constexpr int max_digits10 = std::min(std::numeric_limits<float>::max_digits10, (int)std::ceil((PRECISION_WEAK_FLOAT - 9) * std::log10(2) + 2));
     //const int max_digits10 = std::numeric_limits<float>::max_digits10;
     const real maxprecision = powf(10.0f, max_digits10);
     const real unit = real(1.0f);

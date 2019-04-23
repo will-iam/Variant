@@ -22,28 +22,14 @@ class Engine:
         self._rounding = engineOptionDict['rounding']
 
         if clean:
-            self._clean(self._project_name, self._compiler, self._mode, self._precision, self._std)
+            self._clean(self._project_name, self._compiler, self._mode, self._precision, self._std, self._rounding)
         elif build:
-            self._build(self._project_name, self._compiler, self._mode, self._precision, self._std)
+            self._build(self._project_name, self._compiler, self._mode, self._precision, self._std, self._rounding)
 
-        program_file = self._project_name + '-' + self._mode + '-' + self._compiler + '-' + self._precision + '.exec'
+        program_file = self._project_name + '-' + self._mode + '-' + self._compiler + '-' + self._precision + '-' + self._rounding + '.exec'
         self._binary_path = os.path.join(config.workspace, program_file)
 
-    def _build(self, project_name, compiler, mode, precision, std):
-        p = subprocess.Popen(['scons',
-            'workspace=' + config.workspace,
-            'project=' + project_name,
-            'compiler=' + compiler,
-            'mode=' + mode,
-            'precision=' + precision,
-            'std=' + std],
-            cwd = os.path.join(config.workspace, 'source'))
-        p.wait()
-        if p.returncode != 0:
-            print("Compilation failed")
-            sys.exit(1)
-
-    def _clean(self, project_name, compiler, mode, precision, std):
+    def _build(self, project_name, compiler, mode, precision, std, rounding):
         p = subprocess.Popen(['scons',
             'workspace=' + config.workspace,
             'project=' + project_name,
@@ -51,6 +37,22 @@ class Engine:
             'mode=' + mode,
             'precision=' + precision,
             'std=' + std,
+            'rounding=' + rounding],
+            cwd = os.path.join(config.workspace, 'source'))
+        p.wait()
+        if p.returncode != 0:
+            print("Compilation failed")
+            sys.exit(1)
+
+    def _clean(self, project_name, compiler, mode, precision, std, rounding):
+        p = subprocess.Popen(['scons',
+            'workspace=' + config.workspace,
+            'project=' + project_name,
+            'compiler=' + compiler,
+            'mode=' + mode,
+            'precision=' + precision,
+            'std=' + std,
+            'rounding=' + rounding,
             '-c'],
             cwd = os.path.join(config.workspace, 'source'))
         p.wait()
