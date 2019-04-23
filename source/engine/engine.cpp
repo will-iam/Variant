@@ -3,6 +3,7 @@
 #include <sstream>
 #include <getopt.h>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <algorithm>
 #include <cfenv>
@@ -73,15 +74,15 @@ int Engine::main(int argc, char** argv) {
                 break;
 
             case 'r':
-                strlcpy(roundingmode, optarg, stringsize);
+                strncpy(roundingmode, optarg, stringsize);
                 break;
 
             case 'i':
-                strlcpy(initfile, optarg, stringsize);
+                strncpy(initfile, optarg, stringsize);
                 break;
 
             case 'o':
-                strlcpy(outputpath, optarg, stringsize);
+                strncpy(outputpath, optarg, stringsize);
                 outputpathSet = true;
                 break;
 
@@ -164,10 +165,10 @@ int Engine::main(int argc, char** argv) {
         #if defined (PRECISION_WEAK_FLOAT)
         std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(real(42.f)) << Console::_normal << std::endl;
         std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(real(2.f)) << Console::_normal <<  std::endl;
-            #ifndef NDEBUG
+             // #ifndef NDEBUG
             if (test_weak_float() == false)
                 return EXIT_FAILURE;
-            #endif
+            // #endif
         #endif
 
         #if defined (PRECISION_FLOAT)
