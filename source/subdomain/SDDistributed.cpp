@@ -90,6 +90,7 @@ void SDDistributed::buildAllSDS(unsigned int nSDS, std::string geomType) {
 }
 
 void SDDistributed::dispatchBoundaryCell(const std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        const std::map< std::pair<int, int>, std::map<std::string, real> >& timeVaryingCellMap,
         const std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap) {
     if (_SDSVector.empty())
         exitfail("You must initialize the SDS list before splitting the boundary cell");
@@ -134,6 +135,25 @@ void SDDistributed::dispatchBoundaryCell(const std::map< std::pair<int, int>, st
         ++counter;
     }
 
+
+    s = timeVaryingCellMap.size() / _SDSVector.size();
+    counter = 0;
+    cursor = 0;
+    for (auto it = timeVaryingCellMap.begin(); it != timeVaryingCellMap.end(); ++it) {
+        if (counter >= s) {
+            counter = 0;
+            ++cursor;
+        }
+
+        if (cursor >= _SDSVector.size()) {
+            cursor = 0;
+            counter = 0;
+            s = 1;
+        }
+
+        _SDSVector[cursor].addTimeVaryingCell(*it);
+        ++counter;
+    }
     //for (size_t i = 0; i < _SDSVector.size(); ++i)
     //    std::cout << "SDS: " << i << " has " << _SDSVector[i].getNumberBoundaryCells() << " boundary cells.\n";
 }
@@ -290,7 +310,7 @@ void SDDistributed::parseOverlapCell() {
     #ifndef SEQUENTIAL
     _threadPool->start("readBuffer");
     #endif
-    
+
     // Special case: parsing data for periodic boundary condition with itself.
     for (auto const& it: _selfIndexMap) {
         size_t indexHere(it.first), indexThere(it.second);

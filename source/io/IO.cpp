@@ -160,7 +160,7 @@ int IO::loadBoundaryConditions(std::string directory, Domain& domain) {
 
         std::map<std::string, real> qtyValue;
         if (qty_number > 0) {
-            assert(BCtype == 'D' or BCtype == 'N');
+            assert(BCtype == 'D' || BCtype == 'N' || BCtype == 'T');
             for (int i = 0; i < qty_number; ++i) {
                 std::string name; iss >> name;
                 // Read thrue string for quad.

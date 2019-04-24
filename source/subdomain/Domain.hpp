@@ -114,7 +114,7 @@ class Domain {
     unsigned int getNumberPhysicalCells() const;
     unsigned int getNumberOverlapCells() const;
     size_t getNumberBoundaryCells() const;
-    
+
     void showInfo() const;
 
     /*!
@@ -151,7 +151,7 @@ class Domain {
      *
      * @return boundary condition (type and value) assigned to cell
      */
-    std::pair<char, std::map<std::string, real> > getBoundaryCondition(std::pair<int, int> coordsOnSDD) const;
+    std::map<char, std::map<std::string, real> > getBoundaryCondition(std::pair<int, int> coordsOnSDD) const;
 
     /*!
      * @brief Returns non-modifiable unique id of cell given by its
@@ -303,7 +303,7 @@ class Domain {
     std::map< std::pair<int, int>, unsigned int > _coordsToUid;
 
     // Uid <-> boundary conditions <type, value>
-    std::map< std::pair<int, int>, std::pair<char, std::map<std::string, real> > > _SDD_coordsToBC;
+    std::map< std::pair<int, int>, std::map<char, std::map<std::string, real> > > _SDD_coordsToBC;
 
     real _lx;
     real _ly;

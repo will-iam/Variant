@@ -188,6 +188,7 @@ class SDDistributed {
      */
     void buildRecvMap(const Domain& domain,
         std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        std::map< std::pair<int, int>, std::map<std::string, real> >& timeVaryingCellMap,
         std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap);
 
     /*!
@@ -213,6 +214,7 @@ class SDDistributed {
     * @brief Dispatch the boundary cells among the sds.
     */
     void dispatchBoundaryCell(const std::map< std::pair<int, int>, std::map<std::string, real> >& dirichletCellMap,
+        const std::map< std::pair<int, int>, std::map<std::string, real> >& timeVaryingCellMap,
         const std::map< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > >& neumannCellMap);
 
     /*!

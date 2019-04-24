@@ -83,7 +83,7 @@ int EulerRuO1::init() {
 
     _domain->addEquation("flux", std::bind(&EulerRuO1::flux, this,
                                    std::placeholders::_1, std::placeholders::_2));
-    
+
     _domain->addEquation("updateBoundary", std::bind(&EulerRuO1::updateBoundary, this,
                                    std::placeholders::_1, std::placeholders::_2));
 
@@ -111,10 +111,10 @@ int EulerRuO1::start() {
         _timerComputation.begin();
 
         ++_nIterations;
-        
+
         // Compute pressure and speed.
         _domain->execEquation("updateBoundary");
-        
+
         // ----------------------------------------------------------------------
         // (with a stencil of one, it's not required here because there is no overlap/boundary cell needed in the computation).
    	    /* _timerComputation.end();
@@ -160,7 +160,7 @@ void fastTwoSum(real a, real b, real& c, real& d) {
 
     c = a + b;
     const real z = c - a;
-    d = b - z;    
+    d = b - z;
 }
 
 // Updating according to CFL and max velocity
@@ -191,7 +191,7 @@ void EulerRuO1::computeDT() {
 
     // So that the final T is reached perfectly.
     std::min(_dt, _T - _t);
-    
+
     // If the computation is set with random rounding error, the dt may differ among the sub-domains.
     // To ensure the computation (and also the number of iteration), we must communicate it.
     _dt = reduceMin(_dt);
@@ -208,7 +208,7 @@ void EulerRuO1::computeDT() {
         _min_dt = _dt;
     }
     #endif
-    
+
     #ifndef NDEBUG
     //std::cout << "New timestep _dt = " << _dt << " (ux / dx = " << _Domain_uxmax / _dx << ", uy / dy = " << _Domain_uymax / _dy << ")" << std::endl;
     // std::cout << "_t: " << _t << ",  _dt: " << _dt << ", _T:" << _T << std::endl;
@@ -232,7 +232,7 @@ real EulerRuO1::computePressure(real Ek, real E) {
     // Ek = (1. / 2.) * (rhou_x * rhou_x + rhou_y * rhou_y) / rho.
     // rhoe = rhoE - Ek
     // P = (gamma - 1.) * rhoe
-    
+
     // Cannot divide by zero.
     real e = (E - Ek);
 
@@ -247,7 +247,7 @@ real EulerRuO1::computePressure(real Ek, real E) {
     }
 
     assert(P >= Number::zero);
-    return P; 
+    return P;
 }
 
 real EulerRuO1::computeSoundSpeed(const real& rho, const real& P) {
@@ -365,7 +365,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
     // Flux speed
     // s_x = a^n_{i+1/2, j} = max(max(|u_x^n_{i,j} + c^n_{i,j}|, |u_x^n_{i,j} - c^n_{i,j}|), max(|u_x^n_{i+1,j} + c^n_{i+1,j}|, |u_x^n_{i+1,j} - c^n_{i+1,j}|))
     // s_y = a^n_{i, j+1/2} = max(max(|u_y^n_{i,j} + c^n_{i,j}|, |u_y^n_{i,j} - c^n_{i,j}|), max(|u_y^n_{i,j+1} + c^n_{i,j+1}|, |u_y^n_{i,j+1} - c^n_{i,j+1}|))
-   
+
     // Compute flux X
     const real kx = Number::half * _dt / _dx;
     const real ky = Number::half * _dt / _dy;
@@ -403,7 +403,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
             std::cout << std::scientific << std::setprecision(std::numeric_limits<real>::max_digits10);
             std::cout << "rhou_y_left: " <<  rhou_y_left << std::endl;
             std::cout << "rhou_y_center: " <<  rhou_y_center << std::endl;
-            std::cout << "rhou_y_right: " <<  rhou_y_right << std::endl;            
+            std::cout << "rhou_y_right: " <<  rhou_y_right << std::endl;
             std::cout << _nIterations << " - i: " <<  i << ", j:" << j << std::endl;
             exitfail(1);
         } */
@@ -430,19 +430,19 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
 
         real ux_left = (rho_left == Number::zero) ? Number::zero : rhou_x_left / rho_left;
         real ux_right = (rho_right == Number::zero) ? Number::zero : rhou_x_right / rho_right;
-        
+
         real uy_top = (rho_top == Number::zero) ? Number::zero : rhou_y_top / rho_top;
         real uy_bottom = (rho_bottom == Number::zero) ? Number::zero : rhou_y_bottom / rho_bottom;
-        
+
         real pressure_left = pressure.get0(k_left);
         real pressure_right = pressure.get0(k_right);
         real pressure_top = pressure.get0(k_top);
         real pressure_bottom = pressure.get0(k_bottom);
-        
+
         // U = (rho, rhou_x, rhou_y, rhoE)
         // F = (rhou_x, rhou_x * rhou_x / rho + P, rhou_x *rhou_y / rho, (rhoE + P) * rhou_x / rho)
         // F^n_x = (1. / 2.) * ( F(U^n_{i + 1,j}) - F(U^n_{i - 1,j}) - a^n_{i+1/2,j} * (U^n_{i+1, j} - U^n_{i, j}) + a^n_{i-1/2,j} * (U^n_{i, j} - U^n_{i-1, j}))
-    
+
         // G = (rhou_y, rhou_x *rhou_y / rho, rhou_y * rhou_y / rho + P, (rhoE + P) * rhou_y / rho)
         // G^n_y = (1. / 2.) * ( G(U^n_{i,j + 1}) - G(U^n_{i,j - 1}) - a^n_{i,j+1/2} * (U^n_{i, j+1} - U^n_{i, j}) + a^n_{i,j-1/2} * (U^n_{i, j} - U^n_{i, j-1}))
 
@@ -470,7 +470,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
         rhou_y.set1(rhou_y_center - kx * rhou_y_flux_x - ky * rhou_y_flux_y, k_center);
         rhoE.set1(rhoE_center - kx * rhoE_flux_x  - ky * rhoE_flux_y, k_center);
 
-        
+
         if (rho.get1(k_center) < Number::zero) {
             std::cout << std::scientific << std::setprecision(std::numeric_limits<real>::max_digits10);
             std::cout << "ux_right: " <<  ux_right << ", rhou_y_right: " <<  rhou_y_right << " = " << ux_right * rhou_y_right  << std::endl;
@@ -481,7 +481,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
             std::cout << "rhou_y_left: " <<  rhou_y_left << std::endl;
             std::cout << "rhou_y_center: " <<  rhou_y_center << std::endl;
             std::cout << "rhou_y_right: " <<  rhou_y_right << std::endl;
-            
+
             std::cout << "rhou_y_flux_x: " <<  rhou_y_flux_x << std::endl << std::endl;
 
             std::cout << "uy_top: " <<  uy_top<< ", rhou_y_top: " <<  rhou_y_top << " = " << uy_top * rhou_y_top  << std::endl;
@@ -494,7 +494,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
             std::cout << "rhou_y_center: " <<  rhou_y_center << std::endl;
             std::cout << "rhou_y_bottom: " <<  rhou_y_bottom << std::endl;
             std::cout << "rhou_y_flux_y: " <<  rhou_y_flux_y << std::endl;
-            
+
             std::cout << "rho_center: " <<  rho_center << std::endl;
             std::cout << "kx * rho_flux_x: " <<  kx * rho_flux_x << std::endl;
             std::cout << "ky * rho_flux_y: " <<  ky * rho_flux_y << std::endl;
@@ -504,7 +504,7 @@ void EulerRuO1::flux(const SDShared& sds, const std::map< std::string, Quantity<
             std::cout << sds.getNumberBoundaryCells() << std::endl;
             exitfail(1);
         }
-        
+
         /*
         if (rhou_y_flux_y > 0.) {
             std::cout << "y";
@@ -528,15 +528,15 @@ int EulerRuO1::finalize() {
 
 void EulerRuO1::updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
     // update BoundaryCells
-    sds.updateBoundaryCells(quantityMap.at("rho"));
-    sds.updateBoundaryCells(quantityMap.at("rhou_x"));
-    sds.updateBoundaryCells(quantityMap.at("rhou_y"));
-    sds.updateBoundaryCells(quantityMap.at("rhoE"));
+    sds.updateBoundaryCells(quantityMap.at("rho"), _t);
+    sds.updateBoundaryCells(quantityMap.at("rhou_x"), _t);
+    sds.updateBoundaryCells(quantityMap.at("rhou_y"), _t);
+    sds.updateBoundaryCells(quantityMap.at("rhoE"), _t);
 }
 
 void EulerRuO1::updatePressure(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap) {
     // update BoundaryCells only for pressure
-    sds.updateBoundaryCells(quantityMap.at("pressure"));
+    sds.updateBoundaryCells(quantityMap.at("pressure"), _t);
 
     // As a max, it's not necessary to update.
     // sds.updateBoundaryCells(quantityMap.at("sx"));

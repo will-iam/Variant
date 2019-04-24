@@ -21,7 +21,6 @@ def build_case(case_path, output_dir, force_build = False):
     if not force_build:
         last_modif = os.path.getmtime(os.path.join(case_path, 'chars.py'))
         case_build_dir =  os.path.join(os.path.dirname(os.path.realpath(__file__)), 'initial_condition')
-        print("last_modif", last_modif, os.listdir(case_build_dir))
         for f in os.listdir(case_build_dir):
             if f.endswith(".py"):
                 last_modif = max(last_modif, os.path.getmtime(os.path.join(case_build_dir, f)))

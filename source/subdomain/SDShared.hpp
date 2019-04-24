@@ -56,7 +56,7 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * @brief updates boundary of all SDDs according to their
      * values on reference cells on other SDDs, for a given quantity.
      *
-     * /!\ This has to be called AFTER updating overlap cells, since boundary        
+     * /!\ This has to be called AFTER updating overlap cells, since boundary
         _umax = std::max(_umax, std::abs(uy.get(0, i, j)));
 
      * cells may be updated with values on overlap cells.
@@ -67,31 +67,9 @@ class SDShared: public std::vector< std::pair<int,int> > {
      * @param changeNeumannToOpposite if true, this changes the value into its
      * opposite on cells that have Neumann BC.
      */
-    void updateBoundaryCells(Quantity<real>* quantity) const;
+    void updateBoundaryCells(Quantity<real>* quantity, const real& t) const;
 
-    /*!
-     * @brief Updates Neumann boundary cells of SDD according to values
-     * stored in memory.
-     *
-     * This does not require communication with other SDDs
-     * as long as overlap cells were update before.
-     *
-     * @param quantityName str. name of quantity to update
-     * @param changeToOpposite change to opposite value of reference
-     * according to value. This depends on the boundary and is useful for
-     * quantities traditionnally defined on edges.
-     */
-    void updateNeumannCells(Quantity<real>* quantity) const;
-
-    /*!
-     * @brief Updates Dirichlet boundary cells of SDD according to values stored
-     * in memory.
-     *
-     * @param quantityName str. name of quantity to update
-     */
-    void updateDirichletCells(Quantity<real>* quantity) const;
-
-
+    void addTimeVaryingCell(std::pair < std::pair<int, int>, std::map<std::string, real> > d);
     void addDirichletCell(std::pair < std::pair<int, int>, std::map<std::string, real> > d);
     void addNeumannCell(std::pair< std::pair<int, int>, std::pair< std::pair<int, int>, std::map<std::string, real> > > n);
     size_t getNumberBoundaryCells() const {
@@ -110,11 +88,40 @@ class SDShared: public std::vector< std::pair<int,int> > {
     void setBufferPos(unsigned int sddId, size_t pos) { _bufferStartPos[sddId] = pos; }
     size_t getOverlapCellNumber(unsigned int sddId) const;
     void addOverlapCell(unsigned int sddId, size_t sendIndex, size_t recvIndex);
-    
-    void copyOverlapCellIn(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const;    
-    void copyOverlapCellFrom(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const;    
+
+    void copyOverlapCellIn(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const;
+    void copyOverlapCellFrom(const std::map< std::string, Quantity<real>* >& quantityMap, const std::unordered_map<unsigned int, real* >& buffer) const;
 
   private:
+      /*!
+       * @brief Updates Neumann boundary cells of SDD according to values
+       * stored in memory.
+       *
+       * This does not require communication with other SDDs
+       * as long as overlap cells were update before.
+       *
+       * @param quantityName str. name of quantity to update
+       * @param changeToOpposite change to opposite value of reference
+       * according to value. This depends on the boundary and is useful for
+       * quantities traditionnally defined on edges.
+       */
+      void updateNeumannCells(Quantity<real>* quantity) const;
+
+      /*!
+       * @brief Updates Dirichlet boundary cells of SDD according to values stored
+       * in memory.
+       *
+       * @param quantityName str. name of quantity to update
+       */
+      void updateDirichletCells(Quantity<real>* quantity) const;
+
+      /*!
+       * @brief Updates Dirichlet boundary cells of SDD according to values stored
+       * in memory.
+       *
+       * @param quantityName str. name of quantity to update
+       */
+      void updateTimeVaryingCells(Quantity<real>* quantity, const real& t) const;
 
     /*!
      * own coordinates converter (should be a copy of
@@ -131,6 +138,13 @@ class SDShared: public std::vector< std::pair<int,int> > {
     std::map<std::string, std::unordered_map< size_t, real >> _dirichletCellMap;
 
     /*!
+     * mapping between coords of cells on which are
+     * set time varying boundary conditions, and the
+     * values of one parameter.
+     */
+    std::map<std::string, std::unordered_map< size_t, real >> _timeVaryingCellMap;
+
+    /*!
      * mapping between coords of cells on which are set
      * Neumann boundary conditions, and the associated
      * cells
@@ -144,4 +158,3 @@ class SDShared: public std::vector< std::pair<int,int> > {
 };
 
 #endif
-
