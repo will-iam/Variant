@@ -18,7 +18,5 @@ gamma = 5./3.
 BClayer = 1
 
 quantityList = ['rho', 'rhou_x', 'rhou_y', 'rhoE']
-quantityDict = dict()
-def buildme(coords_to_uid, coords_to_bc):
+def buildme(quantityDict, coords_to_uid, coords_to_bc):
     noh1D.build(quantityDict, coords_to_uid, coords_to_bc, Nx, Ny, lx, ly, BClayer)
- 

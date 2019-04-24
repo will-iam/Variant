@@ -78,7 +78,7 @@ elif axis == 'y':
 elif axis == 'xy':
     axis_title="y = x"
     Npoints = math.floor(max(Nx,Ny)/np.sqrt(2.0))+1
-    x = np.linspace(0., max(Nx,Ny) * float(min(dx,dy)), Npoints)
+    x = np.linspace(0., max(Nx, Ny) * float(min(dx,dy)), Npoints)
     #x = np.linspace(0., np.sqrt(2.0)*Ny * float(dy), Ny)
     qtynormed = np.zeros(max(Nx,Ny))
     if towatch == "u":
@@ -92,25 +92,40 @@ elif axis == 'xy':
     elif towatch == "rho":
         for i in range(max(Nx,Ny)):
             qtynormed[i] = data['rho'][i][i]
-    if Nx>1 and Ny>1:      #2D, Nx=Ny
+
+    if Nx > 1 and Ny > 1: #2D, Nx=Ny
         qty = np.zeros(Npoints)
         for i in range(len(qtynormed)):
-            if i/len(qtynormed)<=1.0/np.sqrt(2.0):
+            if i * np.sqrt(2.0) <= 1.0 * len(qtynormed):
                 qty[i] = qtynormed[i]
     else:      #1D
         qty = qtynormed
+
+
+elif axis == 'r':
+    if Nx != Nx:
+        print("Radial measure: domain must be a square Nx x Ny")
+        sys.exit(1)
+    axis_title="diagonal"
+    Npoints = Ny
+    x = np.linspace(0., Ny * float(dy), Ny)
+    qty = np.zeros(Ny)
+    if towatch == "u":
+        for i in range(Ny):
+            uy = data['rhou_y'][i][i] / data['rho'][i][i]
+            ux = data['rhou_x'][i][i] / data['rho'][i][i]
+            qty[i] = np.sqrt((ux**2. + uy**2.) / 2.)
+    elif towatch == "energy":
+        for i in range(Ny):
+            qty[i] = data['rhouE'][i][i] / data['rho'][i][i]
+    elif towatch == "rho":
+        for i in range(Ny):
+            qty[i] = data['rho'][i][i]
+
 if args.solver == 'sod':
     sys.path.insert(1, os.path.join(sys.path[0], 'sod'))
     from sod import solve
-    if Nx>1 and Ny>1:      #2D, Nx=Ny
-        if axis=='xy':
-            positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                        geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=Npoints)
-        else:
-            positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                        geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=Npoints)
-    else:       #1D
-        positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
+    positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
                     geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=Npoints)
 
 if args.solver == 'sedov':

@@ -44,8 +44,9 @@ def build_case(case_path, output_dir, force_build = False):
 
     coords_to_uid = io.gen_coords_to_uid(case.Nx, case.Ny)
     coords_to_bc = dict()
-    case.buildme(coords_to_uid, coords_to_bc)
-    
+    quantityDict = dict()
+    case.buildme(quantityDict, coords_to_uid, coords_to_bc)
+
     # Merging uid and bc dictionaries
     coords_to_uid_bc = io.gen_coords_to_uid_bc(case.Nx, case.Ny, case.BClayer)
     ds = [coords_to_uid_bc, coords_to_bc]
@@ -66,7 +67,7 @@ def build_case(case_path, output_dir, force_build = False):
     io.write_bc(output_dir, coords_to_uid_and_bc)
 
     # Write quantities and boundary conditions if necessary
-    for q_name, q in case.quantityDict.items():
+    for q_name, q in quantityDict.items():
         io.write_quantity(output_dir, q_name, q)
 
     # Use quantity list from the characteristics.
@@ -76,7 +77,7 @@ def build_case(case_path, output_dir, force_build = False):
     del sys.path[-1]
     del sys.modules["chars"]
     del case
-    
+
     # Return path to case directory
     return q_name_list
 
