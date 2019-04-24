@@ -46,9 +46,6 @@ def case_exist(project_name, case_name):
     if not os.path.isdir(case_ic):
         return False
 
-    if not os.path.isfile(os.path.join(case_ic, 'init.py')):
-        return False
-
     if not os.path.isfile(os.path.join(case_ic, 'chars.py')):
         return False
 
@@ -113,7 +110,7 @@ def create_ref(engineOptionDict, icond_path, input_path, ref_path):
         sdd.merge_quantity(ref_path, ref_path, q_str)
     rmtree(os.path.join(ref_path, "sdd0"), ignore_errors=True)
 
-def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref, forceref):
+def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fastref, forceref, forcebuild):
     # Check values for pure sequential test.
     if engineOptionDict['compiler'] != 'mpi':
         if test['nSDD'][0] != 1 or test['nSDD'][1] != 1:
@@ -155,7 +152,7 @@ def launch_test(tmp_dir, engineOptionDict, case_name, test, compare_with_ref, fa
 
     # Build case
     print(COLOR_BLUE + "Building case data" + COLOR_ENDC)
-    qty_name_list = build_case(icond_path, input_path)
+    qty_name_list = build_case(icond_path, input_path, forcebuild)
 
     # Manage number of SDD
     nSDD_X = test['nSDD'][0]
