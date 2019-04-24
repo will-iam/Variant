@@ -39,7 +39,8 @@ parser.add_argument("--nocompile", action='store_true', default=False, help = "N
 parser.add_argument("--clean-compile", action='store_true', default=False, help = "Clean SCons compilation file")
 parser.add_argument("--nocheck", action='store_true', default=False, help = "Never compare computed results to reference")
 parser.add_argument("--fastref", action='store_true', default=False, help = "Build ref only with given parameters")
-parser.add_argument("--forceref", action='store_true', default=False, help = "Build ref even if already present")
+parser.add_argument("--forceref", action='store_true', default=False, help = "Replace reference results if present")
+parser.add_argument("--forcebuild", action='store_true', default=False, help = "Replace initial data of all tested cases")
 parser.add_argument("--vtune", action='store_true', default=False, help = "Enable vtune tool")
 parser.add_argument("--debug", action='store_true', default=False, help = "Enable debugging compilation option -g -O0")
 parser.add_argument("--gdb", action='store_true', default=False, help = "Enable debugging tool")
@@ -460,7 +461,7 @@ def runTestBattery(engineOptionDict, testBattery):
                     compare_with_ref = False
 
                 # Launch Test
-                tmp_test_path, exec_time = launch_test(tmp_dir, engineOptionDict, cn, test, compare_with_ref, args.fastref, args.forceref)
+                tmp_test_path, exec_time = launch_test(tmp_dir, engineOptionDict, cn, test, compare_with_ref, args.fastref, args.forceref, args.forcebuild)
                 if tmp_test_path is None:
                     # This test was not performed.
                     continue

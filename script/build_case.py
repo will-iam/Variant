@@ -19,8 +19,13 @@ def build_case(case_path, output_dir, force_build = False):
         io.make_sure_path_exists(output_dir)
 
     if not force_build:
-        last_modif = max(os.path.getmtime(os.path.join(case_path, 'init.py')),
-            os.path.getmtime(os.path.join(case_path, 'chars.py')))
+        last_modif = os.path.getmtime(os.path.join(case_path, 'chars.py'))
+        case_build_dir =  os.path.join(os.path.dirname(os.path.realpath(__file__)), 'initial_condition')
+        print("last_modif", last_modif, os.listdir(case_build_dir))
+        for f in os.listdir(case_build_dir):
+            if f.endswith(".py"):
+                last_modif = max(last_modif, os.path.getmtime(os.path.join(case_build_dir, f)))
+
         if last_modif < os.path.getctime(output_dir):
             print('case already built')
             sys.path.append(case_path)
@@ -34,10 +39,19 @@ def build_case(case_path, output_dir, force_build = False):
     print("Case path:", case_path)
     sys.path.append(case_path)
     # Reload chars also else, you build the case with the wrong characteristics
-    import chars
-    reload(chars)
+    import chars as case
+    reload(case)
 
-    import init as case
+    coords_to_uid = io.gen_coords_to_uid(case.Nx, case.Ny)
+    coords_to_bc = dict()
+    case.buildme(coords_to_uid, coords_to_bc)
+    
+    # Merging uid and bc dictionaries
+    coords_to_uid_bc = io.gen_coords_to_uid_bc(case.Nx, case.Ny, case.BClayer)
+    ds = [coords_to_uid_bc, coords_to_bc]
+    coords_to_uid_and_bc = dict()
+    for coord in coords_to_bc:
+        coords_to_uid_and_bc[coord] = tuple(d.get(coord) for d in ds)
 
     rmtree(output_dir, ignore_errors=True)
     io.make_sure_path_exists(output_dir)
@@ -46,10 +60,10 @@ def build_case(case_path, output_dir, force_build = False):
     io.write_scheme_info(output_dir, case.T, case.CFL, case.gamma)
 
     # Write domain
-    io.write_domain(output_dir, case.lx, case.ly, case.Nx, case.Ny, case.coords_to_uid, case.BClayer)
+    io.write_domain(output_dir, case.lx, case.ly, case.Nx, case.Ny, coords_to_uid, case.BClayer)
 
     # Write boundary conditions
-    io.write_bc(output_dir, case.coords_to_uid_and_bc)
+    io.write_bc(output_dir, coords_to_uid_and_bc)
 
     # Write quantities and boundary conditions if necessary
     for q_name, q in case.quantityDict.items():
@@ -60,9 +74,8 @@ def build_case(case_path, output_dir, force_build = False):
 
     # Del case and chars
     del sys.path[-1]
-    del sys.modules["init"]
+    del sys.modules["chars"]
     del case
-    del chars
     
     # Return path to case directory
     return q_name_list

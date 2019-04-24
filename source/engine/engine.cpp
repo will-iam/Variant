@@ -171,8 +171,10 @@ int Engine::main(int argc, char** argv) {
         std::cout << Console::_blue << "-3.999853134e-01" << Console::_bold << " = " << rcos(real(42.f)) << Console::_normal << std::endl;
         std::cout << Console::_blue << "1.414213538e+00" << Console::_bold << " = " << rsqrt(real(2.f)) << Console::_normal <<  std::endl;
              // #ifndef NDEBUG
-            if (test_weak_float() == false)
+            if (test_weak_float() == false) {
+                std::cout << "Weak Float Unit Test Failed" << std::endl;
                 return EXIT_FAILURE;
+            }
             // #endif
         #endif
 

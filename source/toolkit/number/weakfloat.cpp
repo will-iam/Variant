@@ -218,6 +218,7 @@ bool unit_test() {
 }
 
 bool test_weak_float() {
+    return unit_test();
 
     std::cout << "     !~ ------------  Weak float " << PRECISION_WEAK_FLOAT << " test ------------ ~! " << std::endl;
     constexpr int max_digits10 = std::min(std::numeric_limits<float>::max_digits10, (int)std::ceil((PRECISION_WEAK_FLOAT - 9) * std::log10(2) + 2));
@@ -358,8 +359,6 @@ bool test_weak_float() {
         int p = std::min(std::numeric_limits<float>::max_digits10, (int)std::ceil((i - 9) * std::log10(2) + 2));
         std::cout << i << " -> " << p << std::endl;
     } */
-
-    return unit_test();
 
     std::cout << "     !~ ------------  Weak float " << PRECISION_WEAK_FLOAT << " end  ------------ ~! " << std::endl;
     return true;
