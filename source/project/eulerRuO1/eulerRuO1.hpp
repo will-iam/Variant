@@ -15,7 +15,7 @@
 #include "Quantity.hpp"
 
 /*!
- * @brief Donor-cell scheme for the Euler hydrodynamics equations
+ * @brief Rusanov Order 1 scheme for the Euler hydrodynamics equations
  */
 class EulerRuO1: public Engine {
   public:
