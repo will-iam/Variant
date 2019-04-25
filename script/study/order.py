@@ -33,7 +33,7 @@ for m in rounding:
             f = os.path.join(ref_path, d, 'ref', o, m)
             if not os.path.isdir(f):
                 continue
-            if not os.path.isfile(os.path.join(f, 'error.dat')):
+            if args.force or not os.path.isfile(os.path.join(f, 'error.dat')):
                 if not os.path.isfile(os.path.join(f, q_name + '.dat')):
                     continue
                 err = error_norm.compute(f, ["rho"], args.solver)
@@ -63,7 +63,7 @@ for o in random:
         if not os.path.isdir(f):
             continue
 
-        if not os.path.isfile(os.path.join(f, 'error.dat')):
+        if not args.force and not os.path.isfile(os.path.join(f, 'error.dat')):
             continue
 
         err_list = error_norm.load(f)

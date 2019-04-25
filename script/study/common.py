@@ -20,6 +20,8 @@ parser.add_argument("--precision", type = str, help = "Precision searched", defa
 parser.add_argument("--solver", type = str, help = "Exact Solver", required=True)
 parser.add_argument("--axis", type = str, help = "Axis along which you expect the solution", default='x', required=False)
 parser.add_argument("--quant", type = str, help = "Quantity to plot", default='rho', required=False)
+parser.add_argument("--force", action='store_true', default=False, help = "Force compution of error norm.")
+
 args = parser.parse_args()
 
 if args.solver not in ['sod', 'sedov', 'noh']:
