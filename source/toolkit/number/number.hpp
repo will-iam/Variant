@@ -155,6 +155,9 @@ namespace Number {
     int signum(T x) {
         return signum(x, std::is_signed<T>());
     }
+
+    // Kahan algorithm.
+    void fastTwoSum(real a, real b, real& c, real& d);
 }
 
 #endif

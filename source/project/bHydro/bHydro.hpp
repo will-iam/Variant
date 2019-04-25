@@ -15,19 +15,19 @@
 #include "Quantity.hpp"
 
 /*!
- * @brief Rusanov Order 1 scheme for the Euler hydrodynamics equations
+ * @brief Binary scheme for the Euler hydrodynamics equations
  */
-class EulerRuO1: public Engine {
+class BHydro: public Engine {
   public:
 
     /*!
      * @brief Constructor
      */
-    EulerRuO1();
+    BHydro();
     /*!
      * @brief Destructor
      */
-    ~EulerRuO1();
+    ~BHydro();
 
   private:
 
@@ -44,12 +44,8 @@ class EulerRuO1: public Engine {
      * etc.)
      */
 
-    real computePressure(real Ek, real E);
-    real computeSoundSpeed(const real& rho, const real& P);
-    void speed(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap);
     void flux(const SDShared& sds, const std::map< std::string, Quantity<real>* >& quantityMap);
     void updateBoundary(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap);
-    void updatePressure(const SDShared& sds, const std::map< std::string, Quantity<real>*>& quantityMap);
 
     /*!
      * @brief Initialize transport upwind scheme engine
@@ -66,18 +62,13 @@ class EulerRuO1: public Engine {
 
     int finalize() final;
 
-    // Scheme implementation
-    void computeDT();
-
     // Variables
     unsigned int _Nx;
     unsigned int _Ny;
+    unsigned int _Nt;
     real _dx;
     real _dy;
     real _dt;
-    real _t_err;
-    real _last_dt;
-    real _min_dt;
 
     // The Famous Domain
     Domain* _domain;
@@ -88,6 +79,20 @@ class EulerRuO1: public Engine {
      * @param directory: folder path where output files will be written
      */
     void writeState(std::string directory);
+
+
+    // Temporary for prototype design
+    void initial_condition();
+    void convolution();
+    void emulate();
+    void fluxion();
+    const unsigned int convolution_support = 64;
+    const unsigned int bunitsize = 64;
+    typedef unsigned long int bline; // binary line
+    bline* _mass;
+    bline* _uxr;
+    bline* _uxl;
+    size_t _bsize;
 };
 
 #endif

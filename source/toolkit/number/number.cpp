@@ -5,7 +5,7 @@
 #include "number.hpp"
 
 bool Number::equal(real a, real b, real precision) {
-    if (rabs(a - b) <= precision) 
+    if (rabs(a - b) <= precision)
         return true;
     std::cerr << "Absolute error: " << Console::_red << std::scientific << std::setprecision(max_digits10);
     std::cerr << rabs(a - b) << Console::_normal << " > ";
@@ -18,7 +18,7 @@ bool Number::equal(real a, real b, real precision) {
 }
 
 bool Number::relative(real a, real b, real precision) {
-    if (rabs(a / b - unit) <= precision) 
+    if (rabs(a / b - unit) <= precision)
         return true;
 
     std::cerr << "Relative error: " << Console::_red << std::scientific << std::setprecision(max_digits10);
@@ -28,4 +28,13 @@ bool Number::relative(real a, real b, real precision) {
     std::cerr << rabs(a - b) << Console::_normal;
 
     return false;
+}
+
+void Number::fastTwoSum(real a, real b, real& c, real& d) {
+    if (rabs(b) > rabs(a))
+        std::swap(a,b);
+
+    c = a + b;
+    const real z = c - a;
+    d = b - z;
 }

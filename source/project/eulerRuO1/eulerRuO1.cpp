@@ -153,16 +153,6 @@ int EulerRuO1::start() {
     return 0;
 }
 
-// Kahan algorithm.
-void fastTwoSum(real a, real b, real& c, real& d) {
-    if (rabs(b) > rabs(a))
-        std::swap(a,b);
-
-    c = a + b;
-    const real z = c - a;
-    d = b - z;
-}
-
 // Updating according to CFL and max velocity
 void EulerRuO1::computeDT() {
 
@@ -217,7 +207,7 @@ void EulerRuO1::computeDT() {
     // add timestep to global time.
     if (_MPI_rank == 0) {
         real y = _dt + _t_err;
-        fastTwoSum(_t, y, _t, _t_err);
+        Number::fastTwoSum(_t, y, _t, _t_err);
     }
 
     #ifndef SEQUENTIAL
