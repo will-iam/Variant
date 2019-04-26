@@ -110,10 +110,17 @@ y = first_value / (x / first_N)
 
 ax1.plot(x, y,linewidth=1.5, linestyle='dashed', color='black', label="extrap.")
 
+rounding_marker = {'average' : '8', 'upward': '^', 'downward':'v', 'toward_zero':'o', 'farthest':'>', 'nearest':'x'}
 for m in rounding:
     for pr in precisionList:
+        if pr in ['float, double']:
+            lw = 1.2
+        else:
+            lw = 0.5
         if len(order[m][pr]):
-            ax1.plot(sorted(order[m][pr]), [order[m][pr][v] for v in sorted(order[m][pr])], marker='+', linewidth=1.0, label="%s %s" % (pr, m))
+            #ax1.plot(sorted(order[m][pr]), [order[m][pr][v] for v in sorted(order[m][pr])], marker=rounding_marker[m], linewidth=lw, label="%s %s" % (pr, m))
+            ax1.plot(sorted(order[m][pr]), [order[m][pr][v] for v in sorted(order[m][pr])], marker=rounding_marker[m], linewidth=lw)
+        
 
 for N in random['float']:
     ax1.plot(np.ones(len(random['float'][N])) * N, random['float'][N] , 'bx')

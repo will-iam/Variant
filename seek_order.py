@@ -26,12 +26,12 @@ precisionList = [
             #'weak16', // failed on nSod32768
             #'weak17',
             #'weak18', 'weak19',
-            'weak20', 'weak21', 'weak22', 'weak23', 'weak24', 'weak25',
+            #'weak20', 'weak21', 'weak22', 'weak23', 'weak24', 'weak25',
             'weak26', 'weak27', 'weak28', 'weak29', 'weak30', 'weak31',
             'weak32', 'float', 'double', 'long_double', 'quad'
             ]
 
-#precisionList=['weak32', 'weak17', 'weak31']
+precisionList=['weak32', 'weak17', 'weak31']
 
 #sizeList = [(64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024)]
 #sizeList = [(256, 256), (512, 512), (1024, 1024), (2048, 2048), (4096, 4096), (8192, 8192)]

@@ -83,7 +83,7 @@ void SDShared::updateTimeVaryingCells(Quantity<real>* quantity, const real& t) c
     assert(parameterValue.size() != 0);
 
     for (auto it = parameterValue.begin(); it != parameterValue.end(); ++it) {
-        real v = qty.get0(it->first) * (1. + it->second * t);
+        real v = qty.get0(it->first) * (Number::unit + it->second * t);
         //std::cout << "v: " << std::defaultfloat << std::setprecision(Number::max_digits10) << v << std::endl;
         qty.set0(v, it->first);
     }
