@@ -43,27 +43,34 @@ def compute(data_path, qty_name_list, solver):
     # Call solver.
     #in values: ['energy', 'p', 'u', 'rho', 'rho_total', 'x']
     start = timer()
-    gamma = 1.4
     if solver == 'sod':
         if Nx != 1 and Ny != 1:
             return None
         from sod import solve
         positions, regions, values = solve(left_state=(1, 1, 0), right_state=(0.1, 0.125, 0.),
-                        geometry=(0., 1., 0.5), t=0.2, gamma=gamma, npts=Nx)
+                        geometry=(0., 1., 0.5), t=0.2, gamma=1.4, npts=Nx)
     if solver == 'sedov':
         from sedov import solve
-        x = np.linspace(0., Nx * float(dx), Nx)
-        values = solve(t=1.0, gamma=gamma, xpos=x)
+        x = np.linspace(0., Nx * float(dx) * np.sqrt(2), Nx)
+        if Ny==1:
+            values = solve(t=1.0, gamma=1.4, xpos=x, ndim=1)
+        if Nx and Ny>1:
+            values = solve(t=1.0, gamma=1.4, xpos=x, ndim=2)
 
     if solver == 'noh':
         from noh import solve
-        x = np.linspace(0., Nx * float(dx), Nx)
+        if Nx==1:
+            values = solve(t=0.6, gamma=5./3., ndim=1,npts=Ny)
         if Ny==1:
             values = solve(t=0.6, gamma=5./3., ndim=1,npts=Nx)
         if Ny>1:
             values = solve(t=0.6, gamma=5./3., ndim=2,npts=Nx)
-    end = timer()
     
+    
+#    values['rho'] = 0*np.ones(Nx)
+
+
+    end = timer()
     print("Time to compute exact solution of %s elements" % len(values['rho']), "%s second(s)" % int((end - start)))
 
     result = {'N' : Nx*Ny}
@@ -85,7 +92,11 @@ def compute(data_path, qty_name_list, solver):
 
     end = timer()
     print("Time to load quantity rho of %s elements" % (Nx * Ny), "%s second(s)" % int((end - start)))
-    result["rho"] = np.linalg.norm((rho - values["rho"]), ord=2) / Nx
+    if (solver == 'sedov' or solver == 'noh') and (Nx>1 and Ny>1):      #2D Sedov or Noh
+        result["rho"] = np.linalg.norm((rho - values["rho"]), ord=2) * min(float(dx),float(dy)) * np.sqrt(2)
+    else:
+        result["rho"] = np.linalg.norm((rho - values["rho"]), ord=2) * min(float(dx),float(dy))
+
 
     '''
     q_map = {"rhoE" : "energy", "rhou_x" : "u"}

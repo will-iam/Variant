@@ -37,8 +37,12 @@ for q in quantityListName:
 
 x = np.linspace(0., Nx * float(dx), Nx)
 y = np.linspace(0., Ny * float(dy), Ny)
-Npoints = math.floor(max(Nx,Ny)/np.sqrt(2.0))+1
-x_1D = np.linspace(0., max(Nx,Ny) * float(min(dx,dy)), Npoints)
+Npoints = max(Nx,Ny)
+if args.solver == 'sod':
+    x_1D = np.linspace(0., Nx * float(dx), Nx)
+else:
+    x_1D = np.linspace(0., Nx * float(dx) * np.sqrt(2), Nx)
+
 Ux = np.zeros((Nx, Ny))
 Uy = np.zeros((Nx, Ny))
 Ek = np.zeros((Nx, Ny))
@@ -70,7 +74,12 @@ if args.solver == 'sedov':
     exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
-    values = solve(t=1.2, gamma=1.4, xpos=x)
+
+
+    if Ny==1:
+        values = solve(t=1.0, gamma=1.4, xpos=x_1D, ndim=1)
+    if Nx and Ny>1:
+        values = solve(t=1.0, gamma=1.4, xpos=x_1D, ndim=2)
 
 if args.solver == 'noh':
     if Nx==1:
@@ -83,13 +92,7 @@ if args.solver == 'noh':
         exact_title='Rho value on y = 0'
     if Nx>1 and Ny>1:      #2D, with Nx=Ny
         for i in range(Nx):
-            rho_1D = np.zeros(math.floor(max(Nx,Ny)/np.sqrt(2.0))+1)
-            rho_1D_normed = np.zeros(max(Nx,Ny))
-            for i in range(Nx):
-                rho_1D_normed[i] = data['rho'][i][i]
-            for i in range(len(rho_1D_normed)):
-                if i/len(rho_1D_normed)<=1.0/np.sqrt(2.0):
-                    rho_1D[i] = rho_1D_normed[i]
+            rho_1D[i] = data['rho'][i][i]
         exact_title='Rho value on y = x'
     sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
     from noh import solve
@@ -99,6 +102,7 @@ if args.solver == 'noh':
         values = solve(t=0.6, gamma=5./3., ndim=1,npts=Nx,axis='x')
     if Nx>1 and Ny>1:     #2D, with Nx=Ny
         values = solve(t=0.6, gamma=5./3., ndim=2,npts=Nx)
+
 print("intégrale de rho sur tout le domaine (simulation) : ", sum(sum(data['rho'])/(Nx*Ny)))
 #print("intégrale de rho exacte : ", sum(sum(values['rho'])/(Nx*Ny)))
 
@@ -120,7 +124,7 @@ elif Ny==1:
     ax1.plot(x, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
 else:
     ax1.plot(x_1D, rho_1D, 'b+-', linewidth=2, markersize=3, label="simul.")
-plt.plot(values['x'], values['rho'], linewidth=1.5, color='r', linestyle='dashed', label="exact")
+plt.plot(x_1D, values['rho'], linewidth=1.5, color='r', linestyle='dashed', label="exact")
 ax1.set(xlabel='x', ylabel='density', title=exact_title)
 ax1.grid()
 #ax1.axis([0, 1, 0, 1.1])

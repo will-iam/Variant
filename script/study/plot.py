@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-import __future__
 from common import *
 import math
 
@@ -54,13 +53,17 @@ if axis == 'x':
             qty[i] = data['rhou_x'][i][0] / data['rho'][i][0]
     elif towatch == "energy":
         for i in range(Nx):
-            #qty[i] = (data['rhoE'][i][0]) / data['rho'][i][0]
-            qty[i] = data['rhoE'][i][0] / data['rho'][i][0] -(data['rhou_x'][i][0] / data['rho'][i][0])**2/2.0
+            ux = data['rhou_x'][i][0] / data['rho'][i][0]
+            Ek = ux**2/2.0
+            qty[i] = data['rhoE'][i][0] / data['rho'][i][0] - Ek
     elif towatch == "rho":
         for i in range(Nx):
             qty[i] = data['rho'][i][0]
 
 elif axis == 'y':
+    if Ny == 1:
+        print("Cannot show 1D case on axis y, change axis y to axis x")
+        sys.exit(1)
     axis_title="x = 0"
     Npoints = Ny
     x = np.linspace(0., Ny * float(dy), Ny)
@@ -70,54 +73,36 @@ elif axis == 'y':
             qty[i] = data['rhou_y'][0][i] / data['rho'][0][i]
     elif towatch == "energy":
         for i in range(Ny):
-            qty[i] = data['rhoE'][0][i] / data['rho'][0][i] -(data['rhou_y'][0][i] / data['rho'][0][i])**2/2.0
+            uy = data['rhou_y'][0][i] / data['rho'][0][i]
+            Ek = uy**2/2.0
+            qty[i] = data['rhoE'][0][i] / data['rho'][0][i] - Ek
     elif towatch == "rho":
         for i in range(Ny):
             qty[i] = data['rho'][0][i]
 
 elif axis == 'xy':
-    axis_title="y = x"
-    Npoints = math.floor(max(Nx,Ny)/np.sqrt(2.0))+1
-    x = np.linspace(0., max(Nx, Ny) * float(min(dx,dy)), Npoints)
-    #x = np.linspace(0., np.sqrt(2.0)*Ny * float(dy), Ny)
-    qtynormed = np.zeros(max(Nx,Ny))
-    if towatch == "u":
-        for i in range(max(Nx,Ny)):
-            uy = data['rhou_y'][i][i] / data['rho'][i][i]
-            ux = data['rhou_x'][i][i] / data['rho'][i][i]
-            qtynormed[i] = np.sqrt(ux**2. + uy**2) if ux>=0 and uy>=0 else -np.sqrt(ux**2+uy**2)
-    elif towatch == "energy":
-        for i in range(max(Nx,Ny)):
-            qtynormed[i] = data['rhoE'][i][i] / data['rho'][i][i] -(data['rhou_x'][i][i]**2 + data['rhou_y'][i][i]**2) / data['rho'][i][i]**2/2.0
-    elif towatch == "rho":
-        for i in range(max(Nx,Ny)):
-            qtynormed[i] = data['rho'][i][i]
-
-    if Nx > 1 and Ny > 1: #2D, Nx=Ny
-        qty = np.zeros(Npoints)
-        for i in range(len(qtynormed)):
-            if i * np.sqrt(2.0) <= 1.0 * len(qtynormed):
-                qty[i] = qtynormed[i]
-    else:      #1D
-        qty = qtynormed
-
-
-elif axis == 'r':
-    if Nx != Nx:
+    if Nx != Ny:
         print("Radial measure: domain must be a square Nx x Ny")
+        sys.exit(1)
+    if args.solver == 'sod':
+        print("Cannot compare with analytical solution on axis x=y, analytical solution not known")
         sys.exit(1)
     axis_title="diagonal"
     Npoints = Ny
-    x = np.linspace(0., Ny * float(dy), Ny)
+    x = np.linspace(0., Ny * float(dy) * np.sqrt(2), Ny)
     qty = np.zeros(Ny)
+    
     if towatch == "u":
         for i in range(Ny):
             uy = data['rhou_y'][i][i] / data['rho'][i][i]
             ux = data['rhou_x'][i][i] / data['rho'][i][i]
-            qty[i] = np.sqrt((ux**2. + uy**2.) / 2.)
+            qty[i] = np.sqrt(ux**2. + uy**2) if ux>=0 and uy>=0 else -np.sqrt(ux**2+uy**2)
     elif towatch == "energy":
         for i in range(Ny):
-            qty[i] = data['rhouE'][i][i] / data['rho'][i][i]
+            uy = data['rhou_y'][i][i] / data['rho'][i][i]
+            ux = data['rhou_x'][i][i] / data['rho'][i][i]
+            Ek = (uy**2 + ux**2)/2.0
+            qty[i] = data['rhoE'][i][i] / data['rho'][i][i] - Ek
     elif towatch == "rho":
         for i in range(Ny):
             qty[i] = data['rho'][i][i]
@@ -131,7 +116,10 @@ if args.solver == 'sod':
 if args.solver == 'sedov':
     sys.path.insert(1, os.path.join(sys.path[0], 'sedov'))
     from sedov import solve
-    values = solve(t=1.0, gamma=1.4, xpos=x)
+    if Ny==1:
+        values = solve(t=1.0, gamma=1.4, xpos=x, ndim=1)
+    if Nx and Ny>1:
+        values = solve(t=1.0, gamma=1.4, xpos=x, ndim=2)
 
 if args.solver == 'noh':
     sys.path.insert(1, os.path.join(sys.path[0], 'noh'))
@@ -141,12 +129,14 @@ if args.solver == 'noh':
     if Ny==1:
         values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=1, axis='x')
     if Nx>1 and Ny>1:      #2D, Nx=Ny
-        if axis=='xy':
-            values = solve(t=0.6, gamma=5./3., npts=Npoints, ndim=2)
-        else:
-            values = solve(t=0.6, gamma=5./3., npts=Nx, ndim=2)
-print("intégrale exacte de",towatch," : ", sum(values[towatch]/max(Nx,Ny)))
-print("intégrale simulation de",towatch," : ", sum(qty/max(Nx,Ny)))
+        values = solve(t=0.6, gamma=5./3., npts=Npoints, ndim=2)
+
+if (args.solver == 'sedov' or args.solver == 'noh') and (Nx>1 and Ny>1):      #2D Sedov or Noh
+    print("intégrale simulation de",towatch," : ", sum(qty/max(Nx,Ny)) * Ny * float(dy) * np.sqrt(2)) 
+    print("intégrale exacte de",towatch," : ", sum(values[towatch]/max(Nx,Ny))* Ny * float(dy) * np.sqrt(2))
+else:
+    print("intégrale simulation de",towatch," : ", sum(qty/max(Nx,Ny)) * Ny * float(dy)) 
+    print("intégrale exacte de",towatch," : ", sum(values[towatch]/max(Nx,Ny))* Ny * float(dy))
 
 fig = plt.figure(0, figsize=(9, 6))
 ax1 = fig.add_subplot(111)
@@ -163,7 +153,7 @@ ax1.legend()
 
 color = 'red'
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-ax2.plot(x[0:511], np.abs(qty[0:511] - values[towatch][0:511]), linewidth=1.5, color=color, label="err.")
+ax2.plot(x, np.abs(qty - values[towatch]), linewidth=1.5, color=color, label="err.")
 ax2.set_ylabel('err.', color=color)  # we already handled the x-label with ax1
 ax2.tick_params(axis='y', labelcolor=color)
 

@@ -20,11 +20,12 @@ def solve(t, gamma, ndim, npts, axis='x'):
         Nx=npts
         Ny=npts
 
-    Npoints = floor(max(Nx,Ny)/sqrt(2.0))+1
-
     X = linspace(0.0,radius,npts)
     Y = linspace(0.0,radius,npts)
-    r=array([sqrt((X[i]**2+Y[i]**2)/2.0) for i in range(npts)])
+    if ndim == 1:
+        r=array([sqrt((X[i]**2+Y[i]**2)/2) for i in range(npts)])
+    if ndim == 2:
+        r=array([sqrt((X[i]**2+Y[i]**2)/2) for i in range(npts)])
     rho = zeros(npts, dtype=float)
     p = zeros(npts, dtype=float)
     u = zeros(npts, dtype=float)
