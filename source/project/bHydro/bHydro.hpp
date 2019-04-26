@@ -89,10 +89,18 @@ class BHydro: public Engine {
     const unsigned int convolution_support = 64;
     const unsigned int bunitsize = 64;
     typedef unsigned long int bline; // binary line
-    bline* _mass;
-    bline* _uxr;
-    bline* _uxl;
+
+    bline* _mass0;
+    bline* _mass1;
+    bline* _uxr0;
+    bline* _uxr1;
+    bline* _uxl0;
+    bline* _uxl1;
     size_t _bsize;
+
+    inline void algo(const bline& mass_in, const bline& uxr_in,
+        bline& mass_out, bline& uxr_out, bline& bit_from_left) const;
+    void test_algo() const;
 };
 
 #endif

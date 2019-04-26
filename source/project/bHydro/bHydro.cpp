@@ -9,6 +9,7 @@
 #include <ostream>
 #include <vector>
 #include <algorithm>
+#include <bitset>
 
 BHydro::BHydro():
     Engine() {
@@ -18,9 +19,13 @@ BHydro::~BHydro() {
 
     delete _domain;
 
-    delete[] _mass;
-    delete[] _uxl;
-    delete[] _uxr;
+    delete[] _mass0;
+    delete[] _uxl0;
+    delete[] _uxr0;
+
+    delete[] _mass1;
+    delete[] _uxl1;
+    delete[] _uxr1;
 }
 
 int BHydro::init() {
@@ -96,20 +101,25 @@ int BHydro::init() {
     _dt = _dx / bunitsize;
     _Nt = ceil(_T / _dt);
 
+    test_algo();
+
     #ifndef SEQUENTIAL
     MPI_Bcast(&_Nt, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
     #endif
 
     initial_condition();
-
     return 0;
 }
 
 void BHydro::initial_condition() {
 
-    _mass = new bline[_bsize];
-    _uxr = new bline[_bsize];
-    _uxl = new bline[_bsize];
+    _mass0 = new bline[_bsize];
+    _uxr0 = new bline[_bsize];
+    _uxl0 = new bline[_bsize];
+
+    _mass1 = new bline[_bsize];
+    _uxr1 = new bline[_bsize];
+    _uxl1 = new bline[_bsize];
 
     /*
     const SDDistributed& sdd = _domain->getSDDconst();
@@ -124,13 +134,16 @@ void BHydro::initial_condition() {
     } */
 
     for (size_t i(0); i < _bsize / 2; ++i)
-        _mass[i] = 0x1101010101010100;
+        _mass0[i] = 0x1101010101010100;
 
     for (size_t i(_bsize / 2); i < _bsize; ++i)
-        _mass[i] = 0x0000010000000000;
+        _mass0[i] = 0x0000010000000000;
 
     for (size_t i(0); i < _bsize / 2; ++i)
-        _uxr[i] = _mass[i] & 0xffffffffffffffff;
+        _uxr0[i] = _mass0[i] & 0xffffffffffffffff;
+
+    for (size_t i(_bsize / 2); i < _bsize; ++i)
+        _uxr0[i] = 0x0;
 }
 
 static inline int popCount(unsigned long int x) {
@@ -163,8 +176,9 @@ void BHydro::convolution() {
         }
     }*/
     for (size_t i(0); i < _bsize; ++i) {
-        double r = (double)popCount(_mass[i]);
+        double r = (double)(popCount(_mass0[i]));
         //std::cout << "i: " << i << ", r: " << r << std::endl;
+        r /= 8.;
         sdd.setValue("rho", i, 0, r);
     }
 
@@ -217,6 +231,18 @@ int BHydro::start() {
 //        _domain->switchQuantityPrevNext("uxr");
 //        _domain->switchQuantityPrevNext("uxl");
 
+        bline* tmp = _mass0;
+        _mass0 = _mass1;
+        _mass1 = tmp;
+
+        tmp = _uxr0;
+        _uxr0 = _uxr1;
+        _uxr1 = tmp;
+
+        tmp = _uxl0;
+        _uxl0 = _uxl1;
+        _uxl1 = tmp;
+
    	    _timerComputation.end();
         // ----------------------------------------------------------------------
         _timerIteration.end();
@@ -228,24 +254,84 @@ int BHydro::start() {
 void BHydro::flux(const SDShared&, const std::map< std::string, Quantity<real>* >&) {
 }
 
+void BHydro::algo(const bline& mass_in, const bline& uxr_in,
+    bline& mass_out, bline& uxr_out, bline& bit_from_left) const {
+
+    bline immobile(0x0), mobile(0x0), qm(0x0), w(0x0), b(0x0), u(0x0);
+
+    immobile = mass_in & (~uxr_in);
+    qm = (mass_in & uxr_in);
+
+    // This selects only speed (->) against immobile line.
+    w = (((qm - immobile) & immobile) + immobile) & qm;
+
+    // These are lines (-last bit) of bridges.
+    b = ((qm - immobile) & immobile) ^ immobile;
+
+    // Remove from speed what will be moved thrue immobile line.
+    u = qm ^ w;
+
+    // Finally, only immobile bits that transmit speed.
+    w = (w | b) >> 1;
+    u |= (qm - w) & w;
+
+    bit_from_left = (u & 1UL) << 63;
+    u >>= 1;
+
+    // We add the bit from the left.
+    mobile = bit_from_left | u;
+    mass_out = mobile | immobile;
+    uxr_out = mobile;
+}
+
+void BHydro::test_algo() const {
+    bline mass_in(0x13010101f101010f), mass_out;
+    bline uxr_in( 0x1201000101010008), uxr_out, bit_from_left(0x0);
+
+    algo(mass_in, uxr_in, mass_out, uxr_out, bit_from_left);
+
+    std::bitset<64> mi(mass_in);
+    std::bitset<64> mo(mass_out);
+    std::bitset<64> ui(uxr_in);
+    std::bitset<64> uo(uxr_out);
+    std::bitset<64> bl(bit_from_left);
+
+    std::cout << "before:\n";
+    std::cout << mi.to_string() << '\n';
+    std::cout << ui.to_string() << '\n';
+
+    std::cout << "after:\n";
+    std::cout << mo.to_string() << '\n';
+    std::cout << uo.to_string() << '\n';
+    std::cout << bl.to_string() << '\n';
+
+    algo(mass_out, uxr_out, mass_in, uxr_in, bit_from_left);
+
+    std::bitset<64> mi2(mass_out);
+    std::bitset<64> mo2(mass_in);
+    std::bitset<64> ui2(uxr_out);
+    std::bitset<64> uo2(uxr_in);
+    std::bitset<64> bl2(bit_from_left);
+
+
+    std::cout << "before:\n";
+    std::cout << mi2 << '\n';
+    std::cout << ui2 << '\n';
+
+    std::cout << "after:\n";
+    std::cout << mo2 << '\n';
+    std::cout << uo2 << '\n';
+    std::cout << bl2 << '\n';
+
+    //exitfail(1);
+}
+
 void BHydro::fluxion() {
 
     // Impose left border condition.
-    bline previous = 0x0;
-    bline immobile(0x0), mobile(0x0);
+    bline bit_from_left(0x0);
     for (size_t i(0); i < _bsize; ++i) {
-        _mass[i] = (_mass[i] >> 1) | previous;
-        previous = (_mass[i] & 1UL) << 63;
-
-        /*
-        immobile = _mass[i] & (~_uxr[i]);
-        mobile = (_mass[i] & _uxr[i]) >> 1;
-        // first bit is lost : => -------------X -> --------------
-        // but is copied in the next bline.
-        // exception for the last bline.
-
-        _mass[i] = mobile | immobile;
-        */
+        algo(_mass0[i], _uxr0[i], _mass1[i], _uxr1[i], bit_from_left);
     }
 
     // Impose right border condition
