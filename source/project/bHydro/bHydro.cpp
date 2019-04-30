@@ -133,21 +133,13 @@ void BHydro::initial_condition() {
     } */
 
     for (size_t i(0); i < _bsize / 2; ++i) {
-        _mv0[_vnull - 1] = 0x1101010101010100;
-        _mv0[_vnull + 1] = 0x1101010101010100;
+        _mv0[_vnull - 1][i] = 0x1101010101010100;
+        _mv0[_vnull + 1][i] = 0x1101010101010100;
     }
 
     for (size_t i(_bsize / 2); i < _bsize; ++i) {
-        _mv0[_vnull - 1] = 0x0000010000000000;
-        _mv0[_vnull + 1] = 0x0000010000000000;
-    }
-
-        /*
-        if (rand() % 2)
-            _uxr0[i] = _mass0[i] & 0xffffffffffffffff;
-        else
-            _uxl0[i] = _mass0[i] & 0xffffffffffffffff;
-        */
+        _mv0[_vnull - 1][i] = 0x0000010000000000;
+        _mv0[_vnull + 1][i] = 0x0000010000000000;
     }
 }
 
@@ -199,7 +191,8 @@ void BHydro::convolution() {
             if (output_counter == _Nx)
                 break;
         }
-        sum += popCount(_uxl0[i] & _mass0[i]) + popCount(_uxr0[i] & _mass0[i]);
+        for (size_t v(0); v < _vsize; ++v)
+            sum += popCount(_mv0[v][i]);
     }
 
     std::cout << "total mass: " << total << " / " << _bsize * _bunitsize << std::endl;
@@ -252,17 +245,9 @@ int BHydro::start() {
 //        _domain->switchQuantityPrevNext("uxr");
 //        _domain->switchQuantityPrevNext("uxl");
 
-        bline* tmp = _mass0;
-        _mass0 = _mass1;
-        _mass1 = tmp;
-
-        tmp = _uxr0;
-        _uxr0 = _uxr1;
-        _uxr1 = tmp;
-
-        tmp = _uxl0;
-        _uxl0 = _uxl1;
-        _uxl1 = tmp;
+        bline** tmp = _mv0;
+        _mv0 = _mv1;
+        _mv1 = tmp;
 
    	    _timerComputation.end();
         // ----------------------------------------------------------------------
@@ -673,6 +658,7 @@ bool BHydro::unittest() const {
 
 void BHydro::fluxion() {
 
+    /*
     // Impose left border condition.
     bline bit_from_left_in(_mass0[0] & _uxl0[0] & 0x8000000000000000);
 
@@ -692,7 +678,7 @@ void BHydro::fluxion() {
         lalgo(_mass0[i], _uxl0[i], bit_from_right_in, _mass1[i], _uxl1[i], bit_from_right_out);
         bit_from_right_in = bit_from_right_out;
     }
-
+    */
     /*
     unsigned long int total_mass = 0; // 18432
     for (size_t i(0); i <= _bsize; ++i) {
