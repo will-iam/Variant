@@ -7,6 +7,8 @@
  */
 
 #include <memory>
+#include <bitset>
+
 #include "engine.hpp"
 #include "number/number.hpp"
 #include "exception/exception.hpp"
@@ -86,13 +88,32 @@ class BHydro: public Engine {
     void convolution();
     void emulate();
     void fluxion();
-    const unsigned int convolution_support = 64;
-    const unsigned int bunitsize = 64;
+    const unsigned int _cellsize = 64;
+    const unsigned int _bunitsize = 64;
+    const size_t _vsize = 5;
+    const size_t _vnull = 3;
     typedef unsigned long int bline; // binary line
-    bline* _mass;
-    bline* _uxr;
-    bline* _uxl;
+
     size_t _bsize;
+    bline** _mv0;
+    bline** _mv1;
+
+    inline void lalgo(const bline& mass_in, const bline& uxl_in, const bline& p_in,
+        bline& mass_out, bline& uxl_out, bline& p_out) const;
+
+    inline void ralgo(const bline& mass_in, const bline& ux_in, const bline& p_in,
+        bline& mass_out, bline& uxr_out, bline& p_out) const;
+
+
+    bool unittest() const;
+    void show(const bline& mass, const bline& uxl, const bline& uxr) const;
+    bool salgotest(bline& mass, bline& speed, bline& border) const;
+    bool lalgotest(bline& mass, bline& speed, bline& border) const;
+    bool ralgotest(bline& mass, bline& speed, bline& border) const;
+    void ralgoslow(const std::bitset<64>& mass_in, const std::bitset<64>& uxr_in,
+        std::bitset<64>& mass_out, std::bitset<64>& uxr_out, std::bitset<64>& p_from_left) const;
+    void lalgoslow(const std::bitset<64>& mass_in, const std::bitset<64>& uxl_in,
+        std::bitset<64>& mass_out, std::bitset<64>& uxl_out, std::bitset<64>& p_from_right) const;
 };
 
 #endif
