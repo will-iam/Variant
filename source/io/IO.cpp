@@ -48,13 +48,19 @@ int IO::loadDomainInfo(std::string directory, Domain& domain) {
     real ly; stor(tmpStr, ly);
     std::getline(ifs, tmpStr, ' ');
     unsigned int Nx = std::stoi(tmpStr);
-    std::getline(ifs, tmpStr);
+    std::getline(ifs, tmpStr, ' ');
     unsigned int Ny = std::stoi(tmpStr);
-
+    std::getline(ifs, tmpStr, ' ');
+    unsigned int tmpInt = std::stoi(tmpStr);
+    std::getline(ifs, tmpStr, ' ');
+    tmpInt = std::stoi(tmpStr);
+    std::getline(ifs, tmpStr, ' ');
+    unsigned int BClayer = std::stoi(tmpStr);
+    std::cout << "BClayer" << BClayer << std::endl;
     domain.initRect(lx, ly, Nx, Ny);
     ifs.close();
 
-    return 0;
+    return BClayer;
 }
 
 int IO::loadSchemeInfo(std::string directory, Engine& engine) {

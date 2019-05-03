@@ -46,23 +46,31 @@ def build(quantityDict, coords_to_uid, coords_to_bc, Nx, Ny, lx, ly, BClayer):
     for k in range(1, BClayer + 1):
         # Left border
         for j in range(-k, Ny - 1 + k):
-            uy = 1 if j >= 0 and j < Ny else -1
-            coords_to_bc[(-k, j)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": -1, "rhou_y": uy}}
-
+            #uy = 1 if j >= 0 and j < Ny else -1
+            coords_to_bc[(-k, j)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": -1, "rhou_y": 1}}
+            if k == 2:
+                coords_to_bc[(-k, j)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": 1, "rhou_y": 1}} 
+            
         # Top border
         for i in range(-k, Nx - 1 + k):
             ux = 1 if i >= 0 and i < Nx else -1
-            coords_to_bc[(i, Ny - 1 + k)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": ux, "rhou_y": -1}}
+            coords_to_bc[(i, Ny - 1 + k)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": 1, "rhou_y": 1}}
+            if k == 2:
+                coords_to_bc[(i, Ny -1 + k)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1,"rhou_x": 1, "rhou_y": 1}} 
 
         # Right border
-        for j in range(Ny, -k, -1):
-            uy = 1 if j >= 0 and j < Ny else -1
-            coords_to_bc[(Nx - 1 + k, j)] = {'D': {"rho": 1, "rhoE": 1/2*u0**2*rho0, "pressure": 0,"rhou_x": -1, "rhou_y": 0}}
+        for j in range(Ny - 2 + k, -k, -1):
+            #uy = 1 if j >= 0 and j < Ny else -1
+            coords_to_bc[(Nx - 1 + k, j)] = {'D': {"rho": 1, "rhoE": 0.5*u0**2*rho0, "pressure": 0,"rhou_x": -1, "rhou_y": 0}}
+            if k == 2:
+                coords_to_bc[(Nx - 1 + k, j)] = {'D': {"rho": 1, "rhoE": 0.5*u0**2*rho0, "pressure": 0,"rhou_x": -1, "rhou_y": 0}}
 
         # Bottom border
-        for i in range(Nx, -k, -1):
-            ux = 1 if i >= 0 and i < Nx else -1
-            coords_to_bc[(i, -k)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": ux, "rhou_y": -1}}
+        for i in range(Nx - 2 + k, -k, -1):
+            i#ux = 1 if i >= 0 and i < Nx else -1
+            coords_to_bc[(i, -k)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1, "rhou_x": 1, "rhou_y": 1}}
+            if k == 2:
+                coords_to_bc[(i, -k)] = {'N': {"rho": 1, "rhoE": 1, "pressure": 1,"rhou_x": 1, "rhou_y": 1}} 
 
 
     # ------------------------------------------------------------------------------
